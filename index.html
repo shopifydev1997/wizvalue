@@ -16,6 +16,21 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script type="module">
+      // GitHub Pages static branch fallback:
+      // If served uncompiled on GitHub Pages root, redirect to pre-built dist-static/ bundle
+      if (typeof window !== 'undefined' && window.location.hostname.endsWith('github.io')) {
+        setTimeout(function() {
+          var root = document.getElementById('root');
+          if (root && root.childElementCount === 0) {
+            var segments = window.location.pathname.split('/').filter(Boolean);
+            var repo = segments.length > 0 ? segments[0] : '';
+            var dest = (repo ? '/' + repo + '/dist-static/' : '/dist-static/') + window.location.hash;
+            window.location.replace(dest);
+          }
+        }, 400);
+      }
+    </script>
   </body>
 </html>
 

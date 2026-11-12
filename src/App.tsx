@@ -145,6 +145,7 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/docs" element={<HomePage />} />
+                  <Route path="/dist-static" element={<HomePage />} />
                   <Route path="/shop" element={<ShopPage />} />
                   <Route path="/category/:slug" element={<CategoryPage />} />
                   <Route path="/product/:slug" element={<ProductDetailPage />} />
