@@ -1,0 +1,233 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "WiZ home hygiene or personal care product item with multi-variant options",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 200 },
+        "slug": { "type": "string", "maxLength": 200 },
+        "sku": { "type": "string", "maxLength": 64 },
+        "category": { "type": "string", "maxLength": 100 },
+        "subcategory": { "type": "string", "maxLength": 100 },
+        "shortDescription": { "type": "string", "maxLength": 500 },
+        "fullDescription": { "type": "string", "maxLength": 4000 },
+        "benefits": { "type": "string", "maxLength": 2000 },
+        "images": { "type": "string", "maxLength": 10000 },
+        "regularPrice": { "type": "number" },
+        "sellingPrice": { "type": "number" },
+        "discountPercent": { "type": "number" },
+        "variants": { "type": "string", "maxLength": 10000 },
+        "packagingSize": { "type": "string", "maxLength": 100 },
+        "stock": { "type": "number" },
+        "isFeatured": { "type": "boolean" },
+        "isBestseller": { "type": "boolean" },
+        "isSoldout": { "type": "boolean" },
+        "amazonUrl": { "type": "string", "maxLength": 500 },
+        "zeptoUrl": { "type": "string", "maxLength": 500 },
+        "blinkitUrl": { "type": "string", "maxLength": 500 },
+        "seoTitle": { "type": "string", "maxLength": 200 },
+        "seoDescription": { "type": "string", "maxLength": 500 },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "slug", "category", "regularPrice", "sellingPrice"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product category definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "slug": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 500 },
+        "image": { "type": "string", "maxLength": 500 },
+        "order": { "type": "number" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "slug"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order enquiry snapshot",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "orderNumber": { "type": "string", "maxLength": 64 },
+        "customerName": { "type": "string", "maxLength": 150 },
+        "customerPhone": { "type": "string", "maxLength": 20 },
+        "customerEmail": { "type": "string", "maxLength": 150 },
+        "address": { "type": "string", "maxLength": 500 },
+        "city": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "maxLength": 100 },
+        "pincode": { "type": "string", "maxLength": 20 },
+        "notes": { "type": "string", "maxLength": 1000 },
+        "itemsJson": { "type": "string", "maxLength": 15000 },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "couponCode": { "type": "string", "maxLength": 50 },
+        "freebieText": { "type": "string", "maxLength": 200 },
+        "finalTotal": { "type": "number" },
+        "status": { "type": "string", "maxLength": 50 },
+        "source": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["orderNumber", "customerName", "customerPhone", "city", "pincode", "itemsJson"]
+    },
+    "BulkEnquiry": {
+      "title": "BulkEnquiry",
+      "description": "B2B / Institution bulk order enquiry",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "companyName": { "type": "string", "maxLength": 200 },
+        "contactPerson": { "type": "string", "maxLength": 150 },
+        "phone": { "type": "string", "maxLength": 20 },
+        "email": { "type": "string", "maxLength": 150 },
+        "city": { "type": "string", "maxLength": 100 },
+        "pincode": { "type": "string", "maxLength": 20 },
+        "productCategory": { "type": "string", "maxLength": 100 },
+        "variantPackaging": { "type": "string", "maxLength": 100 },
+        "requiredQuantity": { "type": "string", "maxLength": 50 },
+        "frequency": { "type": "string", "maxLength": 100 },
+        "specialRequirements": { "type": "string", "maxLength": 2000 },
+        "status": { "type": "string", "maxLength": 50 },
+        "adminNotes": { "type": "string", "maxLength": 2000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["companyName", "contactPerson", "phone", "city", "requiredQuantity"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Discount coupon code",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "code": { "type": "string", "maxLength": 50 },
+        "discountType": { "type": "string", "maxLength": 20 },
+        "discountValue": { "type": "number" },
+        "minCartValue": { "type": "number" },
+        "maxDiscount": { "type": "number" },
+        "validFrom": { "type": "string" },
+        "validTo": { "type": "string" },
+        "usageLimit": { "type": "number" },
+        "usedCount": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["code", "discountType", "discountValue", "isActive"]
+    },
+    "Freebie": {
+      "title": "Freebie",
+      "description": "Free product gift offer rule",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 500 },
+        "minCartValue": { "type": "number" },
+        "qualifyingProduct": { "type": "string", "maxLength": 200 },
+        "freebieProduct": { "type": "string", "maxLength": 200 },
+        "isActive": { "type": "boolean" },
+        "validTill": { "type": "string" }
+      },
+      "required": ["title", "freebieProduct", "isActive"]
+    },
+    "GeneralSettings": {
+      "title": "GeneralSettings",
+      "description": "Store configuration and metadata",
+      "type": "object",
+      "properties": {
+        "websiteName": { "type": "string", "maxLength": 150 },
+        "headerLogo": { "type": "string", "maxLength": 1000 },
+        "footerLogo": { "type": "string", "maxLength": 1000 },
+        "favicon": { "type": "string", "maxLength": 1000 },
+        "contactEmail": { "type": "string", "maxLength": 150 },
+        "businessPhone": { "type": "string", "maxLength": 50 },
+        "whatsappNumber": { "type": "string", "maxLength": 50 },
+        "corporateAddress": { "type": "string", "maxLength": 500 },
+        "factoryAddress": { "type": "string", "maxLength": 500 },
+        "freeShippingThreshold": { "type": "number" },
+        "announcementText": { "type": "string", "maxLength": 300 },
+        "announcementActive": { "type": "boolean" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "googleAnalyticsId": { "type": "string", "maxLength": 50 },
+        "googleAdsConversionId": { "type": "string", "maxLength": 50 },
+        "googleAdsStatus": { "type": "string", "maxLength": 50 },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["websiteName", "whatsappNumber"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Trusted admin role registry",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "maxLength": 150 },
+        "role": { "type": "string", "maxLength": 50 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["email", "role"]
+    },
+    "AnalyticsEvent": {
+      "title": "AnalyticsEvent",
+      "description": "Website interaction and outbound marketplace click log",
+      "type": "object",
+      "properties": {
+        "eventType": { "type": "string", "maxLength": 100 },
+        "target": { "type": "string", "maxLength": 100 },
+        "details": { "type": "string", "maxLength": 2000 },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["eventType", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Catalog of WiZ products"
+    },
+    "/categories/{categoryId}": {
+      "schema": { "$ref": "#/entities/Category" },
+      "description": "Product categories"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Order enquiries created by customers"
+    },
+    "/bulkEnquiries/{enquiryId}": {
+      "schema": { "$ref": "#/entities/BulkEnquiry" },
+      "description": "B2B bulk purchase requests"
+    },
+    "/coupons/{couponId}": {
+      "schema": { "$ref": "#/entities/Coupon" },
+      "description": "Discount coupon codes"
+    },
+    "/freebies/{freebieId}": {
+      "schema": { "$ref": "#/entities/Freebie" },
+      "description": "Freebie promotion rules"
+    },
+    "/settings/{settingDoc}": {
+      "schema": { "$ref": "#/entities/GeneralSettings" },
+      "description": "Store configuration including settings/general"
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "List of authorized administrator user IDs"
+    },
+    "/analyticsEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/AnalyticsEvent" },
+      "description": "Marketplace redirects and website conversion logs"
+    },
+    "/test/{docId}": {
+      "schema": { "$ref": "#/entities/AnalyticsEvent" },
+      "description": "Connectivity test ping path"
+    }
+  }
+}

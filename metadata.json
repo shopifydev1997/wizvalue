@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix WiZ Home Hygiene \u0026 Personal Care",
+  "description": "Premium e-commerce store for WiZ Home Hygiene \u0026 Personal Care products with multi-variant options, instant WhatsApp \u0026 marketplace order enquiries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

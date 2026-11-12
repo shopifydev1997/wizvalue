@@ -1,0 +1,94 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'big99webdeveloper@gmail.com' ||
+        request.auth.token.email == 'kedar121289@gmail.com' ||
+        (request.auth.token.email is string && request.auth.token.email.lower() == 'big99webdeveloper@gmail.com') ||
+        (request.auth.token.email is string && request.auth.token.email.lower() == 'kedar121289@gmail.com') ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Health check connection test document
+    match /test/{docId} {
+      allow get: if true;
+    }
+
+    // Public catalog items
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /coupons/{couponId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /freebies/{freebieId} {
+      allow get, list: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // General store configuration - Public readable for website display, strictly Admin writeable
+    match /settings/{settingDoc} {
+      allow get: if isValidId(settingDoc);
+      allow list: if false;
+      allow create, update: if isAdmin() && isValidId(settingDoc);
+      allow delete: if false;
+    }
+
+    // Orders and enquiries
+    match /orders/{orderId} {
+      allow create: if isValidId(orderId) &&
+        request.resource.data.orderNumber is string &&
+        request.resource.data.customerName is string &&
+        request.resource.data.customerPhone is string;
+      allow get: if isAdmin() || (isSignedIn() && resource.data.customerEmail == request.auth.token.email);
+      allow list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Bulk enquiries
+    match /bulkEnquiries/{enquiryId} {
+      allow create: if isValidId(enquiryId) &&
+        request.resource.data.companyName is string &&
+        request.resource.data.contactPerson is string &&
+        request.resource.data.phone is string;
+      allow get, list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Analytics and outbound marketplace redirection logging
+    match /analyticsEvents/{eventId} {
+      allow create: if isValidId(eventId) && request.resource.data.eventType is string;
+      allow get, list: if isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    // Administrator registry
+    match /admins/{adminUid} {
+      allow read, write: if isAdmin();
+    }
+  }
+}
