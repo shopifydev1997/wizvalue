@@ -125,6 +125,12 @@ function MainLayout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   useEffect(() => {
+    // Sanitize any malformed, repetitive, or lingering /docs hashes
+    if (typeof window !== 'undefined' && window.location.hash) {
+      if (window.location.hash.includes('docs') || (window.location.hash.match(/#/g) || []).length > 1) {
+        window.history.replaceState(null, '', window.location.pathname + '#/');
+      }
+    }
     testConnection();
   }, []);
 
@@ -138,6 +144,7 @@ export default function App() {
               <MainLayout>
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/docs" element={<HomePage />} />
                   <Route path="/shop" element={<ShopPage />} />
                   <Route path="/category/:slug" element={<CategoryPage />} />
                   <Route path="/product/:slug" element={<ProductDetailPage />} />

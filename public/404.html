@@ -5,24 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WiZ Home Hygiene &amp; Personal Care</title>
     <script>
-      // Single Page App redirect for GitHub Pages (and other static hosts)
-      // Handles direct visits or page refreshes on subpaths
+      // Single Page App redirect for GitHub Pages
       (function() {
         var path = window.location.pathname;
         var segments = path.split('/').filter(Boolean);
-        var search = window.location.search || '';
-        var hash = window.location.hash || '';
+        var repo = segments.length > 0 ? segments[0] : '';
+        var subpath = segments.slice(1).join('/');
 
-        // If hosted on https://<username>.github.io/<repo-name>/...
-        if (window.location.hostname.endsWith('github.io') && segments.length > 0) {
-          var repo = segments[0];
-          var route = segments.slice(1).join('/');
-          window.location.replace('/' + repo + '/#/' + route + search + hash);
-        } else {
-          // Root domain or custom domain
-          var route = segments.join('/');
-          window.location.replace('/#/' + route + search + hash);
+        // Strip any loop fragments like 'docs' or '404'
+        if (subpath === 'docs' || subpath.startsWith('docs/') || subpath === '404') {
+          subpath = '';
         }
+
+        var base = window.location.hostname.endsWith('github.io') && repo ? '/' + repo : '';
+        var targetRoute = subpath ? '/' + subpath : '/';
+
+        // Redirect cleanly without stacking hashes
+        window.location.replace(base + '/#' + targetRoute);
       })();
     </script>
     <style>
