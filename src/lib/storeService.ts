@@ -70,16 +70,32 @@ export function resolveAssetUrl(url?: string | null): string {
     return trimmed;
   }
 
-  // Strip leading 'public/' if saved with prefix
-  let clean = trimmed.replace(/^public\//, '');
-  // Strip leading '/' so it becomes a relative asset path
+  // Strip leading '/public/' or 'public/'
+  let clean = trimmed.replace(/^(\/?public\/)/i, '');
+  // Strip leading slash
   if (clean.startsWith('/')) {
     clean = clean.slice(1);
+  }
+  // Strip leading 'assets/' so we extract the direct asset relative path
+  if (clean.startsWith('assets/')) {
+    clean = clean.slice('assets/'.length);
+  }
+
+  // Determine repository base prefix dynamically for GitHub Pages or custom base
+  if (typeof window !== 'undefined') {
+    const isGitHubPages = window.location.hostname.endsWith('github.io');
+    if (isGitHubPages) {
+      const segments = window.location.pathname.split('/').filter(Boolean);
+      const repo = segments.length > 0 && segments[0] !== 'assets' && segments[0] !== 'dist-static' ? segments[0] : '';
+      if (repo) {
+        return `/${repo}/assets/${clean}`;
+      }
+    }
   }
 
   const base = import.meta.env.BASE_URL || './';
   const prefix = base.endsWith('/') ? base : `${base}/`;
-  return `${prefix}${clean}`;
+  return `${prefix}assets/${clean}`;
 }
 
 /**
@@ -108,7 +124,25 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
     ...merged,
     headerLogo: resolveAssetUrl(merged.headerLogo),
     footerLogo: resolveAssetUrl(merged.footerLogo),
-    footerImage: resolveAssetUrl(merged.footerImage)
+    footerImage: resolveAssetUrl(merged.footerImage),
+    headerBanners: Array.isArray(merged.headerBanners)
+      ? merged.headerBanners.map((b) => ({
+          ...b,
+          imageUrl: resolveAssetUrl(b.imageUrl),
+          thumbnailUrl: resolveAssetUrl(b.thumbnailUrl)
+        }))
+      : merged.headerBanners,
+    megaMenuHighlights:
+      typeof merged.megaMenuHighlights === 'object' && merged.megaMenuHighlights !== null
+        ? Object.fromEntries(
+            Object.entries(merged.megaMenuHighlights).map(([k, v]) => [
+              k,
+              v && typeof v === 'object' && 'imageUrl' in v
+                ? { ...v, imageUrl: resolveAssetUrl((v as { imageUrl?: string }).imageUrl) }
+                : v
+            ])
+          )
+        : merged.megaMenuHighlights
   };
 }
 

@@ -12,6 +12,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@600;700;800&family=Inter:wght@300;400;500;600;700;800&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    <script>
+      // Universal Image Path Auto-Healer:
+      // Dynamically catches and repairs broken /assets/... and legacy public/assets/... image requests
+      // ensuring all product images, banners, and logos resolve correctly across GitHub Pages and custom domains.
+      document.addEventListener('error', function(event) {
+        var target = event.target;
+        if (target && target.tagName === 'IMG') {
+          var src = target.getAttribute('src');
+          if (!src || target.dataset.wizRetried) return;
+          target.dataset.wizRetried = 'true';
+
+          var isAsset = src.indexOf('assets/') !== -1 || src.indexOf('public/') !== -1;
+          if (isAsset) {
+            var clean = src.replace(/^https?:\/\/[^/]+/i, '')
+                           .replace(/^(\/?public\/)/i, '')
+                           .replace(/^\/+/, '');
+            if (clean.indexOf('assets/') === 0) {
+              clean = clean.substring(7);
+            }
+
+            var isGH = window.location.hostname.endsWith('github.io');
+            var segments = window.location.pathname.split('/').filter(Boolean);
+            var repo = (isGH && segments.length > 0 && segments[0] !== 'assets' && segments[0] !== 'dist-static') ? segments[0] : '';
+            var resolved = repo ? ('/' + repo + '/assets/' + clean) : ('./assets/' + clean);
+            if (target.src !== resolved) {
+              target.src = resolved;
+            }
+          }
+        }
+      }, true);
+    </script>
   </head>
   <body>
     <div id="root"></div>

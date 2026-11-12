@@ -47,7 +47,8 @@ import {
   getGeneralSettings,
   saveGeneralSettings,
   getAnalyticsEvents,
-  seedInitialDataIfEmpty
+  seedInitialDataIfEmpty,
+  resolveAssetUrl
 } from '../../lib/storeService';
 import { Product, Category, OrderEnquiry, BulkEnquiry, Coupon, Freebie, GeneralSettings, AnalyticsEvent, HeaderBanner, MegaMenuHighlight } from '../../types';
 import { DEFAULT_PACKAGING_PRESETS } from '../../lib/initialData';
@@ -135,7 +136,7 @@ export const AdminPage: React.FC = () => {
     return {
       'left-top': { image: '/assets/products/Bodywash-M1.jpg', title: 'Smiling Woman', link: '/category/personal-care' },
       'left-bottom': { image: '/assets/products/Bodywash-M2.jpg', title: 'Wet Wipes Pouch', link: '/category/wet-wipes' },
-      'right-top': { image: 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png', title: 'Bodywash Can', link: '/category/bodywash' },
+      'right-top': { image: '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png', title: 'Bodywash Can', link: '/category/bodywash' },
       'right-bottom': { image: '/assets/products/LiquidMatic-M1.jpg', title: 'Radiant Woman', link: '/category/personal-care' }
     };
   });
@@ -216,7 +217,7 @@ export const AdminPage: React.FC = () => {
     const def = {
       'left-top': { image: '/assets/products/Bodywash-M1.jpg', title: 'Smiling Woman', link: '/category/personal-care' },
       'left-bottom': { image: '/assets/products/Bodywash-M2.jpg', title: 'Wet Wipes Pouch', link: '/category/wet-wipes' },
-      'right-top': { image: 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png', title: 'Bodywash Can', link: '/category/bodywash' },
+      'right-top': { image: '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png', title: 'Bodywash Can', link: '/category/bodywash' },
       'right-bottom': { image: '/assets/products/LiquidMatic-M1.jpg', title: 'Radiant Woman', link: '/category/personal-care' }
     };
     setPcareThumbs(def);
@@ -466,7 +467,7 @@ export const AdminPage: React.FC = () => {
         .filter(Boolean);
 
       if (cleanImages.length === 0) {
-        cleanImages.push('public/assets/products/Lemon-Handwash01.jpg');
+        cleanImages.push('/assets/products/Lemon-Handwash01.jpg');
       }
 
       const sanitizedProduct: Product = {
@@ -580,7 +581,7 @@ export const AdminPage: React.FC = () => {
         id: editingCategory.id || `cat-${Date.now()}`,
         name,
         slug,
-        image: editingCategory.image || 'public/assets/products/Lemon-Handwash01.jpg',
+        image: editingCategory.image || '/assets/products/Lemon-Handwash01.jpg',
         order: Number(editingCategory.order) || 0,
         published: Boolean(editingCategory.published)
       };
@@ -1371,7 +1372,7 @@ export const AdminPage: React.FC = () => {
                             <div className="flex-1 w-full flex gap-2">
                               <input
                                 type="text"
-                                placeholder="Enter path (e.g. public/assets/products/Lemon-Handwash01.jpg) or web URL"
+                                placeholder="Enter path (e.g. /assets/products/Lemon-Handwash01.jpg) or web URL"
                                 value={editingProduct.images[0] || ''}
                                 onChange={(e) => {
                                   const copy = [...editingProduct.images];
@@ -1384,7 +1385,7 @@ export const AdminPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setAssetPickerTarget({ type: 'thumbnail' })}
                                 className="px-3 py-2 bg-purple-50 hover:bg-purple-100 border border-[#7a49a6] text-[#7a49a6] text-xs font-bold flex items-center space-x-1.5 shrink-0 cursor-pointer transition-colors shadow-2xs"
-                                title="Choose image from public/assets folder"
+                                title="Choose image from /assets folder"
                               >
                                 <FolderOpen className="w-4 h-4" />
                                 <span>Browse Public Assets</span>
@@ -1401,7 +1402,7 @@ export const AdminPage: React.FC = () => {
                                 Side Post Images for Product Detail Page ({editingProduct.images.length} / 8 Slots)
                               </label>
                               <span className="text-[11px] text-gray-500">
-                                Provision to add and manage up to 8 multi-angle views and packaging images from public/assets folder
+                                Provision to add and manage up to 8 multi-angle views and packaging images from /assets folder
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-2">
@@ -1409,7 +1410,7 @@ export const AdminPage: React.FC = () => {
                                 type="button"
                                 onClick={() => setAssetPickerTarget({ type: 'side-post-add' })}
                                 className="text-[11px] bg-purple-100 hover:bg-purple-200 border border-[#7a49a6] text-[#7a49a6] px-2.5 py-1 font-bold flex items-center space-x-1 cursor-pointer transition-colors"
-                                title="Pick from public/assets and add to next side slot"
+                                title="Pick from /assets and add to next side slot"
                               >
                                 <FolderOpen className="w-3.5 h-3.5" />
                                 <span>+ Add from Public Assets</span>
@@ -1418,17 +1419,17 @@ export const AdminPage: React.FC = () => {
                                 type="button"
                                 onClick={() => {
                                   const presets = [
-                                    editingProduct.images[0] || 'public/assets/products/Orange Wet Wipes.jpg',
-                                    'public/assets/products/Lemon-Handwash01.jpg',
-                                    'public/assets/products/Lemon Bodywash 5L.jpg',
-                                    'public/assets/products/1L Dish Wash Pouch.jpg',
-                                    'public/assets/products/Glass-Cleaner 1L.jpg',
-                                    'public/assets/products/Top Load - Liquid Matic 2L.jpg',
-                                    'public/assets/products/Toilet-Cleaner 1L.jpg',
-                                    'public/assets/products/Sanitizer.jpg'
+                                    editingProduct.images[0] || '/assets/products/Orange Wet Wipes.jpg',
+                                    '/assets/products/Lemon-Handwash01.jpg',
+                                    '/assets/products/Lemon Bodywash 5L.jpg',
+                                    '/assets/products/1L Dish Wash Pouch.jpg',
+                                    '/assets/products/Glass-Cleaner 1L.jpg',
+                                    '/assets/products/Top Load - Liquid Matic 2L.jpg',
+                                    '/assets/products/Toilet-Cleaner 1L.jpg',
+                                    '/assets/products/Sanitizer.jpg'
                                   ];
                                   setEditingProduct({ ...editingProduct, images: presets });
-                                  triggerNotice('success', 'Loaded 8 side post angle presets from public/assets!');
+                                  triggerNotice('success', 'Loaded 8 side post angle presets from /assets!');
                                 }}
                                 className="text-[11px] bg-white border border-gray-300 text-gray-700 px-2 py-1 font-bold hover:bg-gray-100 cursor-pointer"
                               >
@@ -1483,7 +1484,7 @@ export const AdminPage: React.FC = () => {
                                   <div className="flex gap-1.5">
                                     <input
                                       type="text"
-                                      placeholder="e.g. public/assets/products/..."
+                                      placeholder="e.g. /assets/products/..."
                                       value={imgUrl}
                                       onChange={(e) => {
                                         const copy = [...editingProduct.images];
@@ -1496,7 +1497,7 @@ export const AdminPage: React.FC = () => {
                                       type="button"
                                       onClick={() => setAssetPickerTarget({ type: 'side-post', slotIndex: idx })}
                                       className="px-2 py-1 bg-purple-50 hover:bg-purple-100 border border-[#7a49a6] text-[#7a49a6] text-[11px] font-bold flex items-center space-x-1 shrink-0 cursor-pointer"
-                                      title="Select image from public/assets folder"
+                                      title="Select image from /assets folder"
                                     >
                                       <FolderOpen className="w-3 h-3" />
                                       <span>Browse Asset</span>
@@ -1700,7 +1701,7 @@ export const AdminPage: React.FC = () => {
                           ? `Select Side Post Image (Slot #${assetPickerTarget.slotIndex + 1} of 8)`
                           : 'Add Side Post Image from Public Assets'
                       }
-                      subtitle="Choose any genuine product picture from public/assets or public/assets/products repository"
+                      subtitle="Choose any genuine product picture from /assets or /assets/products repository"
                       currentValue={
                         assetPickerTarget?.type === 'thumbnail'
                           ? editingProduct.images[0] || ''
@@ -1863,7 +1864,7 @@ export const AdminPage: React.FC = () => {
                           type="text"
                           value={editingCategory.image}
                           onChange={(e) => setEditingCategory({ ...editingCategory, image: e.target.value })}
-                          placeholder="e.g. public/assets/... or https://..."
+                          placeholder="e.g. /assets/... or https://..."
                           className="w-full p-2 border border-gray-300 font-mono text-sm"
                         />
                       </div>
@@ -2734,7 +2735,7 @@ export const AdminPage: React.FC = () => {
                           type="text"
                           value={editingCategory.image}
                           onChange={(e) => setEditingCategory({ ...editingCategory, image: e.target.value })}
-                          placeholder="e.g. public/assets/... or https://..."
+                          placeholder="e.g. /assets/... or https://..."
                           className="w-full p-2 border border-gray-300 font-mono text-sm"
                         />
                       </div>
@@ -3349,7 +3350,7 @@ export const AdminPage: React.FC = () => {
                             onClick={() => {
                               setSettings({
                                 ...settings,
-                                footerImage: 'public/assets/Fresh Home Care Product Line-1.png',
+                                footerImage: '/assets/Fresh Home Care Product Line-1.png',
                                 showFooterImage: true
                               });
                               triggerNotice('success', 'Set lifestyle footer image');

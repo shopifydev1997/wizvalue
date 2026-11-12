@@ -15,10 +15,10 @@ export const INITIAL_SETTINGS: GeneralSettings = {
   websiteName: 'WiZ Home Hygiene & Personal Care',
   headerLogo: '/assets/WiZ-Logo-NEW.png',
   footerLogo: '/assets/WiZ-Logo-NEW.png',
-  favicon: 'public/assets/products/Orange Wet Wipes.jpg',
+  favicon: '/assets/products/Orange Wet Wipes.jpg',
   showHeaderLogo: true,
   showFooterLogo: true,
-  footerImage: 'public/assets/Fresh Home Care Product Line-1.png',
+  footerImage: '/assets/Fresh Home Care Product Line-1.png',
   showFooterImage: true,
   contactEmail: 'wizvalue@cossmic.com',
   businessPhone: '+91 93213 87229',
@@ -62,7 +62,7 @@ export const INITIAL_SETTINGS: GeneralSettings = {
       title: 'Our Most Loved Essentials',
       subtitle: 'Discover our most-loved essentials, carefully crafted to deliver visible results and keep your skin radiant.',
       imageUrl: '/assets/aistudio/WiZ-H-Banner02.jpg',
-      thumbnailUrl: 'public/assets/Lemon-Handwash01.jpg',
+      thumbnailUrl: '/assets/Lemon-Handwash01.jpg',
       buttonText: 'SHOP BESTSELLERS',
       buttonLink: '/shop',
       nextLabel: 'Wet Wipes',
@@ -150,7 +150,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Handwash',
     slug: 'handwash',
     description: 'Enriched with neem, aloe vera and moisturizing glycerin for complete 99.9% germ protection.',
-    image: 'public/assets/products/Handwash-Innerpage-banner.jpg',
+    image: '/assets/products/Handwash-Innerpage-banner.jpg',
     order: 1,
     published: true,
     itemsCount: 6
@@ -160,7 +160,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Bodywash',
     slug: 'bodywash',
     description: 'Luxurious lathering shower gels that hydrate, refresh, and maintain healthy skin pH balance.',
-    image: 'public/assets/Bodywash-Innerpage-banner.jpg',
+    image: '/assets/Bodywash-Innerpage-banner.jpg',
     order: 2,
     published: true,
     itemsCount: 4
@@ -170,7 +170,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Wet Wipes',
     slug: 'wet-wipes',
     description: 'Ultra-soft, thick cleansing wipes infused with aloe vera, chamomile, and natural botanicals.',
-    image: 'public/assets/products/Wet-Wipes-Innerpage-banner.jpg',
+    image: '/assets/products/Wet-Wipes-Innerpage-banner.jpg',
     order: 3,
     published: true,
     itemsCount: 8
@@ -180,7 +180,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Hand Sanitizer',
     slug: 'hand-sanitizer',
     description: '70% Isopropyl Alcohol disinfectant sanitizers for instant, waterless germ defense.',
-    image: 'public/assets/products/Sanitizer-Innerpage-banner.jpg',
+    image: '/assets/products/Sanitizer-Innerpage-banner.jpg',
     order: 4,
     published: true,
     itemsCount: 5
@@ -190,7 +190,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Laundry Detergent',
     slug: 'laundry-detergent',
     description: 'Liquid Matic advanced enzyme formula for front-load and top-load washing machines.',
-    image: 'public/assets/products/Laundry-Detergent-Innerpage-banner.jpg',
+    image: '/assets/products/Laundry-Detergent-Innerpage-banner.jpg',
     order: 5,
     published: true,
     itemsCount: 7
@@ -200,7 +200,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Floor Cleaner',
     slug: 'floor-cleaner',
     description: 'Surface disinfectant with long-lasting lavender, citrus, and floral fragrance.',
-    image: 'public/assets/products/Floor-Cleaner-Innerpage-banner.jpg',
+    image: '/assets/products/Floor-Cleaner-Innerpage-banner.jpg',
     order: 6,
     published: true,
     itemsCount: 10
@@ -210,7 +210,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Dishwash',
     slug: 'dishwash',
     description: 'Tough lemon active degreasing gel that leaves utensils sparkling clean and odor-free.',
-    image: 'public/assets/products/DishWash-Innerpage-banner.jpg',
+    image: '/assets/products/DishWash-Innerpage-banner.jpg',
     order: 7,
     published: true,
     itemsCount: 11
@@ -220,7 +220,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Glass Cleaner',
     slug: 'glass-cleaner',
     description: 'Streak-free crystal clear shine on mirrors, glass tables, car windshields, and displays.',
-    image: 'public/assets/products/Glass-Cleaner-Innerpage-banner.jpg',
+    image: '/assets/products/Glass-Cleaner-Innerpage-banner.jpg',
     order: 8,
     published: true,
     itemsCount: 4
@@ -230,7 +230,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Toilet Cleaner',
     slug: 'toilet-cleaner',
     description: 'Thick power disinfectant formula that removes tough stains, limescale, and 99.9% germs.',
-    image: 'public/assets/products/Toilet-Cleaner-Innerpage-banner.jpg',
+    image: '/assets/products/Toilet-Cleaner-Innerpage-banner.jpg',
     order: 9,
     published: true,
     itemsCount: 5
@@ -240,7 +240,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     name: 'Paper Products',
     slug: 'paper-products',
     description: 'Premium facial tissues, kitchen absorbent towels, and soft multi-ply paper rolls.',
-    image: 'public/assets/products/Paper-Products-Innerpage-banner.jpg',
+    image: '/assets/products/Paper-Products-Innerpage-banner.jpg',
     order: 10,
     published: true,
     itemsCount: 6
@@ -267,14 +267,14 @@ export const INITIAL_PRODUCTS: Product[] = [
     ingredients: 'Purified Water, Aloe Barbadensis Leaf Extract, Chamomilla Recutita Flower Extract, Glycerin, Polysorbate 20, Vitamin E, Phenoxyethanol, Fragrance.',
     images: [
       '/assets/products/wiz-wet-wipes-card.jpg',
-      'public/assets/products/Orange Wet Wipes.jpg',
+      '/assets/products/Orange Wet Wipes.jpg',
       'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80',
-      'public/assets/products/Lemon Bodywash 5L.jpg',
+      '/assets/products/Lemon Bodywash 5L.jpg',
       'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=800&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80',
-      'public/assets/products/1L Dish Wash Pouch.jpg',
-      'public/assets/products/Glass-Cleaner 1L.jpg',
-      'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+      '/assets/products/1L Dish Wash Pouch.jpg',
+      '/assets/products/Glass-Cleaner 1L.jpg',
+      '/assets/products/Top Load - Liquid Matic 2L.jpg'
     ],
     regularPrice: 125,
     sellingPrice: 99,
@@ -303,7 +303,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 99,
         stock: 120,
         packagingSize: '80 Pulls Pack',
-        image: 'public/assets/products/Orange Wet Wipes.jpg'
+        image: '/assets/products/Orange Wet Wipes.jpg'
       },
       {
         id: 'var-ww-pack2',
@@ -313,7 +313,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 189,
         stock: 80,
         packagingSize: 'Pack of 2',
-        image: 'public/assets/products/Orange Wet Wipes.jpg'
+        image: '/assets/products/Orange Wet Wipes.jpg'
       },
       {
         id: 'var-ww-pack4',
@@ -323,7 +323,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 350,
         stock: 50,
         packagingSize: 'Pack of 4',
-        image: 'public/assets/products/Orange Wet Wipes.jpg'
+        image: '/assets/products/Orange Wet Wipes.jpg'
       }
     ]
   },
@@ -345,15 +345,15 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Press pump once onto wet hands. Lather thoroughly for at least 20 seconds covering palms, fingers, and back of hands. Rinse completely with clean running water.',
     ingredients: 'Aqua, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Glycerin, Sodium Chloride, Benzalkonium Chloride, Fragrance, Citric Acid, Tetrasodium EDTA.',
     images: [
-      'public/assets/Lemon-Handwash01.jpg',
+      '/assets/Lemon-Handwash01.jpg',
       'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80',
-      'public/assets/products/Orange Wet Wipes.jpg',
+      '/assets/products/Orange Wet Wipes.jpg',
       'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80',
-      'public/assets/products/Lemon Bodywash 5L.jpg',
-      'public/assets/products/1L Dish Wash Pouch.jpg',
-      'public/assets/products/Lemon-Floor-Cleaner 1L.jpg',
-      'public/assets/products/Glass-Cleaner 1L.jpg',
-      'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+      '/assets/products/Lemon Bodywash 5L.jpg',
+      '/assets/products/1L Dish Wash Pouch.jpg',
+      '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
+      '/assets/products/Glass-Cleaner 1L.jpg',
+      '/assets/products/Top Load - Liquid Matic 2L.jpg'
     ],
     regularPrice: 125,
     sellingPrice: 99,
@@ -424,7 +424,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Take 1 teaspoon (4-5 ml) of WiZ Gel in a small bowl with water. Dip sponge or scrub pad, squeeze to generate rich lather, and wash utensils. Rinse with water.',
     ingredients: 'Aqua, Anionic Surfactants, Amphoteric Surfactants, Natural Citrus Limon Extract, Glycerin, Colorant, Fragrance.',
     images: [
-      'public/assets/products/1L Dish Wash Pouch.jpg'
+      '/assets/products/1L Dish Wash Pouch.jpg'
     ],
     regularPrice: 150,
     sellingPrice: 93,
@@ -453,7 +453,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 120,
         packagingSize: '750 ml Bottle',
-        image: 'public/assets/products/1L Dish Wash Pouch.jpg'
+        image: '/assets/products/1L Dish Wash Pouch.jpg'
       },
       {
         id: 'var-dw-1l',
@@ -463,7 +463,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 129,
         stock: 60,
         packagingSize: '1 Litre Pouch',
-        image: 'public/assets/products/1L Dish Wash Pouch.jpg'
+        image: '/assets/products/1L Dish Wash Pouch.jpg'
       },
       {
         id: 'var-dw-5l',
@@ -473,7 +473,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 449,
         stock: 30,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/1L Dish Wash Pouch.jpg'
+        image: '/assets/products/1L Dish Wash Pouch.jpg'
       }
     ]
   },
@@ -495,7 +495,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Dilute 1 capful (approx. 20 ml) in half a bucket (4 litres) of water. Mop surface gently. For heavy stains, use undiluted and wipe with wet mop after 5 minutes.',
     ingredients: 'Benzalkonium Chloride, Non-ionic Surfactants, Fragrance, Colorant, Purified Water.',
     images: [
-      'public/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+      '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
     ],
     regularPrice: 160,
     sellingPrice: 99,
@@ -524,7 +524,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 75,
         packagingSize: '750 ml Bottle',
-        image: 'public/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+        image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
       },
       {
         id: 'var-fc-1l',
@@ -534,7 +534,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 99,
         stock: 80,
         packagingSize: '1 Litre Pouch',
-        image: 'public/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+        image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
       },
       {
         id: 'var-fc-5l',
@@ -544,7 +544,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 420,
         stock: 35,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+        image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
       }
     ]
   },
@@ -567,7 +567,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ingredients: 'Bio-enzymes, Optical Brighteners, Surfactant Complex, Fabric Softening Agents, Fragrance.',
     images: [
       '/assets/products/wiz-liquid-matic-card.jpg',
-      'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+      '/assets/products/Top Load - Liquid Matic 2L.jpg'
     ],
     regularPrice: 125,
     sellingPrice: 99,
@@ -596,7 +596,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 159,
         stock: 50,
         packagingSize: '1 Litre Pouch',
-        image: 'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+        image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
       },
       {
         id: 'var-lm-2l',
@@ -606,7 +606,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 199,
         stock: 30,
         packagingSize: '2 Litre Can',
-        image: 'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+        image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
       },
       {
         id: 'var-lm-5l',
@@ -616,7 +616,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 799,
         stock: 15,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/Top Load - Liquid Matic 2L.jpg'
+        image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
       }
     ]
   },
@@ -638,7 +638,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Apply 3-5 ml of liquid on dry palms. Rub vigorously covering palm, back of hands, fingers, and nails until dry. Do not wipe off.',
     ingredients: 'Isopropyl Alcohol 70% v/v, Glycerol, Hydrogen Peroxide, Fragrance, Purified Water.',
     images: [
-      'public/assets/products/Sanitizer.jpg'
+      '/assets/products/Sanitizer.jpg'
     ],
     regularPrice: 165,
     sellingPrice: 96,
@@ -667,7 +667,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 96,
         stock: 35,
         packagingSize: '500 ml Bottle',
-        image: 'public/assets/products/Sanitizer.jpg'
+        image: '/assets/products/Sanitizer.jpg'
       },
       {
         id: 'var-hs-5l',
@@ -677,7 +677,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 699,
         stock: 30,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/Sanitizer.jpg'
+        image: '/assets/products/Sanitizer.jpg'
       }
     ]
   },
@@ -699,7 +699,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Twist cap to open. Squeeze liquid under the rim and around the bowl. Leave for 20 minutes, brush lightly, then flush for a sparkling clean toilet.',
     ingredients: 'Hydrochloric Acid 10.5% w/v, Cetyl Trimethyl Ammonium Chloride, Methyl Salicylate, Acid Blue 80, Purified Water.',
     images: [
-      'public/assets/products/Toilet-Cleaner 1L.jpg'
+      '/assets/products/Toilet-Cleaner 1L.jpg'
     ],
     regularPrice: 150,
     sellingPrice: 93,
@@ -728,7 +728,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 100,
         packagingSize: '1 Litre Bottle',
-        image: 'public/assets/products/Toilet-Cleaner 1L.jpg'
+        image: '/assets/products/Toilet-Cleaner 1L.jpg'
       },
       {
         id: 'var-tc-5l',
@@ -738,7 +738,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 520,
         stock: 40,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/Toilet-Cleaner 1L.jpg'
+        image: '/assets/products/Toilet-Cleaner 1L.jpg'
       }
     ]
   },
@@ -760,7 +760,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Spray evenly onto glass from a distance of 15-20 cm. Wipe off immediately with a clean, lint-free microfiber cloth or newspaper.',
     ingredients: 'Isopropanol, Ethylene Glycol Monobutyl Ether, Surfactant, Fragrance, Water.',
     images: [
-      'public/assets/products/Glass-Cleaner 1L.jpg'
+      '/assets/products/Glass-Cleaner 1L.jpg'
     ],
     regularPrice: 150,
     sellingPrice: 93,
@@ -789,7 +789,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 79,
         stock: 0,
         packagingSize: '500 ml Bottle',
-        image: 'public/assets/products/Glass-Cleaner 1L.jpg'
+        image: '/assets/products/Glass-Cleaner 1L.jpg'
       },
       {
         id: 'var-gc-1l',
@@ -799,7 +799,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 0,
         packagingSize: '1 Litre Bottle',
-        image: 'public/assets/products/Glass-Cleaner 1L.jpg'
+        image: '/assets/products/Glass-Cleaner 1L.jpg'
       }
     ]
   },
@@ -821,7 +821,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Pour a small coin-sized quantity onto a wet loofah or sponge. Work into a luxuriant lather and gently massage all over wet body. Rinse thoroughly with water.',
     ingredients: 'Aqua, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Glycerin, Aloe Barbadensis Leaf Juice, Tocopheryl Acetate (Vitamin E), Fragrance, Citric Acid.',
     images: [
-      'public/assets/products/Lemon Bodywash 5L.jpg'
+      '/assets/products/Lemon Bodywash 5L.jpg'
     ],
     regularPrice: 220,
     sellingPrice: 199,
@@ -850,7 +850,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 129,
         stock: 45,
         packagingSize: '250 ml Bottle',
-        image: 'public/assets/products/Lemon Bodywash 5L.jpg'
+        image: '/assets/products/Lemon Bodywash 5L.jpg'
       },
       {
         id: 'var-bw-500',
@@ -860,7 +860,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 199,
         stock: 30,
         packagingSize: '500 ml Bottle',
-        image: 'public/assets/products/Lemon Bodywash 5L.jpg'
+        image: '/assets/products/Lemon Bodywash 5L.jpg'
       },
       {
         id: 'var-bw-5l',
@@ -870,7 +870,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 899,
         stock: 10,
         packagingSize: '5 Litre Can',
-        image: 'public/assets/products/Lemon Bodywash 5L.jpg'
+        image: '/assets/products/Lemon Bodywash 5L.jpg'
       }
     ]
   },
@@ -893,7 +893,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     ingredients: '100% Virgin Wood Pulp, 2-Ply.',
     images: [
       '/assets/products/wiz-facial-tissue-card.jpg',
-      'public/assets/products/Mint-Paper-Products.jpg'
+      '/assets/products/Mint-Paper-Products.jpg'
     ],
     regularPrice: 125,
     sellingPrice: 99,
@@ -922,7 +922,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 99,
         stock: 70,
         packagingSize: 'Pack of 4 Boxes',
-        image: 'public/assets/products/Mint-Paper-Products.jpg'
+        image: '/assets/products/Mint-Paper-Products.jpg'
       },
       {
         id: 'var-ft-p8',
@@ -932,7 +932,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 189,
         stock: 40,
         packagingSize: 'Pack of 8',
-        image: 'public/assets/products/Mint-Paper-Products.jpg'
+        image: '/assets/products/Mint-Paper-Products.jpg'
       }
     ]
   }

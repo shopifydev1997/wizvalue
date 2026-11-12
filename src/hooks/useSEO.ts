@@ -12,7 +12,7 @@ export function useSEO({
   title,
   description = 'WiZ Home Hygiene & Personal Care - Premium disinfectants, wet wipes, handwash, dishwash, and personal care products with direct WhatsApp and marketplace order options.',
   canonicalUrl,
-  image = 'public/assets/products/Orange Wet Wipes.jpg',
+  image = '/assets/products/Orange Wet Wipes.jpg',
   noIndex = false
 }: SEOProps) {
   useEffect(() => {

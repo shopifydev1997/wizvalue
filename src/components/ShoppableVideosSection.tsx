@@ -27,7 +27,7 @@ export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
     productTitle: 'Hand Wash',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: 'public/assets/products/Lavender-Handwash-1L.jpg',
+    productImage: '/assets/products/Lavender-Handwash-1L.jpg',
     videoPoster: '/assets/products/stoppable-video01.jpg'
   },
   {
@@ -43,7 +43,7 @@ export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
     productTitle: 'Body Wash',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: 'public/assets/products/LilyBodywash 5L.jpg',
+    productImage: '/assets/products/LilyBodywash 5L.jpg',
     videoPoster: '/assets/products/stoppable-video03.jpg'
   },
   {

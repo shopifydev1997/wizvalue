@@ -224,7 +224,7 @@ app.get('/api/admin/asset-library', (_req, res) => {
           else if (lower.includes('banner')) category = 'Banners';
 
           result.push({
-            path: `public/assets/products/${file}`,
+            path: `/assets/products/${file}`,
             name: file,
             category
           });
@@ -237,7 +237,7 @@ app.get('/api/admin/asset-library', (_req, res) => {
       for (const file of assetFiles) {
         if (/\.(jpg|jpeg|png|webp|svg)$/i.test(file)) {
           result.push({
-            path: `public/assets/${file}`,
+            path: `/assets/${file}`,
             name: file,
             category: 'Main Assets'
           });

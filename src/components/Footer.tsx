@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Check } from 'lucide-react';
-import { getGeneralSettings } from '../lib/storeService';
+import { getGeneralSettings, resolveAssetUrl } from '../lib/storeService';
 
-const DEFAULT_FOOTER_THUMBNAIL = 'public/assets/products/lemon-handwash-footer.jpg';
+const DEFAULT_FOOTER_THUMBNAIL = '/assets/products/lemon-handwash-footer.jpg';
 const STORAGE_KEY = 'wiz_footer_customer_thumbnail_v2';
 
 const DEFAULT_FOOTER_LOGO = '/assets/WiZ-Logo-NEW-1.png';
@@ -252,7 +252,7 @@ export const Footer: React.FC = () => {
             {footerLogo ? (
               <Link to="/" className="inline-block" title="WiZ">
                 <img
-                  src={footerLogo}
+                  src={resolveAssetUrl(footerLogo)}
                   alt="WiZ"
                   className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 hover:scale-[1.02]"
                   onError={(e) => {
@@ -306,7 +306,7 @@ export const Footer: React.FC = () => {
             <div className="md:col-span-3 flex justify-start md:justify-end">
               <div className="rounded-sm overflow-hidden shadow-xs bg-white border border-[#ecdcf8]">
                 <img
-                  src={footerThumbnail}
+                  src={resolveAssetUrl(footerThumbnail)}
                   alt="WiZ Customer Care"
                   className="w-64 sm:w-72 md:w-64 lg:w-72 h-44 sm:h-48 md:h-44 lg:h-48 object-cover"
                 />
@@ -319,7 +319,7 @@ export const Footer: React.FC = () => {
       {/* Bottom Philosophical Full-Width Strip Banner */}
       <div className="relative w-full overflow-hidden bg-[#241334]">
         <img
-          src="/assets/footer-bottom-image.jpg"
+          src={resolveAssetUrl('/assets/footer-bottom-image.jpg')}
           alt="WiZ Hygiene Philosophy"
           className="w-full h-24 sm:h-28 object-cover object-center opacity-85"
           onError={(e) => {

@@ -13,7 +13,7 @@ import {
   Tag
 } from 'lucide-react';
 import { Product, Category, GeneralSettings } from '../types';
-import { getProducts, getCategories, getGeneralSettings, normalizePackagingSize } from '../lib/storeService';
+import { getProducts, getCategories, getGeneralSettings, normalizePackagingSize, resolveAssetUrl } from '../lib/storeService';
 import { DEFAULT_PACKAGING_PRESETS } from '../lib/initialData';
 import { ProductCard } from '../components/ProductCard';
 import { Breadcrumbs } from '../components/Breadcrumbs';
@@ -56,19 +56,19 @@ const CATEGORY_GROUPS = [
 
 // High-resolution banner image mapping for category pages
 const CATEGORY_BANNERS: Record<string, string> = {
-  'handwash': 'public/assets/products/Handwash-Innerpage-banner.jpg',
-  'hand-sanitizer': 'public/assets/products/Sanitizer-Innerpage-banner.jpg',
-  'floor-cleaner': 'public/assets/products/Floor-Cleaner-Innerpage-banner.jpg',
-  'dishwash': 'public/assets/products/DishWash-Innerpage-banner.jpg',
-  'glass-cleaner': 'public/assets/products/Glass-Cleaner-Innerpage-banner.jpg',
-  'toilet-cleaner': 'public/assets/products/Toilet-Cleaner-Innerpage-banner.jpg',
-  'laundry-detergent': 'public/assets/products/Laundry-Detergent-Innerpage-banner.jpg',
-  'wet-wipes': 'public/assets/products/Wet-Wipes-Innerpage-banner.jpg',
-  'bodywash': 'public/assets/Bodywash-Innerpage-banner.jpg',
-  '1l-5l-bulk': 'public/assets/products/1-5LCan-Innerpage-banner.jpg',
-  'paper-products': 'public/assets/products/Paper-Products-Innerpage-banner.jpg',
-  'household-cleaners': 'public/assets/products/DishWash-Innerpage-banner.jpg',
-  'personal-care': 'public/assets/Bodywash-Innerpage-banner.jpg'
+  'handwash': '/assets/products/Handwash-Innerpage-banner.jpg',
+  'hand-sanitizer': '/assets/products/Sanitizer-Innerpage-banner.jpg',
+  'floor-cleaner': '/assets/products/Floor-Cleaner-Innerpage-banner.jpg',
+  'dishwash': '/assets/products/DishWash-Innerpage-banner.jpg',
+  'glass-cleaner': '/assets/products/Glass-Cleaner-Innerpage-banner.jpg',
+  'toilet-cleaner': '/assets/products/Toilet-Cleaner-Innerpage-banner.jpg',
+  'laundry-detergent': '/assets/products/Laundry-Detergent-Innerpage-banner.jpg',
+  'wet-wipes': '/assets/products/Wet-Wipes-Innerpage-banner.jpg',
+  'bodywash': '/assets/Bodywash-Innerpage-banner.jpg',
+  '1l-5l-bulk': '/assets/products/1-5LCan-Innerpage-banner.jpg',
+  'paper-products': '/assets/products/Paper-Products-Innerpage-banner.jpg',
+  'household-cleaners': '/assets/products/DishWash-Innerpage-banner.jpg',
+  'personal-care': '/assets/Bodywash-Innerpage-banner.jpg'
 };
 
 export const CategoryPage: React.FC = () => {
@@ -464,11 +464,11 @@ export const CategoryPage: React.FC = () => {
       <div className="w-full h-[350px] relative overflow-hidden bg-gray-900 mb-6 select-none">
         {/* Background Image */}
         <img
-          src={
+          src={resolveAssetUrl(
             CATEGORY_BANNERS[currentSlug] ||
             currentCategory?.image ||
-            'public/assets/products/Handwash-Innerpage-banner.jpg'
-          }
+            '/assets/products/Handwash-Innerpage-banner.jpg'
+          )}
           alt={currentCategory?.name || 'Category Banner'}
           className="w-full h-full object-cover object-center transform scale-102 transition-transform duration-700"
         />

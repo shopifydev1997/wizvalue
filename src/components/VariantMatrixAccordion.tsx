@@ -37,7 +37,7 @@ const DEFAULT_CATEGORIES: CategoryRow[] = [
     name: 'Hand Wash',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    thumbnail: 'public/assets/products/Orange Handwash 500ml-1.jpg',
+    thumbnail: '/assets/products/Orange Handwash 500ml-1.jpg',
     matchCategory: 'Handwash',
     variants: [
       {
@@ -47,7 +47,7 @@ const DEFAULT_CATEGORIES: CategoryRow[] = [
         regularPrice: 150.0,
         sellingPrice: 99.0,
         stock: 120,
-        thumbnail: 'public/assets/products/Orange Handwash 500ml-1.jpg'
+        thumbnail: '/assets/products/Orange Handwash 500ml-1.jpg'
       },
       {
         id: 'hw-1l',
@@ -56,7 +56,7 @@ const DEFAULT_CATEGORIES: CategoryRow[] = [
         regularPrice: 150.0,
         sellingPrice: 99.0,
         stock: 85,
-        thumbnail: 'public/assets/products/Lavender-Handwash-1L.jpg'
+        thumbnail: '/assets/products/Lavender-Handwash-1L.jpg'
       },
       {
         id: 'hw-5l-purple',
@@ -65,7 +65,7 @@ const DEFAULT_CATEGORIES: CategoryRow[] = [
         regularPrice: 150.0,
         sellingPrice: 99.0,
         stock: 50,
-        thumbnail: 'public/assets/products/Orange Handwash 5L.jpg'
+        thumbnail: '/assets/products/Orange Handwash 5L.jpg'
       },
       {
         id: 'hw-5l-pink',
@@ -74,7 +74,7 @@ const DEFAULT_CATEGORIES: CategoryRow[] = [
         regularPrice: 150.0,
         sellingPrice: 99.0,
         stock: 45,
-        thumbnail: 'public/assets/products/Orange Handwash 5L.jpg'
+        thumbnail: '/assets/products/Orange Handwash 5L.jpg'
       }
     ]
   },
@@ -499,7 +499,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
     if (thumbnailOverrides[cat.id] !== undefined) {
       thumbnail = thumbnailOverrides[cat.id]; // empty string if deleted
     } else if (cat.id === 'cat-handwash') {
-      thumbnail = 'public/assets/products/Orange Handwash 500ml-1.jpg';
+      thumbnail = '/assets/products/Orange Handwash 500ml-1.jpg';
     } else if (backendProd?.images?.[0]) {
       thumbnail = backendProd.images[0];
     }
@@ -540,11 +540,11 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
     if (thumbnailOverrides[variant.id] !== undefined) {
       thumbnail = thumbnailOverrides[variant.id];
     } else if (variant.id === 'hw-500ml' || (cat.id === 'cat-handwash' && idx === 0)) {
-      thumbnail = 'public/assets/products/Orange Handwash 500ml-1.jpg';
+      thumbnail = '/assets/products/Orange Handwash 500ml-1.jpg';
     } else if (variant.id === 'hw-1l' || (cat.id === 'cat-handwash' && idx === 1)) {
-      thumbnail = 'public/assets/products/Lavender-Handwash-1L.jpg';
+      thumbnail = '/assets/products/Lavender-Handwash-1L.jpg';
     } else if (variant.id === 'hw-5l-purple' || variant.id === 'hw-5l-pink' || (cat.id === 'cat-handwash' && idx >= 2)) {
-      thumbnail = 'public/assets/products/Orange Handwash 5L.jpg';
+      thumbnail = '/assets/products/Orange Handwash 5L.jpg';
     } else if (backendVar?.image) {
       thumbnail = backendVar.image;
     } else if (backendProd?.images?.[0]) {

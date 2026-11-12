@@ -53,7 +53,7 @@ export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
     productTitle: 'Hand Wash',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: 'public/assets/products/Lavender-Handwash-1L.jpg',
+    productImage: '/assets/products/Lavender-Handwash-1L.jpg',
     secondaryImage: '/assets/products/Fresh Lemon Dishwashing Refill Pouch.png',
     videoPoster: '/assets/products/stoppable-video01.jpg',
     isShopTheLook: false,
@@ -74,7 +74,7 @@ export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
     productTitle: 'Body Wash',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: 'public/assets/products/LilyBodywash 5L.jpg',
+    productImage: '/assets/products/LilyBodywash 5L.jpg',
     videoPoster: '/assets/products/stoppable-video03.jpg',
     isShopTheLook: true,
     progress: 30
@@ -153,7 +153,7 @@ export const DEFAULT_CUSTOMER_REVIEWS: CustomerReviewItem[] = [
     reviewText: 'My skin feels smoother and more balanced. Hydration lasts all day, and my routine finally feels simple, effective, and worth following consistently.',
     customerThumbnail: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=1000&auto=format&fit=crop&q=80',
     productTitle: 'Hydrating Cleanser',
-    productImage: 'public/assets/products/Lavender-Handwash-1L.jpg',
+    productImage: '/assets/products/Lavender-Handwash-1L.jpg',
     originalPrice: 150.0,
     salePrice: 95.0
   },
@@ -370,7 +370,7 @@ export const HomePage: React.FC = () => {
       title: 'Our Most Loved Essentials',
       subtitle: 'Discover our most-loved essentials, carefully crafted to deliver visible results and keep your skin radiant.',
       defaultBg: '/assets/aistudio/WiZ-H-Banner02.jpg',
-      defaultThumb: 'public/assets/Lemon-Handwash01.jpg',
+      defaultThumb: '/assets/Lemon-Handwash01.jpg',
       buttonText: 'SHOP BESTSELLERS',
       buttonLink: '/shop',
       nextLabel: 'Wet Wipes'
@@ -418,7 +418,7 @@ export const HomePage: React.FC = () => {
       },
       'banner-most-loved': {
         bgImage: '/assets/aistudio/WiZ-H-Banner02.jpg',
-        thumbImage: 'public/assets/Lemon-Handwash01.jpg'
+        thumbImage: '/assets/Lemon-Handwash01.jpg'
       }
     };
   });
@@ -447,7 +447,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'botanical-bg',
       name: 'Botanical Moisture & Cleanse',
-      url: 'public/assets/products/Lemon Bodywash 5L.jpg'
+      url: '/assets/products/Lemon Bodywash 5L.jpg'
     }
   ];
 
@@ -460,7 +460,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'handwash-thumb',
       name: 'WiZ Anti-Bacterial Handwash',
-      url: 'public/assets/Lemon-Handwash01.jpg'
+      url: '/assets/Lemon-Handwash01.jpg'
     },
     {
       id: 'liquid-matic-thumb',
@@ -657,7 +657,7 @@ export const HomePage: React.FC = () => {
       productId: 'prod-handwash',
       title: 'Handwash',
       slug: 'wiz-anti-bacterial-handwash-500ml',
-      image: 'public/assets/products/wiz-handwash-card.jpg',
+      image: '/assets/products/wiz-handwash-card.jpg',
       regularPrice: 125.00,
       sellingPrice: 99,
       badge: null,
@@ -705,7 +705,7 @@ export const HomePage: React.FC = () => {
       productId: 'prod-dishwash',
       title: 'Dishwash Gel 750ml',
       slug: 'wiz-power-degreasing-dishwash-gel-750ml',
-      image: 'public/assets/products/1L Dish Wash Pouch.jpg',
+      image: '/assets/products/1L Dish Wash Pouch.jpg',
       regularPrice: 135.00,
       sellingPrice: 99,
       badge: null,
@@ -717,7 +717,7 @@ export const HomePage: React.FC = () => {
       productId: 'prod-floor-cleaner',
       title: 'Disinfectant Floor Cleaner',
       slug: 'wiz-disinfectant-floor-cleaner-citrus-750ml',
-      image: 'public/assets/products/Lemon-Floor-Cleaner 1L.jpg',
+      image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
       regularPrice: 145.00,
       sellingPrice: 110,
       badge: null,
@@ -729,7 +729,7 @@ export const HomePage: React.FC = () => {
       productId: 'prod-bodywash',
       title: 'Moisturizing Bodywash 300ml',
       slug: 'wiz-moisturizing-bodywash-citrus-splash-300ml',
-      image: 'public/assets/products/Lemon Bodywash 5L.jpg',
+      image: '/assets/products/Lemon Bodywash 5L.jpg',
       regularPrice: 180.00,
       sellingPrice: 149,
       badge: null,
@@ -741,7 +741,7 @@ export const HomePage: React.FC = () => {
       productId: 'prod-hand-sanitizer',
       title: 'Instant Hand Sanitizer 500ml',
       slug: 'wiz-instant-hand-sanitizer-gel-500ml',
-      image: 'public/assets/products/Sanitizer.jpg',
+      image: '/assets/products/Sanitizer.jpg',
       regularPrice: 150.00,
       sellingPrice: 120,
       badge: null,
@@ -868,7 +868,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'handwash-orange',
       name: 'WiZ Orange Hand Wash Bottle',
-      url: 'public/assets/Lemon-Handwash01.jpg'
+      url: '/assets/Lemon-Handwash01.jpg'
     },
     {
       id: 'wet-wipes-lavender',
@@ -989,7 +989,7 @@ export const HomePage: React.FC = () => {
   const DEFAULT_LOVED_SLIDE_BGS: Record<string, string> = {
     'personal-care-slide': '/assets/products/Fresh Orange & Aloe Wet Wipes.png',
     'wet-wipes-slide': '/assets/products/WiZ-Wet-Wipes-02.jpg',
-    'home-care-slide': 'public/assets/Lemon Fresh Dishwash Refill Ad.png.png'
+    'home-care-slide': '/assets/Lemon Fresh Dishwash Refill Ad.png.png'
   };
 
   const LOVED_PICKS_BG_STORAGE_KEY = 'wiz_most_loved_bgs_v4';
@@ -1007,7 +1007,7 @@ export const HomePage: React.FC = () => {
             parsed['personal-care-slide'] = '/assets/products/Fresh Orange & Aloe Wet Wipes.png';
           }
           if (parsed['home-care-slide'] === '/assets/products/most-loved-slide-2.jpg') {
-            parsed['home-care-slide'] = 'public/assets/Lemon Fresh Dishwash Refill Ad.png.png';
+            parsed['home-care-slide'] = '/assets/Lemon Fresh Dishwash Refill Ad.png.png';
           }
           return parsed;
         }
@@ -1114,7 +1114,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'preset-home-care',
       name: 'Home Care (Lemon Fresh Dishwash)',
-      url: 'public/assets/Lemon Fresh Dishwash Refill Ad.png.png'
+      url: '/assets/Lemon Fresh Dishwash Refill Ad.png.png'
     },
     {
       id: 'preset-bath-glow',
@@ -1141,7 +1141,7 @@ export const HomePage: React.FC = () => {
           id: 'card-handwash',
           title: handwashProd?.name || 'Handwash',
           price: getBackendPrice(handwashProd, '₹99.00'),
-          image: getBackendThumbnail(handwashProd, 'public/assets/Lemon-Handwash01.jpg'),
+          image: getBackendThumbnail(handwashProd, '/assets/Lemon-Handwash01.jpg'),
           product: handwashProd
         },
         {
@@ -1216,42 +1216,42 @@ export const HomePage: React.FC = () => {
       name: 'Handwash',
       count: '6 items',
       slug: '/category/handwash',
-      image: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
+      image: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
     },
     {
       id: 'cat-wet-wipes',
       name: 'Wet Wipes',
       count: '6 items',
       slug: '/category/wet-wipes',
-      image: 'public/assets/products/Fresh Lemon Mint Wet Wipes-1.png'
+      image: '/assets/products/Fresh Lemon Mint Wet Wipes-1.png'
     },
     {
       id: 'cat-hand-sanitizer',
       name: 'Hand Sanitizer',
       count: '4 items',
       slug: '/category/hand-sanitizer',
-      image: 'public/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png'
+      image: '/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png'
     },
     {
       id: 'cat-dishwash',
       name: 'Dishwash',
       count: '12 items',
       slug: '/category/dishwash',
-      image: 'public/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png'
+      image: '/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png'
     },
     {
       id: 'cat-floor-cleaner',
       name: 'Floor Cleaner',
       count: '10 items',
       slug: '/category/floor-cleaner',
-      image: 'public/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png'
+      image: '/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png'
     },
     {
       id: 'cat-liquid-matic',
       name: 'Liquid Matic',
       count: '10 items',
       slug: '/category/laundry-detergent',
-      image: 'public/assets/WiZ Liquid Matic Fresh Laundry Refill.png'
+      image: '/assets/WiZ Liquid Matic Fresh Laundry Refill.png'
     }
   ];
 
@@ -1265,22 +1265,22 @@ export const HomePage: React.FC = () => {
         if (Array.isArray(parsed) && parsed.length > 0) {
           return parsed.map((cat: any) => {
             if (cat.id === 'cat-handwash' && (cat.image === '/assets/products/cat-handwash.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png' };
+              return { ...cat, image: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png' };
             }
             if (cat.id === 'cat-wet-wipes' && (cat.image === '/assets/products/cat-wet-wipes.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/products/Fresh Lemon Mint Wet Wipes-1.png' };
+              return { ...cat, image: '/assets/products/Fresh Lemon Mint Wet Wipes-1.png' };
             }
             if (cat.id === 'cat-hand-sanitizer' && (cat.image === '/assets/products/cat-hand-sanitizer.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png' };
+              return { ...cat, image: '/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png' };
             }
             if (cat.id === 'cat-dishwash' && (cat.image === '/assets/products/cat-dishwash.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png' };
+              return { ...cat, image: '/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png' };
             }
             if (cat.id === 'cat-floor-cleaner' && (cat.image === '/assets/products/cat-floor-cleaner.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png' };
+              return { ...cat, image: '/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png' };
             }
             if (cat.id === 'cat-liquid-matic' && (cat.image === '/assets/products/cat-liquid-matic.jpg' || cat.image === '/assets/products/cat-liquid-matic-partial.jpg' || !cat.image)) {
-              return { ...cat, image: 'public/assets/WiZ Liquid Matic Fresh Laundry Refill.png' };
+              return { ...cat, image: '/assets/WiZ Liquid Matic Fresh Laundry Refill.png' };
             }
             return cat;
           });
@@ -1307,7 +1307,7 @@ export const HomePage: React.FC = () => {
     name: '',
     count: '6 items',
     slug: '',
-    image: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
+    image: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
   });
 
   const showCategoryToast = (msg: string) => {
@@ -1351,7 +1351,7 @@ export const HomePage: React.FC = () => {
     if (defaultCat && defaultCat.image) {
       handleSetCategoryThumb(catId, defaultCat.image);
     } else {
-      handleSetCategoryThumb(catId, 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png');
+      handleSetCategoryThumb(catId, '/assets/products/Fresh Orange Hand Wash Advertisement-1.png');
     }
   };
 
@@ -1368,7 +1368,7 @@ export const HomePage: React.FC = () => {
       name: newCatForm.name.trim(),
       count: newCatForm.count.trim() || '6 items',
       slug,
-      image: newCatForm.image.trim() || 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
+      image: newCatForm.image.trim() || '/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
     };
 
     const updated = [...productCategories, newCategory];
@@ -1384,7 +1384,7 @@ export const HomePage: React.FC = () => {
       name: '',
       count: '6 items',
       slug: '',
-      image: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
+      image: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
     });
     showCategoryToast(`Category "${newCategory.name}" added successfully`);
 
@@ -1455,32 +1455,32 @@ export const HomePage: React.FC = () => {
     {
       id: 'preset-cat-handwash',
       name: 'Handwash (Attached Design)',
-      url: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
+      url: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png'
     },
     {
       id: 'preset-cat-wet-wipes',
       name: 'Wet Wipes (Attached Design)',
-      url: 'public/assets/products/Fresh Lemon Mint Wet Wipes-1.png'
+      url: '/assets/products/Fresh Lemon Mint Wet Wipes-1.png'
     },
     {
       id: 'preset-cat-hand-sanitizer',
       name: 'Hand Sanitizer (Attached Design)',
-      url: 'public/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png'
+      url: '/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png'
     },
     {
       id: 'preset-cat-dishwash',
       name: 'Dishwash (Attached Design)',
-      url: 'public/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png'
+      url: '/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png'
     },
     {
       id: 'preset-cat-floor-cleaner',
       name: 'Floor Cleaner (Attached Design)',
-      url: 'public/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png'
+      url: '/assets/products/Glossy Pink Floor Cleaner Refill Pouch-1.png'
     },
     {
       id: 'preset-cat-liquid-matic',
       name: 'Liquid Matic (Attached Design)',
-      url: 'public/assets/WiZ Liquid Matic Fresh Laundry Refill.png'
+      url: '/assets/WiZ Liquid Matic Fresh Laundry Refill.png'
     },
     {
       id: 'preset-cat-bodywash',
@@ -1732,14 +1732,14 @@ export const HomePage: React.FC = () => {
     {
       id: 'slide-wet-wipes',
       name: 'Wet Wipes',
-      image: 'public/assets/Rose Water Wet Wipes in Bloom.png',
+      image: '/assets/Rose Water Wet Wipes in Bloom.png',
       link: '/category/wet-wipes',
       description: 'Ultra-soft, refreshing wipes infused with aloe vera & calming botanical extracts.'
     },
     {
       id: 'slide-bodywash',
       name: 'Bodywash',
-      image: 'public/assets/products/Bodywash-5L-Banner.jpg',
+      image: '/assets/products/Bodywash-5L-Banner.jpg',
       link: '/category/bodywash',
       description: 'Luxurious moisturizing body wash with floral paradise lily and gentle lather.'
     }
@@ -1765,7 +1765,7 @@ export const HomePage: React.FC = () => {
       link: '/category/wet-wipes'
     },
     'right-top': {
-      image: 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png',
+      image: '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png',
       title: 'Paradise Lily Body Wash',
       link: '/category/bodywash'
     },
@@ -1792,7 +1792,7 @@ export const HomePage: React.FC = () => {
             migrated['left-bottom'].image = '/assets/products/Bodywash-M2.jpg';
           }
           if (migrated['right-top']?.image === '/assets/products/pcare-thumb-right-top.jpg') {
-            migrated['right-top'].image = 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png';
+            migrated['right-top'].image = '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png';
           }
           if (migrated['right-bottom']?.image === '/assets/products/pcare-thumb-right-bot.jpg') {
             migrated['right-bottom'].image = '/assets/products/LiquidMatic-M1.jpg';
@@ -1902,7 +1902,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'preset-right-top',
       name: 'Paradise Lily Body Wash (Right Top)',
-      url: 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png'
+      url: '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png'
     },
     {
       id: 'preset-right-bot',
@@ -1917,7 +1917,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'preset-orange-hw',
       name: 'WiZ Handwash Bottle',
-      url: 'public/assets/Lemon-Handwash01.jpg'
+      url: '/assets/Lemon-Handwash01.jpg'
     }
   ];
 
@@ -2187,7 +2187,7 @@ export const HomePage: React.FC = () => {
         title: bodywashProd?.name ? (bodywashProd.name.toLowerCase().includes('body') ? 'Bodywash' : bodywashProd.name) : 'Bodywash',
         slug: bodywashProd ? `/product/${bodywashProd.slug}` : '/product/wiz-moisturizing-bodywash-citrus-splash-300ml',
         productId: bodywashProd?.id || 'prod-bodywash',
-        image: getBackendThumbnail(bodywashProd, 'public/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png'),
+        image: getBackendThumbnail(bodywashProd, '/assets/products/WiZ Liquid Matic Fresh Laundry Ad.png'),
         badge: null,
         regularPrice: bodywashProd?.regularPrice || 900.0,
         sellingPrice: bodywashProd?.sellingPrice || 450.0

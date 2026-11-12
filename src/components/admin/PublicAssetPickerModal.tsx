@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, Check, FolderOpen, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { PublicAssetItem, fetchPublicAssets, FALLBACK_PUBLIC_ASSETS } from '../../lib/assetLibrary';
+import { resolveAssetUrl } from '../../lib/storeService';
 
 interface PublicAssetPickerModalProps {
   isOpen: boolean;
@@ -69,7 +70,7 @@ export const PublicAssetPickerModal: React.FC<PublicAssetPickerModalProps> = ({
                 {title}
               </h3>
               <p className="text-[11px] text-gray-500">
-                {subtitle || 'Select an authentic product image from the public/assets or public/assets/products repository'}
+                {subtitle || 'Select an authentic product image from the /assets repository'}
               </p>
             </div>
           </div>
@@ -120,7 +121,14 @@ export const PublicAssetPickerModal: React.FC<PublicAssetPickerModalProps> = ({
                 type="button"
                 onClick={() => {
                   if (customPath.trim()) {
-                    onSelect(customPath.trim());
+                    let cleaned = customPath.trim();
+                    if (!/^(https?:|\/\/|data:|blob:)/i.test(cleaned)) {
+                      cleaned = cleaned.replace(/^(\/?public\/)/i, '/');
+                      if (!cleaned.startsWith('/')) {
+                        cleaned = '/' + cleaned;
+                      }
+                    }
+                    onSelect(cleaned);
                     onClose();
                   }
                 }}
@@ -180,14 +188,14 @@ export const PublicAssetPickerModal: React.FC<PublicAssetPickerModalProps> = ({
                   {/* Thumbnail Container */}
                   <div className="w-full aspect-square bg-gray-50 flex items-center justify-center p-2 overflow-hidden mb-2 relative">
                     <img
-                      src={asset.path}
+                      src={resolveAssetUrl(asset.path)}
                       alt={asset.name}
                       className="w-full h-full object-contain transition-transform duration-200 group-hover:scale-105"
                       onError={(e) => {
-                        // Attempt fallback without public prefix or with leading slash if needed
                         const target = e.currentTarget as HTMLImageElement;
-                        if (!target.src.includes('data:image')) {
-                          target.src = asset.path.replace(/^public\//, '/');
+                        if (!target.dataset.retried) {
+                          target.dataset.retried = 'true';
+                          target.src = resolveAssetUrl(asset.path);
                         }
                       }}
                     />

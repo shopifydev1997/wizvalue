@@ -3,6 +3,7 @@ import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
 import { ShieldCheck, Award, Factory, HeartHandshake, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { resolveAssetUrl } from '../lib/storeService';
 
 export const AboutPage: React.FC = () => {
   useSEO({
@@ -54,7 +55,7 @@ export const AboutPage: React.FC = () => {
 
           <div className="aspect-[4/3] bg-gray-100 border border-gray-200 overflow-hidden">
             <img
-              src="public/assets/products/Lemon-Floor-Cleaner 1L.jpg"
+              src={resolveAssetUrl('/assets/products/Lemon-Floor-Cleaner 1L.jpg')}
               alt="WiZ Laboratory Quality"
               className="w-full h-full object-cover"
             />

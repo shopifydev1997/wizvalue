@@ -266,7 +266,7 @@ export const Header: React.FC = () => {
       offers: {
         title: 'Hygiene Mega Bundle & Combo Packs',
         subtitle: 'Get up to 40% OFF + Free 100ml Sanitizer on orders above ₹799.',
-        imageUrl: 'public/assets/products/Orange Wet Wipes.jpg',
+        imageUrl: '/assets/products/Orange Wet Wipes.jpg',
         link: '/offers',
         badge: '40% OFF',
         price: 'From ₹99.00'

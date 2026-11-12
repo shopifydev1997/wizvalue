@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { resolveAssetUrl } from '../lib/storeService';
 
 interface ProductCardData {
   id: string;
@@ -14,7 +15,7 @@ const PERSONAL_CARE_PRODUCTS: ProductCardData[] = [
     id: 'pc-1',
     name: 'Body Wash',
     category: 'Personal Care',
-    image: 'public/assets/products/Bodywash-5L-Banner.jpg',
+    image: '/assets/products/Bodywash-5L-Banner.jpg',
     link: '/category/personal-care'
   },
   {
@@ -28,14 +29,14 @@ const PERSONAL_CARE_PRODUCTS: ProductCardData[] = [
     id: 'pc-3',
     name: 'Handwash',
     category: 'Hand Hygiene',
-    image: 'public/assets/products/Fresh Orange Hand Wash Advertisement-1.png',
+    image: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png',
     link: '/category/handwash'
   },
   {
     id: 'pc-4',
     name: 'Hand Sanitizer',
     category: 'Hand Hygiene',
-    image: 'public/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png',
+    image: '/assets/products/Fresh Mint Hand Sanitizer Still Life-1.png',
     link: '/category/hand-sanitizer'
   },
   {
@@ -70,7 +71,7 @@ const PERSONAL_CARE_PRODUCTS: ProductCardData[] = [
     id: 'pc-9',
     name: 'Power Degreaser',
     category: 'Home Care',
-    image: 'public/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png',
+    image: '/assets/products/Lemon Fresh Dish Wash Refill Pouch-1.png',
     link: '/category/household-cleaners'
   },
   {
@@ -120,7 +121,7 @@ export const CurvedPersonalCareHero: React.FC = () => {
     PERSONAL_CARE_PRODUCTS.forEach((p) => {
       if (!loadedImagesRef.current.has(p.image)) {
         const img = new Image();
-        img.src = p.image;
+        img.src = resolveAssetUrl(p.image);
         img.onload = () => {
           loadedImagesRef.current.set(p.image, img);
         };

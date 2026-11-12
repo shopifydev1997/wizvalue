@@ -5,6 +5,7 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { QuickViewModal } from './QuickViewModal';
 import { recordRecentlyViewed } from '../lib/recentlyViewed';
+import { resolveAssetUrl } from '../lib/storeService';
 
 interface ProductCardProps {
   product: Product;
@@ -46,7 +47,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory 
     setTimeout(() => setAddedNotice(false), 2000);
   };
 
-  const mainImage = product.images[0] || 'public/assets/products/Orange Wet Wipes.jpg';
+  const mainImage = resolveAssetUrl(product.images[0]) || resolveAssetUrl('/assets/products/Orange Wet Wipes.jpg');
 
   return (
     <>
