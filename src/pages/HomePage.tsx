@@ -2425,78 +2425,81 @@ export const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent pointer-events-none" />
         )}
 
-        {/* Small thumbnail image with heading, subheading, and white button - Shifted to left, aligned with WiZ logo (180-200px margin from left) */}
-        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[180px] xl:left-[200px] bottom-12 sm:bottom-14 md:bottom-[95px] z-20 flex flex-row items-center gap-5 sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto">
-          {/* Banner Small Square Thumbnail Card */}
-          {bannerThumbImage && (
-            <div className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/30 bg-white/10 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
-              <img
-                src={resolveAssetUrl(bannerThumbImage)}
-                alt={currentBanner.title}
-                className="w-full h-full object-cover"
-              />
+        {/* Hero Overlay Content & Slide Controls - Unified Flexbox Container Aligned with Hero Margins */}
+        <div className="absolute inset-x-0 bottom-12 sm:bottom-14 md:bottom-[95px] z-20 w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pointer-events-none">
+          {/* Left Side: Thumbnail Card + Heading, Subtitle & CTA */}
+          <div className="flex flex-row items-center gap-5 sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto">
+            {/* Banner Small Square Thumbnail Card */}
+            {bannerThumbImage && (
+              <div className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/30 bg-white/10 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
+                <img
+                  src={resolveAssetUrl(bannerThumbImage)}
+                  alt={currentBanner.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* Typography & White CTA Button */}
+            <div className="text-white text-left">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold tracking-tight text-white leading-tight font-['Poppins',sans-serif] drop-shadow-sm">
+                {currentBanner.title}
+              </h1>
+
+              <p className="text-xs sm:text-sm md:text-base text-white/95 max-w-sm sm:max-w-md mt-2 sm:mt-3 leading-relaxed font-normal drop-shadow-xs font-['Poppins',sans-serif]">
+                {currentBanner.subtitle}
+              </p>
+
+              <div className="mt-4 sm:mt-6">
+                <Link
+                  to={currentBanner.buttonLink || '/shop'}
+                  className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider py-3 sm:py-3.5 px-7 sm:px-9 transition-colors shadow-sm rounded-none cursor-pointer"
+                >
+                  {currentBanner.buttonText || 'EXPLORE PRODUCTS'}
+                </Link>
+              </div>
             </div>
-          )}
+          </div>
 
-          {/* Typography & White CTA Button */}
-          <div className="text-white text-left">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold tracking-tight text-white leading-tight font-['Poppins',sans-serif] drop-shadow-sm">
-              {currentBanner.title}
-            </h1>
+          {/* Right Side: Slide Controls */}
+          <div className="flex items-end space-x-6 shrink-0 self-end pointer-events-auto">
+            <div className="text-left hidden sm:block">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/90 block mb-0.5">
+                NEXT
+              </span>
+              <span className="text-sm sm:text-base font-semibold text-white tracking-wide block">
+                {currentBanner.nextLabel || nextBanner.title}
+              </span>
+              <div className="h-[2px] bg-white w-36 sm:w-56 mt-2 relative overflow-hidden">
+                <div
+                  className="absolute inset-y-0 left-0 bg-white transition-all duration-300"
+                  style={{
+                    width: `${((currentBannerIndex + 1) / activeBanners.length) * 100}%`
+                  }}
+                />
+              </div>
+            </div>
 
-            <p className="text-xs sm:text-sm md:text-base text-white/95 max-w-sm sm:max-w-md mt-2 sm:mt-3 leading-relaxed font-normal drop-shadow-xs font-['Poppins',sans-serif]">
-              {currentBanner.subtitle}
-            </p>
-
-            <div className="mt-4 sm:mt-6">
-              <Link
-                to={currentBanner.buttonLink || '/shop'}
-                className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider py-3 sm:py-3.5 px-7 sm:px-9 transition-colors shadow-sm rounded-none cursor-pointer"
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                onClick={handlePrevBanner}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
+                style={{ borderRadius: '9999px' }}
+                aria-label="Previous slide"
               >
-                {currentBanner.buttonText || 'EXPLORE PRODUCTS'}
-              </Link>
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handleNextBanner}
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
+                style={{ borderRadius: '9999px' }}
+                aria-label="Next slide"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
-          </div>
-        </div>
-
-        {/* Bottom Right Slide Controls - Aligned with Right Margin */}
-        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-[180px] xl:right-[200px] bottom-12 sm:bottom-14 md:bottom-[95px] flex items-end space-x-6 z-20">
-          <div className="text-left hidden sm:block">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/90 block mb-0.5">
-              NEXT
-            </span>
-            <span className="text-sm sm:text-base font-semibold text-white tracking-wide block">
-              {currentBanner.nextLabel || nextBanner.title}
-            </span>
-            <div className="h-[2px] bg-white w-36 sm:w-56 mt-2 relative overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 bg-white transition-all duration-300"
-                style={{
-                  width: `${((currentBannerIndex + 1) / activeBanners.length) * 100}%`
-                }}
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <button
-              type="button"
-              onClick={handlePrevBanner}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
-              style={{ borderRadius: '9999px' }}
-              aria-label="Previous slide"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              type="button"
-              onClick={handleNextBanner}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
-              style={{ borderRadius: '9999px' }}
-              aria-label="Next slide"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
           </div>
         </div>
 
@@ -2973,7 +2976,7 @@ export const HomePage: React.FC = () => {
           SECTION 4: PRODUCT CATEGORIES (Exact Layout Match with Product_Category_ddffba0a.jpg)
           ========================================================================= */}
       <section className="w-full py-12 sm:py-16 bg-white overflow-hidden">
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
           {/* Header Row: Title */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
             <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 text-left font-['Poppins',sans-serif]">
@@ -2981,17 +2984,17 @@ export const HomePage: React.FC = () => {
             </h2>
           </div>
 
-          {/* Horizontal Slider Track matching attached Product_Category_ddffba0a.jpg */}
+          {/* Horizontal Slider Track matching Hero Banner left/right alignment */}
           <div
             ref={categoryScrollRef}
             onScroll={handleCategoryScrollEvent}
-            className="flex items-center gap-[18px] overflow-x-auto scroll-smooth pb-4 select-none no-scrollbar"
+            className="flex items-stretch gap-[18px] overflow-x-auto scroll-smooth pb-4 select-none no-scrollbar w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {productCategories.map((cat) => (
               <div
                 key={cat.id}
-                className="group relative shrink-0 w-[240px] sm:w-[270px] md:w-[285px] lg:w-[294px] h-[320px] sm:h-[350px] md:h-[365px] overflow-hidden bg-gray-50 shadow-xs hover:shadow-md transition-all duration-300"
+                className="group relative shrink-0 w-[calc((100%-18px)/1.35)] sm:w-[calc((100%-18px)/2)] md:w-[calc((100%-36px)/3)] lg:w-[calc((100%-54px)/4)] h-[320px] sm:h-[350px] md:h-[365px] overflow-hidden bg-gray-50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col"
               >
                 {/* Category Thumbnail Image or Clean Neutral Box */}
                 {cat.image ? (
@@ -3181,20 +3184,18 @@ export const HomePage: React.FC = () => {
           SECTION 6: PERSONAL CARE (Exact Layout Matching Personal-Care-Section_bad93f56.jpg)
           ========================================================================= */}
       <section className="w-full py-12 sm:py-16 lg:py-20 bg-[#5f3786] overflow-hidden select-none">
-        {/* Top Header: Left-Aligned Heading */}
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] mb-8 sm:mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
+          {/* Top Header: Left-Aligned Heading */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-10">
             <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
               Personal Care
             </h2>
           </div>
-        </div>
 
-        {/* 3-Column Layout: Left Thumbnails, Center 2-Slide Big Image, Right Thumbnails */}
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
-          <div className="flex flex-col 2xl:grid 2xl:grid-cols-[1fr_minmax(460px,560px)_1fr] items-center justify-between gap-6 sm:gap-8">
-            {/* Left Column: 2 Stacked Thumbnails (Hidden on laptop, tablet, mobile; visible only on 2xl) */}
-            <div className="hidden 2xl:flex w-full flex-col gap-6 sm:gap-8 shrink-0">
+          {/* 3-Column Flexbox Layout: Left Thumbnails, Center 2-Slide Big Image, Right Thumbnails */}
+          <div className="w-full flex flex-col lg:flex-row items-stretch justify-between gap-6 sm:gap-7">
+            {/* Left Column: 2 Stacked Thumbnails */}
+            <div className="hidden lg:flex lg:flex-1 min-w-0 flex-col justify-between gap-6">
               {/* Left Top Thumbnail */}
               {(() => {
                 const slotKey = 'left-top';
@@ -3202,7 +3203,7 @@ export const HomePage: React.FC = () => {
                 const hasImage = Boolean(slot?.image);
 
                 return (
-                  <div className="relative aspect-[326/244] w-full bg-white overflow-hidden shadow-xs group">
+                  <div className="relative flex-1 min-h-0 w-full bg-white overflow-hidden shadow-xs group">
                     {hasImage && (
                       <Link to={slot.link || '/category/personal-care'} className="block w-full h-full relative cursor-pointer">
                         <img
@@ -3224,7 +3225,7 @@ export const HomePage: React.FC = () => {
                 const hasImage = Boolean(slot?.image);
 
                 return (
-                  <div className="relative aspect-[326/244] w-full bg-white overflow-hidden shadow-xs group">
+                  <div className="relative flex-1 min-h-0 w-full bg-white overflow-hidden shadow-xs group">
                     {hasImage && (
                       <Link to={slot.link || '/category/wet-wipes'} className="block w-full h-full relative cursor-pointer">
                         <img
@@ -3245,7 +3246,7 @@ export const HomePage: React.FC = () => {
               const currentCenterSlide = PERSONAL_CARE_CENTER_SLIDES[pcareSlideIndex] || PERSONAL_CARE_CENTER_SLIDES[0];
 
               return (
-                <div className="relative w-full max-w-[580px] lg:max-w-[620px] aspect-square shrink-0 overflow-hidden shadow-xs group bg-white mx-auto">
+                <div className="relative w-full lg:w-[44%] xl:w-[42%] aspect-square shrink-0 overflow-hidden shadow-xs group bg-white">
                   <Link
                     to={currentCenterSlide.link}
                     className="block w-full h-full relative cursor-pointer"
@@ -3299,8 +3300,8 @@ export const HomePage: React.FC = () => {
               );
             })()}
 
-            {/* Right Column: 2 Stacked Thumbnails (Hidden on laptop, tablet, mobile; visible only on 2xl) */}
-            <div className="hidden 2xl:flex w-full flex-col gap-6 sm:gap-8 shrink-0">
+            {/* Right Column: 2 Stacked Thumbnails */}
+            <div className="hidden lg:flex lg:flex-1 min-w-0 flex-col justify-between gap-6">
               {/* Right Top Thumbnail */}
               {(() => {
                 const slotKey = 'right-top';
@@ -3308,7 +3309,7 @@ export const HomePage: React.FC = () => {
                 const hasImage = Boolean(slot?.image);
 
                 return (
-                  <div className="relative aspect-[326/244] w-full bg-white overflow-hidden shadow-xs group">
+                  <div className="relative flex-1 min-h-0 w-full bg-white overflow-hidden shadow-xs group">
                     {hasImage && (
                       <Link to={slot.link || '/category/bodywash'} className="block w-full h-full relative cursor-pointer">
                         <img
@@ -3330,7 +3331,7 @@ export const HomePage: React.FC = () => {
                 const hasImage = Boolean(slot?.image);
 
                 return (
-                  <div className="relative aspect-[326/244] w-full bg-white overflow-hidden shadow-xs group">
+                  <div className="relative flex-1 min-h-0 w-full bg-white overflow-hidden shadow-xs group">
                     {hasImage && (
                       <Link to={slot.link || '/category/personal-care'} className="block w-full h-full relative cursor-pointer">
                         <img
@@ -3926,7 +3927,7 @@ export const HomePage: React.FC = () => {
           ========================================================================= */}
       {recentlyViewedProducts.length > 0 && (
         <section className="w-full py-14 sm:py-16 bg-[#fbfbfb] border-t border-gray-200">
-          <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+          <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
             {/* Header: Title, Browsing Subtitle, and Quick Links */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
               <div className="text-left">
@@ -3964,8 +3965,8 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* 4 Recently Viewed Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+            {/* 4 Recently Viewed Cards Flexbox Row */}
+            <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-start gap-6">
               {recentlyViewedProducts.slice(0, 4).map((item) => {
                 const defaultVariant = item.variants?.[0] || {
                   id: `${item.id}-default`,
@@ -3982,7 +3983,7 @@ export const HomePage: React.FC = () => {
                 return (
                   <div
                     key={item.id}
-                    className="group relative bg-white border border-gray-200 hover:border-gray-400 transition-all duration-200 flex flex-col justify-between shadow-2xs"
+                    className="w-full sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)] shrink-0 group relative bg-white border border-gray-200 hover:border-gray-400 transition-all duration-200 flex flex-col justify-between shadow-2xs"
                   >
                     <div>
                       {/* Product Image Area */}
@@ -4107,16 +4108,16 @@ export const HomePage: React.FC = () => {
           SECTION 15: LOVED BY EVERY SKIN TYPE (Matches Reference Design Exactly)
           ========================================================================= */}
       <section className="w-full py-16 sm:py-20 bg-[#5f3786] border-t border-purple-900">
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
           <div className="text-left mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight font-['Poppins',sans-serif]">
               Loved By Every Skin Type
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-between gap-6">
             {/* Card 1: Free shipping */}
-            <div className="bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
               <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
                 <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 5h11v11H2z" />
@@ -4132,7 +4133,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Card 2: Customer Support */}
-            <div className="bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
               <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
                 <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 14v-3a8 8 0 0 1 16 0v3" />
@@ -4152,7 +4153,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Card 3: Satisfaction */}
-            <div className="bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
               <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
                 <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -4167,7 +4168,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Card 4: Free Returns */}
-            <div className="bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
               <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
                 <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />

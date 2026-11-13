@@ -260,9 +260,9 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
 
   return (
     <section className="w-full py-12 sm:py-16 bg-white select-none">
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
         {/* Top Header Row matching Reference Layout */}
-        <div className="flex items-center justify-between mb-8 sm:mb-10">
+        <div className="flex items-center justify-between mb-8 sm:mb-10 w-full">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-neutral-900 tracking-tight font-['Poppins',sans-serif]">
             Shoppable videos
           </h2>
@@ -297,10 +297,8 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
             </button>
           </div>
         </div>
-      </div>
 
-      {/* 4 Video Cards Row / Carousel matching Reference Layout */}
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+        {/* 4 Video Cards Flexbox Row / Carousel aligned flush left-to-right */}
         {shoppableVideos.length === 0 ? (
           <div className="py-16 text-center bg-gray-50 border border-dashed border-gray-300 p-8 w-full">
             <p className="text-gray-500 mb-4 font-medium">No shoppable videos currently available.</p>
@@ -315,7 +313,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
         ) : (
           <div
             ref={scrollContainerRef}
-            className="flex items-stretch overflow-x-auto gap-[18px] no-scrollbar scroll-smooth pb-2"
+            className="flex items-stretch overflow-x-auto gap-[18px] no-scrollbar scroll-smooth pb-2 w-full"
           >
             {shoppableVideos.map((video) => {
               const isPlaying = playingVideoMap[video.id] === true;
@@ -336,7 +334,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
               return (
                 <div
                   key={video.id}
-                  className="relative shrink-0 w-[calc(100%-16px)] sm:w-[calc(50%-12px)] lg:w-[calc(25%-13.5px)] min-w-[270px] max-w-[340px] aspect-[330/510] bg-neutral-900 overflow-hidden group select-none shadow-xs rounded-none border border-neutral-100"
+                  className="relative shrink-0 w-full sm:w-[calc((100%-18px)/2)] lg:w-[calc((100%-54px)/4)] aspect-[330/510] bg-neutral-900 overflow-hidden group select-none shadow-xs rounded-none border border-neutral-100"
                 >
                   {/* Video / Background Media Layer */}
                   <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-950">

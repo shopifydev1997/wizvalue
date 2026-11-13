@@ -64,15 +64,15 @@ export const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-[#f8f0fc] text-gray-800 border-t border-[#ecdcf8] font-['Poppins',sans-serif]">
       {/* Upper Footer Container */}
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] pt-12 sm:pt-16 pb-8 text-left">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] pt-12 sm:pt-16 pb-8 text-left flex flex-col">
         {/* Newsletter Signup Row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 sm:mb-16">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 sm:mb-16 w-full">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight leading-snug max-w-xl">
             Be the First to Know About Our New Launches and Special Offers!
           </h2>
 
-          <div className="w-full lg:w-auto">
-            <form onSubmit={handleSubscribe} className="relative flex items-center max-w-md w-full">
+          <div className="w-full lg:w-[380px] xl:w-[420px] shrink-0 lg:ml-auto">
+            <form onSubmit={handleSubscribe} className="relative flex items-center w-full">
               <input
                 type="email"
                 required
@@ -116,10 +116,10 @@ export const Footer: React.FC = () => {
         {/* Subtle Horizontal Divider */}
         <div className="h-[1px] w-full bg-[#ecdcf8] mb-10 sm:mb-12" />
 
-        {/* Four Navigation Columns Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-14 pb-12 sm:pb-16 text-sm">
+        {/* Four Navigation Columns Flexbox Row */}
+        <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-8 lg:gap-14 pb-12 sm:pb-16 text-sm w-full">
           {/* Column 1: Why WiZ? */}
-          <div>
+          <div className="w-[calc(50%-16px)] md:w-auto">
             <h3 className="font-semibold text-gray-900 text-[15px] mb-4">
               Why WiZ?
             </h3>
@@ -133,7 +133,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Column 2: About */}
-          <div>
+          <div className="w-[calc(50%-16px)] md:w-auto">
             <h3 className="font-semibold text-gray-900 text-[15px] mb-4">
               About
             </h3>
@@ -177,7 +177,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Column 3: Categories */}
-          <div>
+          <div className="w-[calc(50%-16px)] md:w-auto">
             <h3 className="font-semibold text-gray-900 text-[15px] mb-4">
               Categories
             </h3>
@@ -216,7 +216,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Column 4: Quick links */}
-          <div>
+          <div className="w-[calc(50%-16px)] md:w-auto">
             <h3 className="font-semibold text-gray-900 text-[15px] mb-4">
               Quick links
             </h3>
@@ -246,9 +246,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Lower Content Row (Logo, Address, Customer Skincare Thumbnail) */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center pt-4 pb-10">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4 pb-10 w-full">
           {/* Left Block: WiZ Logo */}
-          <div className="md:col-span-4 flex items-center">
+          <div className="w-full md:w-auto md:flex-1 flex items-center justify-start">
             {footerLogo ? (
               <Link to="/" className="inline-block" title="WiZ">
                 <img
@@ -279,7 +279,7 @@ export const Footer: React.FC = () => {
           </div>
 
           {/* Center Block: Address */}
-          <div className="md:col-span-5 text-gray-700">
+          <div className="w-full md:w-auto md:flex-[1.3] text-gray-700">
             <h4 className="text-[15px] font-semibold text-gray-900 mb-2.5">Address</h4>
             <div className="space-y-3 text-[13px] leading-relaxed max-w-md">
               <div>
@@ -303,7 +303,7 @@ export const Footer: React.FC = () => {
 
           {/* Right Block: Customer Footer Thumbnail */}
           {footerThumbnail && (
-            <div className="md:col-span-3 flex justify-start md:justify-end">
+            <div className="w-full md:w-auto flex justify-start md:justify-end shrink-0">
               <div className="rounded-sm overflow-hidden shadow-xs bg-white border border-[#ecdcf8]">
                 <img
                   src={resolveAssetUrl(footerThumbnail)}
