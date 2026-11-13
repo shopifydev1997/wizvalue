@@ -24,7 +24,7 @@ import {
   ImageIcon
 } from 'lucide-react';
 import { Product, Category, GeneralSettings, HeaderBanner } from '../types';
-import { getProducts, getCategories, getGeneralSettings } from '../lib/storeService';
+import { getProducts, getCategories, getGeneralSettings, resolveAssetUrl } from '../lib/storeService';
 import { ProductCard } from '../components/ProductCard';
 import { VariantMatrixAccordion } from '../components/VariantMatrixAccordion';
 import { QuickViewModal } from '../components/QuickViewModal';
@@ -2373,12 +2373,12 @@ export const HomePage: React.FC = () => {
       <section
         onMouseEnter={() => setIsBannerHovered(true)}
         onMouseLeave={() => setIsBannerHovered(false)}
-        className="relative w-full overflow-hidden bg-[#efc0c6] group select-none min-h-[380px] sm:min-h-[460px] md:min-h-[520px] lg:min-h-[600px] xl:min-h-[660px] aspect-[1920/790]"
+        className="relative w-full overflow-hidden bg-[#efc0c6] group select-none h-[440px] sm:h-[525px]"
       >
         {/* Hero Background Image */}
         {bannerBgImage ? (
           <img
-            src={bannerBgImage}
+            src={resolveAssetUrl(bannerBgImage)}
             alt={currentBanner.title || 'WiZ Banner'}
             key={bannerBgImage + currentBanner.id}
             className="absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-700"
@@ -2425,13 +2425,13 @@ export const HomePage: React.FC = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent pointer-events-none" />
         )}
 
-        {/* Small thumbnail image with heading, subheading, and white button - Shifted to left, aligned with WiZ logo (180-200px margin from left) and 150px margin from bottom */}
-        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[180px] xl:left-[200px] bottom-8 sm:bottom-12 md:bottom-[150px] z-20 flex flex-row items-center gap-5 sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto">
+        {/* Small thumbnail image with heading, subheading, and white button - Shifted to left, aligned with WiZ logo (180-200px margin from left) */}
+        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[180px] xl:left-[200px] bottom-12 sm:bottom-14 md:bottom-[95px] z-20 flex flex-row items-center gap-5 sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto">
           {/* Banner Small Square Thumbnail Card */}
           {bannerThumbImage && (
             <div className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/30 bg-white/10 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
               <img
-                src={bannerThumbImage}
+                src={resolveAssetUrl(bannerThumbImage)}
                 alt={currentBanner.title}
                 className="w-full h-full object-cover"
               />
@@ -2459,8 +2459,8 @@ export const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom Right Slide Controls - Aligned with Right Margin & 150px bottom margin */}
-        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-[180px] xl:right-[200px] bottom-8 sm:bottom-12 md:bottom-[150px] flex items-end space-x-6 z-20">
+        {/* Bottom Right Slide Controls - Aligned with Right Margin */}
+        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-[180px] xl:right-[200px] bottom-12 sm:bottom-14 md:bottom-[95px] flex items-end space-x-6 z-20">
           <div className="text-left hidden sm:block">
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/90 block mb-0.5">
               NEXT
@@ -2516,6 +2516,80 @@ export const HomePage: React.FC = () => {
               aria-label={`Slide ${idx + 1}`}
             />
           ))}
+        </div>
+      </section>
+
+      {/* =========================================================================
+          SECTION 1B: WiZ CATEGORIES QUICK NAVIGATION STRIP (Matches Attached WiZ-Categories Design)
+          ========================================================================= */}
+      <section className="w-full bg-white py-8 sm:py-10 border-b border-gray-100">
+        <div className="w-full px-4 sm:px-6 md:px-10 lg:px-[100px]">
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-x-3 gap-y-6 sm:gap-x-4 items-end">
+            {[
+              {
+                name: 'Hand Wash',
+                image: '/assets/categories/cat-hand-wash.png',
+                link: '/category/handwash'
+              },
+              {
+                name: 'Bodywash',
+                image: '/assets/categories/cat-bodywash.png',
+                link: '/category/bodywash'
+              },
+              {
+                name: 'Wet Wipes',
+                image: '/assets/categories/cat-wet-wipes.png',
+                link: '/category/wet-wipes'
+              },
+              {
+                name: 'Liquid Matic',
+                image: '/assets/categories/cat-liquid-matic.png',
+                link: '/category/laundry-detergent'
+              },
+              {
+                name: 'Dish Wash',
+                image: '/assets/categories/cat-dish-wash.png',
+                link: '/category/dishwash'
+              },
+              {
+                name: 'Floor Cleaner',
+                image: '/assets/categories/cat-floor-cleaner.png',
+                link: '/category/floor-cleaner'
+              },
+              {
+                name: 'Glass Cleaner',
+                image: '/assets/categories/cat-glass-cleaner.png',
+                link: '/category/glass-cleaner'
+              },
+              {
+                name: 'Toilet Cleaner',
+                image: '/assets/categories/cat-toilet-cleaner.png',
+                link: '/category/toilet-cleaner'
+              },
+              {
+                name: 'Tissue Paper',
+                image: '/assets/categories/cat-tissue-paper.png',
+                link: '/category/paper-products'
+              }
+            ].map((cat) => (
+              <Link
+                key={cat.name}
+                to={cat.link}
+                className="group flex flex-col items-center text-center focus:outline-none"
+              >
+                <div className="w-full h-28 sm:h-32 md:h-36 flex items-center justify-center overflow-visible">
+                  <img
+                    src={resolveAssetUrl(cat.image)}
+                    alt={cat.name}
+                    className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+                  />
+                </div>
+                <span className="mt-2.5 text-[13px] sm:text-sm font-medium text-gray-900 group-hover:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] whitespace-nowrap">
+                  {cat.name}
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -3108,7 +3182,7 @@ export const HomePage: React.FC = () => {
           ========================================================================= */}
       <section className="w-full py-12 sm:py-16 lg:py-20 bg-[#5f3786] overflow-hidden select-none">
         {/* Top Header: Left-Aligned Heading */}
-        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px] mb-8 sm:mb-10">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] mb-8 sm:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
               Personal Care
@@ -3117,10 +3191,10 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* 3-Column Layout: Left Thumbnails, Center 2-Slide Big Image, Right Thumbnails */}
-        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
-          <div className="flex flex-col 2xl:flex-row items-center justify-center gap-6 sm:gap-8 lg:gap-10">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
+          <div className="flex flex-col 2xl:grid 2xl:grid-cols-[1fr_minmax(460px,560px)_1fr] items-center justify-between gap-6 sm:gap-8">
             {/* Left Column: 2 Stacked Thumbnails (Hidden on laptop, tablet, mobile; visible only on 2xl) */}
-            <div className="hidden 2xl:flex 2xl:w-[330px] flex-col gap-6 sm:gap-8 shrink-0">
+            <div className="hidden 2xl:flex w-full flex-col gap-6 sm:gap-8 shrink-0">
               {/* Left Top Thumbnail */}
               {(() => {
                 const slotKey = 'left-top';
@@ -3226,7 +3300,7 @@ export const HomePage: React.FC = () => {
             })()}
 
             {/* Right Column: 2 Stacked Thumbnails (Hidden on laptop, tablet, mobile; visible only on 2xl) */}
-            <div className="hidden 2xl:flex 2xl:w-[330px] flex-col gap-6 sm:gap-8 shrink-0">
+            <div className="hidden 2xl:flex w-full flex-col gap-6 sm:gap-8 shrink-0">
               {/* Right Top Thumbnail */}
               {(() => {
                 const slotKey = 'right-top';
@@ -3852,7 +3926,7 @@ export const HomePage: React.FC = () => {
           ========================================================================= */}
       {recentlyViewedProducts.length > 0 && (
         <section className="w-full py-14 sm:py-16 bg-[#fbfbfb] border-t border-gray-200">
-          <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
+          <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
             {/* Header: Title, Browsing Subtitle, and Quick Links */}
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
               <div className="text-left">
@@ -4033,7 +4107,7 @@ export const HomePage: React.FC = () => {
           SECTION 15: LOVED BY EVERY SKIN TYPE (Matches Reference Design Exactly)
           ========================================================================= */}
       <section className="w-full py-16 sm:py-20 bg-[#5f3786] border-t border-purple-900">
-        <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
           <div className="text-left mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight font-['Poppins',sans-serif]">
               Loved By Every Skin Type

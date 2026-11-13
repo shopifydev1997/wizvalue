@@ -260,7 +260,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
 
   return (
     <section className="w-full py-12 sm:py-16 bg-white select-none">
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
         {/* Top Header Row matching Reference Layout */}
         <div className="flex items-center justify-between mb-8 sm:mb-10">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-neutral-900 tracking-tight font-['Poppins',sans-serif]">
@@ -300,7 +300,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
       </div>
 
       {/* 4 Video Cards Row / Carousel matching Reference Layout */}
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
         {shoppableVideos.length === 0 ? (
           <div className="py-16 text-center bg-gray-50 border border-dashed border-gray-300 p-8 w-full">
             <p className="text-gray-500 mb-4 font-medium">No shoppable videos currently available.</p>

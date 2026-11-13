@@ -15,7 +15,7 @@ export const Footer: React.FC = () => {
     try {
       const saved = localStorage.getItem(LOGO_STORAGE_KEY) || localStorage.getItem('wiz_footer_logo_v2');
       if (saved === 'DELETED') return null;
-      if (saved && saved !== '/assets/wiz-footer-logo-extracted.png') return saved;
+      if (saved && saved !== '/assets/wiz-footer-logo-extracted.png' && !saved.includes('WiZ-Logo-NEW.png')) return saved;
     } catch {
       // fallback
     }
@@ -64,7 +64,7 @@ export const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-[#f8f0fc] text-gray-800 border-t border-[#ecdcf8] font-['Poppins',sans-serif]">
       {/* Upper Footer Container */}
-      <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px] pt-12 sm:pt-16 pb-8 text-left">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] pt-12 sm:pt-16 pb-8 text-left">
         {/* Newsletter Signup Row */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 sm:mb-16">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight leading-snug max-w-xl">

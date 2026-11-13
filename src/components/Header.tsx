@@ -21,7 +21,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useCoinWallet } from '../context/CoinWalletContext';
 import { CoinWalletModal } from './CoinWalletModal';
-import { getGeneralSettings, saveGeneralSettings, getProducts, getCategories } from '../lib/storeService';
+import { getGeneralSettings, saveGeneralSettings, getProducts, getCategories, resolveAssetUrl } from '../lib/storeService';
 import { GeneralSettings, MegaMenuHighlight, Product, Category } from '../types';
 
 export const Header: React.FC = () => {
@@ -357,9 +357,9 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-2 shrink-0">
             {settings?.showHeaderLogo !== false ? (
               <Link to="/" className="flex items-center space-x-2 group">
-                {(settings?.headerLogo || '/assets/WiZ-Logo-NEW.png') ? (
+                {(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png') ? (
                   <img
-                    src={settings?.headerLogo || '/assets/WiZ-Logo-NEW.png'}
+                    src={resolveAssetUrl(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png')}
                     alt={settings?.websiteName || 'WiZ'}
                     className="h-9 sm:h-10 max-w-[160px] object-contain transition-transform group-hover:scale-105"
                     onError={(e) => {

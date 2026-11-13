@@ -120,10 +120,18 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
     console.warn('Could not read settings/general from Firestore, using initial settings:', error);
   }
 
+  const normalizeBrandLogo = (logo?: string) => {
+    if (!logo) return logo;
+    if (logo.includes('WiZ-Logo-NEW.png')) {
+      return '/assets/WiZ-Logo-NEW-1.png';
+    }
+    return logo;
+  };
+
   return {
     ...merged,
-    headerLogo: resolveAssetUrl(merged.headerLogo),
-    footerLogo: resolveAssetUrl(merged.footerLogo),
+    headerLogo: resolveAssetUrl(normalizeBrandLogo(merged.headerLogo)),
+    footerLogo: resolveAssetUrl(normalizeBrandLogo(merged.footerLogo)),
     footerImage: resolveAssetUrl(merged.footerImage),
     headerBanners: Array.isArray(merged.headerBanners)
       ? merged.headerBanners.map((b) => ({

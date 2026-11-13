@@ -3186,7 +3186,7 @@ export const AdminPage: React.FC = () => {
                         {/* Live Preview */}
                         <div className="h-16 bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center p-2">
                           {settings.headerLogo ? (
-                            <img src={settings.headerLogo} alt="Header Logo" className="h-10 max-w-full object-contain" />
+                            <img src={resolveAssetUrl(settings.headerLogo)} alt="Header Logo" className="h-10 max-w-full object-contain" />
                           ) : (
                             <span className="text-2xl font-black text-[#7a49a6]">
                               WiZ<span className="text-xs align-super ml-0.5 text-gray-400">®</span> (Text Logo)
@@ -3255,7 +3255,7 @@ export const AdminPage: React.FC = () => {
                         {/* Live Preview */}
                         <div className="h-16 bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center p-2">
                           {settings.footerLogo ? (
-                            <img src={settings.footerLogo} alt="Footer Logo" className="h-10 max-w-full object-contain" />
+                            <img src={resolveAssetUrl(settings.footerLogo)} alt="Footer Logo" className="h-10 max-w-full object-contain" />
                           ) : (
                             <span className="text-3xl font-black text-[#7a49a6]">
                               WiZ<span className="text-xs align-super ml-0.5 text-gray-400">®</span> (Brand Logo)

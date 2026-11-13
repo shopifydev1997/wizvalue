@@ -13,8 +13,8 @@ export const DEFAULT_PACKAGING_PRESETS: string[] = [
 
 export const INITIAL_SETTINGS: GeneralSettings = {
   websiteName: 'WiZ Home Hygiene & Personal Care',
-  headerLogo: '/assets/WiZ-Logo-NEW.png',
-  footerLogo: '/assets/WiZ-Logo-NEW.png',
+  headerLogo: '/assets/WiZ-Logo-NEW-1.png',
+  footerLogo: '/assets/WiZ-Logo-NEW-1.png',
   favicon: '/assets/products/Orange Wet Wipes.jpg',
   showHeaderLogo: true,
   showFooterLogo: true,
