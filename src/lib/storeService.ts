@@ -84,32 +84,64 @@ export function resolveAssetUrl(url?: string | null): string {
     return trimmed;
   }
 
-  // Strip leading '/public/' or 'public/'
-  let clean = trimmed.replace(/^(\/?public\/)/i, '');
-  // Strip leading slash
-  if (clean.startsWith('/')) {
-    clean = clean.slice(1);
-  }
-  // Strip leading 'assets/' so we extract the direct asset relative path
-  if (clean.startsWith('assets/')) {
-    clean = clean.slice('assets/'.length);
-  }
-
-  // Determine repository base prefix dynamically for GitHub Pages or custom base
-  if (typeof window !== 'undefined') {
-    const isGitHubPages = window.location.hostname.endsWith('github.io');
-    if (isGitHubPages) {
-      const segments = window.location.pathname.split('/').filter(Boolean);
-      const repo = segments.length > 0 && segments[0] !== 'assets' && segments[0] !== 'dist-static' ? segments[0] : '';
-      if (repo) {
-        return `/${repo}/assets/${clean}`;
-      }
+  // Extract normalized path relative to assets/
+  let clean = trimmed;
+  const assetsMarkerIdx = clean.toLowerCase().indexOf('assets/');
+  if (assetsMarkerIdx !== -1) {
+    const prefix = clean.slice(0, assetsMarkerIdx);
+    if (
+      prefix === '' ||
+      prefix === '/' ||
+      prefix === './' ||
+      /^\/?public\/$/i.test(prefix) ||
+      /^\/[^/]+\/(?:dist-static\/)?$/i.test(prefix)
+    ) {
+      clean = clean.slice(assetsMarkerIdx + 'assets/'.length);
+    }
+  } else {
+    clean = clean.replace(/^(\/?public\/)/i, '').replace(/^(\.\/|\/)+/, '');
+    if (clean.toLowerCase().startsWith('assets/')) {
+      clean = clean.slice('assets/'.length);
     }
   }
 
-  const base = import.meta.env.BASE_URL || './';
-  const prefix = base.endsWith('/') ? base : `${base}/`;
-  return `${prefix}assets/${clean}`;
+  const encodedClean = clean
+    .split('/')
+    .filter(Boolean)
+    .map((seg) => {
+      try {
+        return encodeURI(decodeURI(seg));
+      } catch {
+        return encodeURI(seg);
+      }
+    })
+    .join('/');
+
+  // Determine deployment base prefix dynamically for GitHub Pages, dist-static, and root hosting
+  if (typeof window !== 'undefined') {
+    const isGitHubPages = window.location.hostname.endsWith('github.io');
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    const distIdx = segments.indexOf('dist-static');
+
+    if (isGitHubPages) {
+      if (distIdx !== -1) {
+        return `/${segments.slice(0, distIdx + 1).join('/')}/assets/${encodedClean}`;
+      }
+      const repo = segments.length > 0 && segments[0] !== 'assets' ? segments[0] : '';
+      if (repo) {
+        return `/${repo}/assets/${encodedClean}`;
+      }
+      return `/assets/${encodedClean}`;
+    }
+
+    if (distIdx !== -1) {
+      return `/${segments.slice(0, distIdx + 1).join('/')}/assets/${encodedClean}`;
+    }
+  }
+
+  const base = import.meta.env.BASE_URL || '/';
+  const normalizedBase = base === './' || base === '.' ? '/' : base.endsWith('/') ? base : `${base}/`;
+  return `${normalizedBase}assets/${encodedClean}`;
 }
 
 /**
@@ -135,8 +167,8 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
   }
 
   const normalizeBrandLogo = (logo?: string) => {
-    if (!logo) return logo;
-    if (logo.includes('WiZ-Logo-NEW.png')) {
+    if (!logo) return '/assets/WiZ-Logo-NEW-1.png';
+    if (logo.includes('WiZ-Logo-NEW.png') || logo.includes('wiz-footer-logo-extracted')) {
       return '/assets/WiZ-Logo-NEW-1.png';
     }
     return logo;

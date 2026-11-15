@@ -1060,7 +1060,7 @@ export const AdminPage: React.FC = () => {
                     {products.map((p) => (
                       <tr key={p.id} className="hover:bg-gray-50">
                         <td className="py-3 px-4 flex items-center space-x-3">
-                          <img src={p.images[0]} alt={p.name} className="w-10 h-10 object-contain bg-gray-50 border p-1" />
+                          <img src={resolveAssetUrl(p.images[0])} alt={p.name} className="w-10 h-10 object-contain bg-gray-50 border p-1" />
                           <div>
                             <span className="font-bold text-gray-900 block truncate max-w-[200px]">{p.name}</span>
                             <span className="text-[10px] text-gray-400 font-mono">SKU: {p.sku}</span>
@@ -1387,7 +1387,7 @@ export const AdminPage: React.FC = () => {
                           <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
                             <div className="w-16 h-16 bg-gray-50 border border-gray-300 p-1 flex items-center justify-center shrink-0">
                               <img
-                                src={editingProduct.images[0] || 'https://via.placeholder.com/150'}
+                                src={resolveAssetUrl(editingProduct.images[0] || '/assets/products/Orange Wet Wipes.jpg')}
                                 alt="Thumbnail"
                                 className="w-full h-full object-contain"
                               />
@@ -1481,7 +1481,7 @@ export const AdminPage: React.FC = () => {
                               <div key={idx} className="bg-white border border-gray-300 p-2.5 flex items-start gap-3">
                                 <div className="w-14 h-14 bg-gray-50 border border-gray-200 p-1 shrink-0 flex items-center justify-center">
                                   {imgUrl ? (
-                                    <img src={imgUrl} alt={`Slot ${idx + 1}`} className="w-full h-full object-contain" />
+                                    <img src={resolveAssetUrl(imgUrl)} alt={`Slot ${idx + 1}`} className="w-full h-full object-contain" />
                                   ) : (
                                     <span className="text-[10px] text-gray-400">Empty</span>
                                   )}
@@ -1812,7 +1812,7 @@ export const AdminPage: React.FC = () => {
                     {categories.map((c) => (
                       <tr key={c.id} className="hover:bg-gray-50">
                         <td className="py-3 px-4">
-                          <img src={c.image} alt={c.name} className="w-10 h-10 object-cover border" />
+                          <img src={resolveAssetUrl(c.image)} alt={c.name} className="w-10 h-10 object-cover border" />
                         </td>
                         <td className="py-3 px-4 font-bold text-gray-900">{c.name}</td>
                         <td className="py-3 px-4 font-mono text-gray-500">{c.slug}</td>
@@ -2002,14 +2002,14 @@ export const AdminPage: React.FC = () => {
                       {/* Banner Preview */}
                       <div className="relative h-44 bg-neutral-900 overflow-hidden">
                         <img
-                          src={b.imageUrl || '/assets/aistudio/WiZ-H-Banner03.jpg'}
+                          src={resolveAssetUrl(b.imageUrl || '/assets/aistudio/WiZ-H-Banner03.jpg')}
                           alt={b.title}
                           className="w-full h-full object-cover opacity-85"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent flex items-end p-3">
                           <div className="flex items-center space-x-2">
                             <div className="w-10 h-10 bg-[#d5c7b7] p-1 shrink-0 border border-white/50">
-                              <img src={b.thumbnailUrl} alt="Thumbnail" className="w-full h-full object-contain" />
+                              <img src={resolveAssetUrl(b.thumbnailUrl)} alt="Thumbnail" className="w-full h-full object-contain" />
                             </div>
                             <span className="text-white text-xs font-bold truncate drop-shadow-sm">{b.title}</span>
                           </div>
@@ -2109,7 +2109,7 @@ export const AdminPage: React.FC = () => {
 
                     <div className="relative h-28 bg-[#a8bba8] rounded border border-gray-200 overflow-hidden flex items-center justify-center">
                       {bestsellerBg ? (
-                        <img src={bestsellerBg} alt="Bestsellers BG" className="w-full h-full object-cover" />
+                        <img src={resolveAssetUrl(bestsellerBg)} alt="Bestsellers BG" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-xs text-white/80 font-medium">Default Sage Background (No Image)</span>
                       )}
@@ -2158,7 +2158,7 @@ export const AdminPage: React.FC = () => {
 
                     <div className="relative h-28 bg-[#f5ede5] rounded border border-gray-200 overflow-hidden flex items-center justify-center">
                       {lovedEssentialsBg ? (
-                        <img src={lovedEssentialsBg} alt="Essentials BG" className="w-full h-full object-cover" />
+                        <img src={resolveAssetUrl(lovedEssentialsBg)} alt="Essentials BG" className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-xs text-gray-500 font-medium">Warm Gradient (No Image)</span>
                       )}
@@ -2226,7 +2226,7 @@ export const AdminPage: React.FC = () => {
 
                             <div className="relative aspect-[326/244] bg-white border border-gray-200 rounded overflow-hidden flex items-center justify-center">
                               {slot?.image ? (
-                                <img src={slot.image} alt={label} className="w-full h-full object-cover" />
+                                <img src={resolveAssetUrl(slot.image)} alt={label} className="w-full h-full object-cover" />
                               ) : (
                                 <span className="text-[11px] text-gray-400">Deleted / Blank</span>
                               )}
@@ -2283,7 +2283,7 @@ export const AdminPage: React.FC = () => {
 
                           <div className="relative aspect-video bg-white border border-gray-200 rounded overflow-hidden flex items-center justify-center">
                             {post.image ? (
-                              <img src={post.image} alt={post.title} className="w-full h-full object-cover" />
+                              <img src={resolveAssetUrl(post.image)} alt={post.title} className="w-full h-full object-cover" />
                             ) : (
                               <span className="text-[11px] text-gray-400">No Image (Deleted)</span>
                             )}
@@ -2326,13 +2326,13 @@ export const AdminPage: React.FC = () => {
                     {/* Live Preview Box */}
                     <div className="relative h-32 bg-neutral-900 border border-gray-300 overflow-hidden flex items-center p-3">
                       <img
-                        src={editingBanner.imageUrl || '/assets/aistudio/WiZ-H-Banner03.jpg'}
+                        src={resolveAssetUrl(editingBanner.imageUrl || '/assets/aistudio/WiZ-H-Banner03.jpg')}
                         alt="Preview"
                         className="absolute inset-0 w-full h-full object-cover opacity-75"
                       />
                       <div className="relative flex items-center space-x-3 text-white">
                         <div className="w-12 h-12 bg-[#d5c7b7] p-1 shrink-0 border border-white/60">
-                          <img src={editingBanner.thumbnailUrl} alt="Thumbnail preview" className="w-full h-full object-contain" />
+                          <img src={resolveAssetUrl(editingBanner.thumbnailUrl)} alt="Thumbnail preview" className="w-full h-full object-contain" />
                         </div>
                         <div>
                           <div className="text-sm font-light drop-shadow-sm">{editingBanner.title}</div>
@@ -2684,7 +2684,7 @@ export const AdminPage: React.FC = () => {
                 {categories.map((c) => (
                   <div key={c.id} className="bg-white border border-gray-300 p-4 flex items-center justify-between shadow-xs">
                     <div className="flex items-center space-x-3">
-                      <img src={c.image} alt={c.name} className="w-12 h-12 object-cover bg-gray-50 border p-1" />
+                      <img src={resolveAssetUrl(c.image)} alt={c.name} className="w-12 h-12 object-cover bg-gray-50 border p-1" />
                       <div>
                         <h4 className="font-bold text-sm text-gray-900">{c.name}</h4>
                         <span className="text-[11px] text-gray-400 font-mono">slug: {c.slug}</span>
@@ -3354,7 +3354,7 @@ export const AdminPage: React.FC = () => {
                     <div className="flex gap-4 items-center bg-white p-3 border border-gray-200">
                       <div className="w-20 h-20 bg-gray-100 border border-gray-300 flex items-center justify-center shrink-0 overflow-hidden">
                         {settings.footerImage ? (
-                          <img src={settings.footerImage} alt="Footer Preview" className="w-full h-full object-cover" />
+                          <img src={resolveAssetUrl(settings.footerImage)} alt="Footer Preview" className="w-full h-full object-cover" />
                         ) : (
                           <span className="text-[10px] text-gray-400">No Image</span>
                         )}
@@ -3445,7 +3445,7 @@ export const AdminPage: React.FC = () => {
 
                             <div className="flex gap-3 items-center">
                               <div className="w-14 h-14 bg-gray-50 border p-1 shrink-0 flex items-center justify-center">
-                                <img src={h.imageUrl} alt={h.title} className="w-full h-full object-contain" />
+                                <img src={resolveAssetUrl(h.imageUrl)} alt={h.title} className="w-full h-full object-contain" />
                               </div>
                               <div className="flex-1 space-y-1">
                                 <input
@@ -3569,7 +3569,7 @@ export const AdminPage: React.FC = () => {
                             <div className="flex gap-3 items-center">
                               <div className="w-14 h-14 bg-gray-50 border p-1 shrink-0 flex items-center justify-center">
                                 {isVisible ? (
-                                  <img src={imgConfig.imageUrl} alt={imgConfig.title} className="w-full h-full object-cover" />
+                                  <img src={resolveAssetUrl(imgConfig.imageUrl)} alt={imgConfig.title} className="w-full h-full object-cover" />
                                 ) : (
                                   <span className="text-[9px] text-gray-400 text-center">Hidden / Deleted</span>
                                 )}

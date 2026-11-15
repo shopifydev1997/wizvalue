@@ -15,6 +15,7 @@ import { useCart } from '../context/CartContext';
 import { useCoinWallet } from '../context/CoinWalletContext';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
+import { resolveAssetUrl } from '../lib/storeService';
 
 export const CartPage: React.FC = () => {
   useSEO({
@@ -125,7 +126,7 @@ export const CartPage: React.FC = () => {
                   {/* Product thumbnail & title */}
                   <div className="sm:col-span-6 flex items-center space-x-4 w-full">
                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-50 border border-gray-200 p-2 shrink-0 flex items-center justify-center">
-                      <img src={item.image} alt={item.productName} className="w-full h-full object-contain" />
+                      <img src={resolveAssetUrl(item.image)} alt={item.productName} className="w-full h-full object-contain" />
                     </div>
                     <div>
                       <Link

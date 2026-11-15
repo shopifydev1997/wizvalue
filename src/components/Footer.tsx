@@ -255,8 +255,20 @@ export const Footer: React.FC = () => {
                   src={resolveAssetUrl(footerLogo)}
                   alt="WiZ"
                   className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 hover:scale-[1.02]"
+                  onLoad={(e) => {
+                    e.currentTarget.style.display = '';
+                    const fb = document.getElementById('wiz-logo-fallback');
+                    if (fb) fb.style.display = 'none';
+                  }}
                   onError={(e) => {
-                    (e.currentTarget as HTMLElement).style.display = 'none';
+                    const img = e.currentTarget;
+                    const defaultLogo = resolveAssetUrl(DEFAULT_FOOTER_LOGO);
+                    if (!img.dataset.logoRetried && img.getAttribute('src') !== defaultLogo) {
+                      img.dataset.logoRetried = 'true';
+                      img.setAttribute('src', defaultLogo);
+                      return;
+                    }
+                    img.style.display = 'none';
                     const fb = document.getElementById('wiz-logo-fallback');
                     if (fb) fb.style.display = 'block';
                   }}

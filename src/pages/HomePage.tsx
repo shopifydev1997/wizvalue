@@ -1020,7 +1020,7 @@ export const HomePage: React.FC = () => {
     {
       id: 'preset-bath-glow',
       name: 'Fresh Glow Bath & Wellness',
-      url: '/assets/products/wiz-bodywash-card.jpg'
+      url: '/assets/products/top-pick-bodywash.jpg'
     },
     {
       id: 'preset-pure-pink',
@@ -2520,7 +2520,7 @@ export const HomePage: React.FC = () => {
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
-                    src={tabThumbnails.all}
+                    src={resolveAssetUrl(tabThumbnails.all)}
                     alt="All Essentials"
                     className="w-full h-full object-cover rounded-full"
                     style={{ borderRadius: '9999px' }}
@@ -2552,7 +2552,7 @@ export const HomePage: React.FC = () => {
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
-                    src={tabThumbnails.home}
+                    src={resolveAssetUrl(tabThumbnails.home)}
                     alt="Home Care"
                     className="w-full h-full object-cover rounded-full"
                     style={{ borderRadius: '9999px' }}
@@ -2584,7 +2584,7 @@ export const HomePage: React.FC = () => {
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
-                    src={tabThumbnails.personal}
+                    src={resolveAssetUrl(tabThumbnails.personal)}
                     alt="Personal Care"
                     className="w-full h-full object-cover rounded-full"
                     style={{ borderRadius: '9999px' }}
@@ -2651,7 +2651,7 @@ export const HomePage: React.FC = () => {
                   className="w-full h-full flex items-center justify-center"
                 >
                   <img
-                    src={item.image}
+                    src={resolveAssetUrl(item.image)}
                     alt={item.title}
                     loading="lazy"
                     className="w-full h-full object-contain object-center transition-transform duration-300 group-hover:scale-105"
@@ -2771,7 +2771,7 @@ export const HomePage: React.FC = () => {
                   {/* Slide Background Image */}
                   {slide.bgImage ? (
                     <img
-                      src={slide.bgImage}
+                      src={resolveAssetUrl(slide.bgImage)}
                       alt={slide.title}
                       className="w-full h-full object-cover"
                       draggable={false}
@@ -2806,7 +2806,7 @@ export const HomePage: React.FC = () => {
                         {/* Product Image Thumbnail from Backend Product Upload */}
                         <div className="w-16 h-14 sm:w-20 sm:h-18 lg:w-24 lg:h-20 flex items-center justify-center shrink-0 p-1 bg-white">
                           <img
-                            src={pItem.image}
+                            src={resolveAssetUrl(pItem.image)}
                             alt={pItem.title}
                             className="max-h-full max-w-full object-contain"
                             draggable={false}
@@ -2901,7 +2901,7 @@ export const HomePage: React.FC = () => {
                 {cat.image ? (
                   <Link to={cat.slug} className="block w-full h-full">
                     <img
-                      src={cat.image}
+                      src={resolveAssetUrl(cat.image)}
                       alt={cat.name}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       draggable={false}
@@ -2961,7 +2961,7 @@ export const HomePage: React.FC = () => {
         {bestsellerBgImage ? (
           <div
             className="absolute inset-0 w-full h-full bg-cover bg-top bg-no-repeat transition-all duration-500 pointer-events-none"
-            style={{ backgroundImage: `url('${bestsellerBgImage}')` }}
+            style={{ backgroundImage: `url('${resolveAssetUrl(bestsellerBgImage)}')` }}
           />
         ) : (
           <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#8ba18b] via-[#9bb09b] to-[#7a937a] pointer-events-none flex items-center justify-center">
@@ -3028,7 +3028,7 @@ export const HomePage: React.FC = () => {
                 <div className="relative aspect-[374/498] bg-white overflow-hidden shadow-xs border-0">
                   <Link to={item.slug} className="block w-full h-full">
                     <img
-                      src={item.image}
+                      src={resolveAssetUrl(item.image)}
                       alt={item.title}
                       className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
                       draggable={false}
@@ -3108,7 +3108,7 @@ export const HomePage: React.FC = () => {
                     {hasImage && (
                       <Link to={slot.link || '/category/personal-care'} className="block w-full h-full relative cursor-pointer">
                         <img
-                          src={slot.image!}
+                          src={resolveAssetUrl(slot.image!)}
                           alt={slot.title || 'Personal Care'}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           draggable={false}
@@ -3130,7 +3130,7 @@ export const HomePage: React.FC = () => {
                     {hasImage && (
                       <Link to={slot.link || '/category/wet-wipes'} className="block w-full h-full relative cursor-pointer">
                         <img
-                          src={slot.image!}
+                          src={resolveAssetUrl(slot.image!)}
                           alt={slot.title || 'Personal Care'}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           draggable={false}
@@ -3154,7 +3154,7 @@ export const HomePage: React.FC = () => {
                     title={`View ${currentCenterSlide.name} Collection`}
                   >
                     <img
-                      src={currentCenterSlide.image}
+                      src={resolveAssetUrl(currentCenterSlide.image)}
                       alt={currentCenterSlide.name}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       draggable={false}
@@ -3214,7 +3214,7 @@ export const HomePage: React.FC = () => {
                     {hasImage && (
                       <Link to={slot.link || '/category/bodywash'} className="block w-full h-full relative cursor-pointer">
                         <img
-                          src={slot.image!}
+                          src={resolveAssetUrl(slot.image!)}
                           alt={slot.title || 'Personal Care'}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           draggable={false}
@@ -3236,7 +3236,7 @@ export const HomePage: React.FC = () => {
                     {hasImage && (
                       <Link to={slot.link || '/category/personal-care'} className="block w-full h-full relative cursor-pointer">
                         <img
-                          src={slot.image!}
+                          src={resolveAssetUrl(slot.image!)}
                           alt={slot.title || 'Personal Care'}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           draggable={false}
@@ -3270,7 +3270,7 @@ export const HomePage: React.FC = () => {
                 <div className="relative aspect-[261/348] bg-[#f7f7f8] rounded-none overflow-hidden border-0">
                   <Link to={item.slug} className="block w-full h-full">
                     <img
-                      src={item.image}
+                      src={resolveAssetUrl(item.image)}
                       alt={item.title}
                       className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
                       loading="lazy"
@@ -3358,7 +3358,7 @@ export const HomePage: React.FC = () => {
         {/* Full Section Background Banner Image or Gradient Fallback */}
         {lovedEssentialsBg ? (
           <img
-            src={lovedEssentialsBg}
+            src={resolveAssetUrl(lovedEssentialsBg)}
             alt="Our Most Loved Essentials"
             className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
             loading="lazy"
@@ -3439,7 +3439,7 @@ export const HomePage: React.FC = () => {
                     )}
                     <Link to={item.slug} className="block w-full h-full p-2 sm:p-3">
                       <img
-                        src={item.image}
+                        src={resolveAssetUrl(item.image)}
                         alt={item.title}
                         className="w-full h-full object-contain group-hover/item:scale-105 transition-transform duration-500 ease-out"
                         loading="lazy"
@@ -3502,7 +3502,7 @@ export const HomePage: React.FC = () => {
                     )}
                     <Link to={item.slug} className="block w-full h-full p-2 sm:p-3">
                       <img
-                        src={item.image}
+                        src={resolveAssetUrl(item.image)}
                         alt={item.title}
                         className="w-full h-full object-contain group-hover/item:scale-105 transition-transform duration-500 ease-out"
                         loading="lazy"
@@ -3612,7 +3612,7 @@ export const HomePage: React.FC = () => {
             {/* Left Lifestyle Photo */}
             <div className="relative aspect-[682/512] md:aspect-auto md:h-full bg-gray-100 overflow-hidden">
               <img
-                src="/assets/products/flash-deal-lifestyle.jpg"
+                src={resolveAssetUrl('/assets/products/flash-deal-lifestyle.jpg')}
                 alt="WiZ Handwash Lavender Refill Pouch Complete Beauty Care"
                 className="w-full h-full object-cover object-center pointer-events-none"
                 loading="lazy"
@@ -3643,7 +3643,7 @@ export const HomePage: React.FC = () => {
                       <div className="relative aspect-[184/246] bg-[#f7f7f8] rounded-none overflow-hidden border-0 flex items-center justify-center">
                         <Link to={item.slug} className="block w-full h-full">
                           <img
-                            src={item.image}
+                            src={resolveAssetUrl(item.image)}
                             alt={item.title}
                             className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
                             loading="lazy"
@@ -3701,7 +3701,7 @@ export const HomePage: React.FC = () => {
           ========================================================================= */}
       <section className="relative w-full h-[400px] sm:h-[480px] bg-black overflow-hidden flex items-center justify-center text-center">
         <img
-          src="/assets/every-drop-metters.jpg"
+          src={resolveAssetUrl('/assets/every-drop-metters.jpg')}
           alt="Every Drop Matters"
           className="absolute inset-0 w-full h-full object-cover opacity-45"
         />
@@ -3913,7 +3913,7 @@ export const HomePage: React.FC = () => {
                           className="w-full h-full flex items-center justify-center"
                         >
                           <img
-                            src={item.images?.[0] || '/assets/products/mini-green-bodywash.jpg'}
+                            src={resolveAssetUrl(item.images?.[0] || '/assets/products/mini-green-bodywash.jpg')}
                             alt={item.name}
                             loading="lazy"
                             className="w-full h-full object-contain object-center transition-transform duration-300 group-hover:scale-105"

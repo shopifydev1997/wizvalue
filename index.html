@@ -25,19 +25,38 @@
 
           var isAsset = src.indexOf('assets/') !== -1 || src.indexOf('public/') !== -1;
           if (isAsset) {
-            var clean = src.replace(/^https?:\/\/[^/]+/i, '')
-                           .replace(/^(\/?public\/)/i, '')
-                           .replace(/^\/+/, '');
-            if (clean.indexOf('assets/') === 0) {
-              clean = clean.substring(7);
+            var clean = src.replace(/^https?:\/\/[^/]+/i, '');
+            var markerIdx = clean.toLowerCase().indexOf('assets/');
+            if (markerIdx !== -1) {
+              clean = clean.substring(markerIdx + 7);
+            } else {
+              clean = clean.replace(/^(\/?public\/)/i, '').replace(/^(\.\/|\/)+/, '');
+            }
+            try {
+              clean = clean.split('/').map(function(s) {
+                return s ? encodeURI(decodeURI(s)) : '';
+              }).filter(Boolean).join('/');
+            } catch (e) {
+              clean = encodeURI(clean);
             }
 
             var isGH = window.location.hostname.endsWith('github.io');
             var segments = window.location.pathname.split('/').filter(Boolean);
-            var repo = (isGH && segments.length > 0 && segments[0] !== 'assets' && segments[0] !== 'dist-static') ? segments[0] : '';
-            var resolved = repo ? ('/' + repo + '/assets/' + clean) : ('./assets/' + clean);
-            if (target.src !== resolved) {
-              target.src = resolved;
+            var distIdx = segments.indexOf('dist-static');
+            var basePrefix = '/';
+            if (isGH) {
+              if (distIdx !== -1) {
+                basePrefix = '/' + segments.slice(0, distIdx + 1).join('/') + '/';
+              } else if (segments.length > 0 && segments[0] !== 'assets') {
+                basePrefix = '/' + segments[0] + '/';
+              }
+            } else if (distIdx !== -1) {
+              basePrefix = '/' + segments.slice(0, distIdx + 1).join('/') + '/';
+            }
+            var resolved = basePrefix + 'assets/' + clean;
+            if (target.getAttribute('src') !== resolved) {
+              target.style.display = '';
+              target.setAttribute('src', resolved);
             }
           }
         }

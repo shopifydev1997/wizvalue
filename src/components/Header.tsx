@@ -288,7 +288,7 @@ export const Header: React.FC = () => {
           <div>
             <div className="relative aspect-4/3 w-full bg-white border border-gray-100 overflow-hidden mb-3">
               <img
-                src={leftImg.imageUrl}
+                src={resolveAssetUrl(leftImg.imageUrl)}
                 alt={leftImg.title || 'WiZ Category'}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
@@ -358,14 +358,37 @@ export const Header: React.FC = () => {
             {settings?.showHeaderLogo !== false ? (
               <Link to="/" className="flex items-center space-x-2 group">
                 {(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png') ? (
-                  <img
-                    src={resolveAssetUrl(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png')}
-                    alt={settings?.websiteName || 'WiZ'}
-                    className="h-9 sm:h-10 max-w-[160px] object-contain transition-transform group-hover:scale-105"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLElement).style.display = 'none';
-                    }}
-                  />
+                  <>
+                    <img
+                      src={resolveAssetUrl(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png')}
+                      alt={settings?.websiteName || 'WiZ'}
+                      className="h-9 sm:h-10 max-w-[160px] object-contain transition-transform group-hover:scale-105"
+                      onLoad={(e) => {
+                        e.currentTarget.style.display = '';
+                        const fb = document.getElementById('wiz-header-logo-fallback');
+                        if (fb) fb.style.display = 'none';
+                      }}
+                      onError={(e) => {
+                        const img = e.currentTarget;
+                        const defaultLogo = resolveAssetUrl('/assets/WiZ-Logo-NEW-1.png');
+                        if (!img.dataset.logoRetried && img.getAttribute('src') !== defaultLogo) {
+                          img.dataset.logoRetried = 'true';
+                          img.setAttribute('src', defaultLogo);
+                          return;
+                        }
+                        img.style.display = 'none';
+                        const fb = document.getElementById('wiz-header-logo-fallback');
+                        if (fb) fb.style.display = 'inline-block';
+                      }}
+                    />
+                    <span
+                      id="wiz-header-logo-fallback"
+                      style={{ display: 'none' }}
+                      className="text-4xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150"
+                    >
+                      WiZ<span className="text-xs font-bold align-super ml-0.5 text-gray-500">®</span>
+                    </span>
+                  </>
                 ) : (
                   <span className="text-4xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150">
                     WiZ<span className="text-xs font-bold align-super ml-0.5 text-gray-500">®</span>
@@ -803,7 +826,7 @@ export const Header: React.FC = () => {
                         <div className="flex gap-4">
                           <div className="w-24 h-24 bg-white border border-gray-200 p-2 shrink-0 flex items-center justify-center">
                             <img
-                              src={h.imageUrl}
+                              src={resolveAssetUrl(h.imageUrl)}
                               alt={h.title}
                               className="w-full h-full object-contain"
                             />
@@ -973,7 +996,7 @@ export const Header: React.FC = () => {
                         <div className="flex gap-4">
                           <div className="w-24 h-24 bg-white border border-gray-200 p-2 shrink-0 flex items-center justify-center">
                             <img
-                              src={h.imageUrl}
+                              src={resolveAssetUrl(h.imageUrl)}
                               alt={h.title}
                               className="w-full h-full object-contain"
                             />
@@ -1147,7 +1170,7 @@ export const Header: React.FC = () => {
                               <div className="w-13 h-13 sm:w-14 sm:h-14 bg-white border border-gray-200 overflow-hidden shrink-0 relative flex items-center justify-center">
                                 {thumbnailImg ? (
                                   <img
-                                    src={thumbnailImg}
+                                    src={resolveAssetUrl(thumbnailImg)}
                                     alt={p.name}
                                     className="w-full h-full object-contain p-1 group-hover:scale-105 transition-transform"
                                   />

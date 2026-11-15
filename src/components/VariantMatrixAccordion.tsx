@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
+import { resolveAssetUrl } from '../lib/storeService';
 
 interface VariantMatrixAccordionProps {
   products: Product[];
@@ -619,7 +620,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
             {leftBigBanner && (
               <div className="relative bg-white border border-gray-200/80 shadow-xs overflow-hidden rounded-none">
                 <img
-                  src={leftBigBanner}
+                  src={resolveAssetUrl(leftBigBanner)}
                   alt="WiZ Lemon Hand Wash Big Thumbnail"
                   className="w-full h-auto object-cover select-none pointer-events-none transition-transform duration-500 ease-out hover:scale-102"
                   loading="lazy"
@@ -651,7 +652,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
                         <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-[#f7f7f8] rounded-none shrink-0 flex items-center justify-center p-1 border border-gray-100">
                           {catImg && (
                             <img
-                              src={catImg}
+                              src={resolveAssetUrl(catImg)}
                               alt={cat.name}
                               className="max-w-full max-h-full object-contain pointer-events-none"
                               loading="lazy"
@@ -713,7 +714,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
                                 <div className="relative w-10 h-10 sm:w-11 sm:h-11 bg-white rounded-none shrink-0 flex items-center justify-center p-1 border border-gray-200/80">
                                   {vImg && (
                                     <img
-                                      src={vImg}
+                                      src={resolveAssetUrl(vImg)}
                                       alt={variant.name}
                                       className="max-w-full max-h-full object-contain pointer-events-none"
                                       loading="lazy"
@@ -804,7 +805,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
             {rightBigBanner && (
               <div className="relative bg-white border border-gray-200/80 shadow-xs overflow-hidden rounded-none">
                 <img
-                  src={rightBigBanner}
+                  src={resolveAssetUrl(rightBigBanner)}
                   alt="WiZ Body Wash Paradise Lily Big Thumbnail"
                   className="w-full h-auto object-cover select-none pointer-events-none transition-transform duration-500 ease-out hover:scale-102"
                   loading="lazy"
