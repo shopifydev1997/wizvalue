@@ -257,6 +257,17 @@ export const AdminPage: React.FC = () => {
     setBlogThumbnails(updated);
     try {
       localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(updated));
+      const v3Raw = localStorage.getItem('wiz_blog_posts_v3');
+      if (v3Raw) {
+        const v3List = JSON.parse(v3Raw);
+        if (Array.isArray(v3List)) {
+          const targetId = `blog-${id}`;
+          localStorage.setItem(
+            'wiz_blog_posts_v3',
+            JSON.stringify(v3List.map((p: any) => (p.id === targetId ? { ...p, image: url } : p)))
+          );
+        }
+      }
     } catch {}
     triggerNotice('success', `Blog Post #${id} thumbnail updated!`);
   };
@@ -266,19 +277,31 @@ export const AdminPage: React.FC = () => {
     setBlogThumbnails(updated);
     try {
       localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(updated));
+      const v3Raw = localStorage.getItem('wiz_blog_posts_v3');
+      if (v3Raw) {
+        const v3List = JSON.parse(v3Raw);
+        if (Array.isArray(v3List)) {
+          const targetId = `blog-${id}`;
+          localStorage.setItem(
+            'wiz_blog_posts_v3',
+            JSON.stringify(v3List.map((p: any) => (p.id === targetId ? { ...p, image: null } : p)))
+          );
+        }
+      }
     } catch {}
     triggerNotice('success', `Blog Post #${id} thumbnail deleted!`);
   };
 
   const handleResetBlogThumbs = () => {
     const def = [
-      { id: 1, title: 'Clean Beauty Rituals for Radiant Skin Everyday', image: '/assets/Blog01.jpg', date: 'October 12, 2026' },
-      { id: 2, title: 'Gentle pH Balance Formulas That Protect Daily', image: '/assets/Blog02.jpg', date: 'October 18, 2026' },
-      { id: 3, title: 'Nourishing Body Care Routines for All Seasons', image: '/assets/Blog03.jpg', date: 'October 24, 2026' }
+      { id: 1, title: 'Glow Naturally With Hydrating Skin Rituals', image: '/assets/Blog01.jpg', date: 'February 23, 2026' },
+      { id: 2, title: 'Flawless Foundation Secrets For Radiant Skin', image: '/assets/Blog02.jpg', date: 'February 23, 2026' },
+      { id: 3, title: 'Golden Hour Makeup For Effortless Beauty', image: '/assets/Blog03.jpg', date: 'February 23, 2026' }
     ];
     setBlogThumbnails(def);
     try {
       localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(def));
+      localStorage.removeItem('wiz_blog_posts_v3');
     } catch {}
     triggerNotice('success', 'Blog thumbnails reset to defaults!');
   };

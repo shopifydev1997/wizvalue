@@ -86,6 +86,34 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Blog articles - Publicly readable, verified authenticated users or admins can create, admins can update/delete
+    function isValidBlogPost(data) {
+      return data.keys().hasAll(['id', 'slug', 'title', 'excerpt', 'content', 'date', 'category']) &&
+        data.keys().hasOnly(['id', 'slug', 'title', 'excerpt', 'content', 'author', 'date', 'readTime', 'category', 'tags', 'image', 'imagePosition', 'published', 'createdAt', 'updatedAt']) &&
+        data.id is string && data.id.size() > 0 && data.id.size() <= 128 &&
+        data.slug is string && data.slug.size() > 0 && data.slug.size() <= 200 &&
+        data.title is string && data.title.size() > 0 && data.title.size() <= 220 &&
+        data.excerpt is string && data.excerpt.size() <= 600 &&
+        data.content is string && data.content.size() > 0 && data.content.size() <= 25000 &&
+        data.date is string && data.date.size() <= 64 &&
+        data.category is string && data.category.size() <= 80 &&
+        (!('author' in data) || (data.author is string && data.author.size() <= 120)) &&
+        (!('readTime' in data) || (data.readTime is string && data.readTime.size() <= 40)) &&
+        (!('tags' in data) || (data.tags is list && data.tags.size() <= 10)) &&
+        (!('image' in data) || data.image == null || (data.image is string && data.image.size() <= 800000)) &&
+        (!('imagePosition' in data) || data.imagePosition in ['top', 'bottom']) &&
+        (!('published' in data) || data.published is bool);
+    }
+
+    match /blogs/{blogId} {
+      allow get, list: if true;
+      allow create: if (isAdmin() || (isSignedIn() && request.auth.token.email_verified == true)) &&
+        isValidId(blogId) &&
+        isValidBlogPost(request.resource.data);
+      allow update: if isAdmin() && isValidId(blogId) && isValidBlogPost(request.resource.data);
+      allow delete: if isAdmin() && isValidId(blogId);
+    }
+
     // Administrator registry
     match /admins/{adminUid} {
       allow read, write: if isAdmin();

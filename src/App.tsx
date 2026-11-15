@@ -25,6 +25,8 @@ import { ContactPage } from './pages/ContactPage';
 import { FaqPage } from './pages/FaqPage';
 import { PrivacyPolicyPage, TermsPage, ShippingPolicyPage, ReturnsPolicyPage } from './pages/PolicyPages';
 import { SearchPage } from './pages/SearchPage';
+import { BlogPage } from './pages/BlogPage';
+import { BlogDetailPage } from './pages/BlogDetailPage';
 import { AdminPage } from './pages/admin/AdminPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -163,6 +165,8 @@ export default function App() {
                   <Route path="/shipping-policy" element={<ShippingPolicyPage />} />
                   <Route path="/returns-policy" element={<ReturnsPolicyPage />} />
                   <Route path="/search" element={<SearchPage />} />
+                  <Route path="/blog" element={<BlogPage />} />
+                  <Route path="/blog/:slug" element={<BlogDetailPage />} />
                   <Route path="/admin" element={<AdminPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>

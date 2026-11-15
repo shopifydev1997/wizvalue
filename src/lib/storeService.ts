@@ -15,9 +15,20 @@ import {
   INITIAL_CATEGORIES,
   INITIAL_SETTINGS,
   INITIAL_COUPONS,
-  INITIAL_FREEBIES
+  INITIAL_FREEBIES,
+  INITIAL_BLOG_POSTS
 } from './initialData';
-import { Product, Category, Coupon, Freebie, GeneralSettings, OrderEnquiry, BulkEnquiry, AnalyticsEvent } from '../types';
+import {
+  Product,
+  Category,
+  Coupon,
+  Freebie,
+  GeneralSettings,
+  OrderEnquiry,
+  BulkEnquiry,
+  AnalyticsEvent,
+  BlogPost
+} from '../types';
 
 const SETTINGS_DOC_PATH = 'settings/general';
 const LOCAL_PRODUCTS_KEY = 'wiz_stored_products';
@@ -29,6 +40,9 @@ const LOCAL_DELETED_COUPONS_KEY = 'wiz_deleted_coupons';
 const LOCAL_FREEBIES_KEY = 'wiz_stored_freebies';
 const LOCAL_DELETED_FREEBIES_KEY = 'wiz_deleted_freebies';
 const LOCAL_SETTINGS_KEY = 'wiz_stored_settings';
+const LOCAL_BLOGS_KEY = 'wiz_blog_posts_v3';
+const LOCAL_LEGACY_BLOGS_KEY = 'wiz_blog_posts_v2';
+const LOCAL_DELETED_BLOGS_KEY = 'wiz_deleted_blogs';
 
 /**
  * Recursively cleans any object to eliminate `undefined` fields.
@@ -960,7 +974,250 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
       console.log('Seeding default general settings into Firestore...');
       await setDoc(doc(db, 'settings', 'general'), INITIAL_SETTINGS);
     }
+
+    const blogSnap = await getDocs(collection(db, 'blogs'));
+    if (blogSnap.empty) {
+      console.log('Seeding initial blog posts into Firestore...');
+      for (const blog of INITIAL_BLOG_POSTS) {
+        await setDoc(doc(db, 'blogs', blog.id), cleanFirestoreData(blog));
+      }
+    }
   } catch (error) {
     console.warn('Initial data seeding check finished:', error);
+  }
+}
+
+export function slugifyBlogTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '') || `post-${Date.now()}`;
+}
+
+function normalizeBlogPost(raw: any, index = 0): BlogPost {
+  const id = typeof raw.id === 'number' ? `blog-${raw.id}` : String(raw.id || `blog-${Date.now()}-${index}`);
+  const fallbackDefault = INITIAL_BLOG_POSTS.find((b) => b.id === id);
+  const title = (typeof raw.title === 'string' && raw.title.trim()) || fallbackDefault?.title || 'WiZ Hygiene Journal';
+  const slug = (typeof raw.slug === 'string' && raw.slug.trim()) || fallbackDefault?.slug || slugifyBlogTitle(title);
+
+  let rawImage: string | null = raw.image !== undefined ? raw.image : (fallbackDefault?.image ?? null);
+  if (rawImage === '/assets/blog-post-1.jpg') rawImage = '/assets/Blog01.jpg';
+  if (rawImage === '/assets/blog-post-2.jpg') rawImage = '/assets/Blog02.jpg';
+  if (rawImage === '/assets/blog-post-3.jpg') rawImage = '/assets/Blog03.jpg';
+
+  const resolvedImg = rawImage ? resolveAssetUrl(rawImage) : null;
+  const excerpt = (typeof raw.excerpt === 'string' && raw.excerpt.trim()) || fallbackDefault?.excerpt || '';
+  const content = (typeof raw.content === 'string' && raw.content.trim()) || fallbackDefault?.content || excerpt;
+
+  return {
+    id,
+    slug,
+    title,
+    excerpt,
+    content,
+    author: (typeof raw.author === 'string' && raw.author.trim()) || fallbackDefault?.author || 'WiZ Editorial Team',
+    date: (typeof raw.date === 'string' && raw.date.trim()) || fallbackDefault?.date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    readTime: (typeof raw.readTime === 'string' && raw.readTime.trim()) || fallbackDefault?.readTime || '4 min read',
+    category: (typeof raw.category === 'string' && raw.category.trim()) || fallbackDefault?.category || 'Personal Care',
+    tags: Array.isArray(raw.tags) ? raw.tags.map(String) : (fallbackDefault?.tags || ['Hygiene', 'WiZ Care']),
+    image: resolvedImg,
+    imagePosition: raw.imagePosition === 'top' || raw.imagePosition === 'bottom'
+      ? raw.imagePosition
+      : (fallbackDefault?.imagePosition || (index % 2 === 1 ? 'top' : 'bottom')),
+    published: raw.published !== false,
+    createdAt: raw.createdAt || fallbackDefault?.createdAt || new Date().toISOString(),
+    updatedAt: raw.updatedAt || fallbackDefault?.updatedAt
+  };
+}
+
+/**
+ * Loads Blog Posts from Firestore, localStorage (v3 & legacy v2), and INITIAL_BLOG_POSTS
+ */
+export async function getBlogPosts(): Promise<BlogPost[]> {
+  const firestoreBlogs: BlogPost[] = [];
+  try {
+    const snapshot = await getDocs(collection(db, 'blogs'));
+    if (!snapshot.empty) {
+      snapshot.forEach((docSnap) => {
+        firestoreBlogs.push(normalizeBlogPost({ id: docSnap.id, ...docSnap.data() }));
+      });
+    }
+  } catch (error) {
+    console.warn('Using initial/local blog posts dataset:', error);
+  }
+
+  let legacyBlogs: any[] = [];
+  try {
+    const rawLegacy = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_LEGACY_BLOGS_KEY) : null;
+    if (rawLegacy) {
+      const parsed = JSON.parse(rawLegacy);
+      if (Array.isArray(parsed)) legacyBlogs = parsed;
+    }
+  } catch {}
+
+  let localBlogs: BlogPost[] = [];
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_BLOGS_KEY) : null;
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        localBlogs = parsed.map((b, i) => normalizeBlogPost(b, i));
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading local blogs:', e);
+  }
+
+  const deletedIds = new Set<string>();
+  try {
+    const raw = typeof window !== 'undefined' ? localStorage.getItem(LOCAL_DELETED_BLOGS_KEY) : null;
+    if (raw) {
+      const arr: string[] = JSON.parse(raw);
+      arr.forEach((id) => deletedIds.add(id));
+    }
+  } catch {}
+
+  const map = new Map<string, BlogPost>();
+  INITIAL_BLOG_POSTS.forEach((b, i) => map.set(b.id, normalizeBlogPost(b, i)));
+
+  // Overlay any legacy v2 thumbnail adjustments safely without erasing content/tags
+  legacyBlogs.forEach((b, i) => {
+    const norm = normalizeBlogPost(b, i);
+    const prev = map.get(norm.id);
+    map.set(norm.id, {
+      ...prev,
+      ...norm,
+      excerpt: norm.excerpt || prev?.excerpt || '',
+      content: norm.content || prev?.content || '',
+      tags: norm.tags?.length ? norm.tags : (prev?.tags || ['Hygiene']),
+      image: b.image === '' || b.image === null ? null : norm.image
+    });
+  });
+
+  firestoreBlogs.forEach((b) => map.set(b.id, b));
+  localBlogs.forEach((b) => map.set(b.id, b));
+
+  return Array.from(map.values())
+    .filter((b) => !deletedIds.has(b.id))
+    .sort((a, b) => {
+      const timeA = new Date(a.createdAt || a.date || 0).getTime();
+      const timeB = new Date(b.createdAt || b.date || 0).getTime();
+      return timeB - timeA;
+    });
+}
+
+export async function getBlogPostBySlugOrId(slugOrId: string): Promise<BlogPost | undefined> {
+  const posts = await getBlogPosts();
+  return posts.find((p) => p.slug === slugOrId || p.id === slugOrId);
+}
+
+/**
+ * Saves or creates a Blog Post in localStorage and Firestore (when authenticated)
+ */
+export async function saveBlogPost(post: BlogPost): Promise<BlogPost> {
+  const id = post.id && /^[a-zA-Z0-9_-]+$/.test(post.id) ? post.id : `blog-${Date.now()}`;
+  const slug = post.slug?.trim() || slugifyBlogTitle(post.title);
+  const now = new Date().toISOString();
+
+  const normalized = cleanFirestoreData(
+    normalizeBlogPost({
+      ...post,
+      id,
+      slug,
+      createdAt: post.createdAt || now,
+      updatedAt: now
+    })
+  );
+
+  // 1. Immediately persist to localStorage so /blog & HomePage stay updated instantly
+  try {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(LOCAL_BLOGS_KEY);
+      const list: BlogPost[] = raw ? JSON.parse(raw) : [];
+      const idx = list.findIndex((b) => b.id === normalized.id);
+      if (idx >= 0) {
+        list[idx] = normalized;
+      } else {
+        list.unshift(normalized);
+      }
+      localStorage.setItem(LOCAL_BLOGS_KEY, JSON.stringify(list));
+
+      // Keep legacy v2 thumbnail array synced if matching one of default 3
+      const legacyRaw = localStorage.getItem(LOCAL_LEGACY_BLOGS_KEY);
+      if (legacyRaw) {
+        const legacyList: any[] = JSON.parse(legacyRaw);
+        const updatedLegacy = legacyList.map((item) => {
+          const itemId = typeof item.id === 'number' ? `blog-${item.id}` : String(item.id);
+          return itemId === normalized.id
+            ? { ...item, title: normalized.title, image: normalized.image || '', date: normalized.date }
+            : item;
+        });
+        localStorage.setItem(LOCAL_LEGACY_BLOGS_KEY, JSON.stringify(updatedLegacy));
+      }
+
+      const delRaw = localStorage.getItem(LOCAL_DELETED_BLOGS_KEY);
+      if (delRaw) {
+        const delList: string[] = JSON.parse(delRaw);
+        localStorage.setItem(
+          LOCAL_DELETED_BLOGS_KEY,
+          JSON.stringify(delList.filter((deletedId) => deletedId !== normalized.id))
+        );
+      }
+    }
+  } catch (err) {
+    console.warn('LocalStorage saveBlogPost warning:', err);
+  }
+
+  // 2. Sync to Firestore cleanly
+  const path = `blogs/${normalized.id}`;
+  try {
+    await setDoc(doc(db, 'blogs', normalized.id), normalized);
+  } catch (error) {
+    console.warn('Firestore blog sync skipped/warned (preserved locally):', error);
+    try {
+      handleFirestoreError(error, OperationType.WRITE, path);
+    } catch {
+      // Handled gracefully while preserving local persistence
+    }
+  }
+
+  return normalized;
+}
+
+export async function deleteBlogPost(blogId: string): Promise<void> {
+  try {
+    if (typeof window !== 'undefined') {
+      const raw = localStorage.getItem(LOCAL_BLOGS_KEY);
+      if (raw) {
+        const list: BlogPost[] = JSON.parse(raw);
+        localStorage.setItem(
+          LOCAL_BLOGS_KEY,
+          JSON.stringify(list.filter((b) => b.id !== blogId))
+        );
+      }
+
+      const delRaw = localStorage.getItem(LOCAL_DELETED_BLOGS_KEY);
+      const delList: string[] = delRaw ? JSON.parse(delRaw) : [];
+      if (!delList.includes(blogId)) {
+        delList.push(blogId);
+        localStorage.setItem(LOCAL_DELETED_BLOGS_KEY, JSON.stringify(delList));
+      }
+    }
+  } catch (err) {
+    console.warn('LocalStorage deleteBlogPost warning:', err);
+  }
+
+  const path = `blogs/${blogId}`;
+  try {
+    await deleteDoc(doc(db, 'blogs', blogId));
+  } catch (error) {
+    try {
+      handleFirestoreError(error, OperationType.DELETE, path);
+    } catch {
+      // Local delete remains intact
+    }
   }
 }

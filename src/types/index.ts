@@ -215,3 +215,22 @@ export interface AnalyticsEvent {
   details?: Record<string, unknown> | string;
   timestamp?: string;
 }
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  date: string;
+  readTime?: string;
+  category: string;
+  tags: string[];
+  image: string | null;
+  imagePosition?: 'top' | 'bottom';
+  published?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+

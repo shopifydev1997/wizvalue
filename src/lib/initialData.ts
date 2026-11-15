@@ -1,4 +1,4 @@
-import { Product, Category, Coupon, Freebie, GeneralSettings } from '../types';
+import { Product, Category, Coupon, Freebie, GeneralSettings, BlogPost } from '../types';
 
 export const DEFAULT_PACKAGING_PRESETS: string[] = [
   '500 ml Bottle',
@@ -991,5 +991,83 @@ export const INITIAL_FREEBIES: Freebie[] = [
     freebieProduct: 'WiZ Gentle Cleansing Wet Wipes (80 Pulls)',
     isActive: true,
     validTill: '2026-12-31'
+  }
+];
+
+export const INITIAL_BLOG_POSTS: BlogPost[] = [
+  {
+    id: 'blog-1',
+    slug: 'glow-naturally-with-hydrating-skin-rituals',
+    date: 'February 23, 2026',
+    title: 'Glow Naturally With Hydrating Skin Rituals',
+    excerpt: 'Healthy, radiant skin begins with one simple principle: deep, consistent hydration that protects your skin barrier every day.',
+    content: `Healthy, radiant skin begins with one simple principle: deep, consistent hydration that nurtures your skin barrier from morning until night. Modern pollution, air-conditioned rooms, and harsh soap-based cleansers slowly strip essential lipids from your skin, leaving it tight and dull.
+
+Choosing gentle, pH-balanced cleansers enriched with glycerin, botanical aloe vera, and vitamin E makes all the difference. Rather than harsh foaming agents that disrupt natural moisture, creamy soap-free bodywashes and conditioning handwashes lift away dust and bacteria while locking in lasting suppleness.
+
+Build a mindful 3-step daily hydration ritual:
+1. Cleanse gently using lukewarm water and a nourishing cleanser like WiZ Deep Hydrating Aloe & Vitamin E Bodywash.
+2. Refresh on the move with alcohol-free wet wipes infused with soothing rose water or chamomile so sweat and grime never clog pores.
+3. Seal in hydration immediately after toweling off, when your skin is slightly damp, to preserve softness all day long.
+
+When your everyday hygiene essentials care for your skin as much as they protect it, a natural, effortless glow becomes part of your routine.`,
+    author: 'WiZ Skin Care Editorial',
+    readTime: '4 min read',
+    category: 'Skin Care',
+    tags: ['Facial', 'Lotion', 'Minimal'],
+    image: '/assets/Blog01.jpg',
+    imagePosition: 'bottom',
+    published: true,
+    createdAt: '2026-02-23T10:00:00.000Z'
+  },
+  {
+    id: 'blog-2',
+    slug: 'flawless-foundation-secrets-for-radiant-skin',
+    date: 'February 23, 2026',
+    title: 'Flawless Foundation Secrets For Radiant Skin',
+    excerpt: 'When it comes to achieving radiant skin, flawless foundation application starts well before the first drop of makeup touches your face.',
+    content: `When it comes to achieving radiant skin, flawless foundation application actually starts well before makeup enters the picture. Even the finest serum tint or cushion foundation will settle unevenly if skin surface preparation is rushed.
+
+Start with a clean, calm canvas. Removing leftover sunscreen, oil, and travel dust using soft, dermatologist-tested cleansing wipes or mild facial cleansers prevents pilling and patchiness. Pair that with ultra-soft virgin-pulp facial tissues to blot excess moisture gently without micro-abrasions.
+
+Three simple prep habits makeup artists swear by:
+• Keep hands immaculate: Always wash with an antibacterial moisturizing handwash before touching your face or beauty sponges.
+• Layer lightweight moisture: Give hydrating lotions 2 to 3 minutes to absorb fully so base makeup glides seamlessly.
+• Press, don't drag: Whether applying tint or blotting midday shine with a clean 2-ply tissue, gentle pressing keeps the skin barrier calm and smooth.
+
+Clean hygiene practices and minimalist prep steps naturally elevate how your skin looks and feels from dawn to evening.`,
+    author: 'WiZ Beauty Desk',
+    readTime: '5 min read',
+    category: 'Beauty Rituals',
+    tags: ['Facial', 'Minimal', 'Product'],
+    image: '/assets/Blog02.jpg',
+    imagePosition: 'top',
+    published: true,
+    createdAt: '2026-02-23T09:00:00.000Z'
+  },
+  {
+    id: 'blog-3',
+    slug: 'golden-hour-makeup-for-effortless-beauty',
+    date: 'February 23, 2026',
+    title: 'Golden Hour Makeup For Effortless Beauty',
+    excerpt: 'Golden hour, that magical time of day when the sun bathes everything in warm light, inspires fresh, luminous, effortless routines.',
+    content: `Golden hour, that magical time of day when warm sunlight softens every contour, is the ideal inspiration for fresh, luminous, minimalist beauty and personal care.
+
+The secret behind golden-hour radiance isn't heavy coverage—it is skin that feels clean, comfortable, and fresh. Throughout warm afternoons and busy commutes, sweat, dust, and urban humidity can dim your skin's natural vitality.
+
+Keep these travel-ready freshness essentials within reach:
+• Refreshing Lemon Mint or Rose Water Wet Wipes to cool overheated skin and sweep away travel grime in seconds.
+• Travel-sized 70% IPA gentle moisturizing sanitizer so hands stay hygienic before refreshing your look outdoors.
+• Mild, aromatic botanical bodywash at home to unwind, wash away the day, and restore calm fragrance from citrus or lily blossoms.
+
+By pairing crisp home and personal hygiene with light, effortless beauty habits, you carry that calm golden-hour freshness wherever the day takes you.`,
+    author: 'WiZ Lifestyle Studio',
+    readTime: '4 min read',
+    category: 'Personal Care',
+    tags: ['Beauty', 'Minimal', 'Product'],
+    image: '/assets/Blog03.jpg',
+    imagePosition: 'bottom',
+    published: true,
+    createdAt: '2026-02-23T08:00:00.000Z'
   }
 ];

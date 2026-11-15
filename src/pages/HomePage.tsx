@@ -23,8 +23,9 @@ import {
   Upload,
   ImageIcon
 } from 'lucide-react';
-import { Product, Category, GeneralSettings, HeaderBanner } from '../types';
-import { getProducts, getCategories, getGeneralSettings, resolveAssetUrl } from '../lib/storeService';
+import { Product, Category, GeneralSettings, HeaderBanner, BlogPost } from '../types';
+import { getProducts, getCategories, getGeneralSettings, getBlogPosts, resolveAssetUrl } from '../lib/storeService';
+import { INITIAL_BLOG_POSTS } from '../lib/initialData';
 import { ProductCard } from '../components/ProductCard';
 import { VariantMatrixAccordion } from '../components/VariantMatrixAccordion';
 import { QuickViewModal } from '../components/QuickViewModal';
@@ -50,86 +51,57 @@ export interface ShoppableVideoItem {
 export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
   {
     id: 'shoppable-1',
+    productId: 'prod-handwash',
     productTitle: 'Hand Wash',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
+    regularPrice: 120.0,
+    sellingPrice: 96.0,
     productImage: '/assets/products/Lavender-Handwash-1L.jpg',
     secondaryImage: '/assets/products/Fresh Lemon Dishwashing Refill Pouch.png',
     videoPoster: '/assets/products/stoppable-video01.jpg',
+    videoUrl: '/assets/Handwash (2).mp4',
     isShopTheLook: false,
     progress: 42
   },
   {
     id: 'shoppable-2',
-    productTitle: 'Wet Wipes',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
-    productImage: '/assets/products/shoppable-thumb-2.jpg',
+    productId: 'prod-floor-cleaner',
+    productTitle: 'Floor Cleaner',
+    regularPrice: 199.0,
+    sellingPrice: 149.0,
+    productImage: '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
     videoPoster: '/assets/products/stoppable-video02.jpg',
+    videoUrl: '/assets/Floor Cleaner.mp4',
     isShopTheLook: false,
     progress: 30
   },
   {
     id: 'shoppable-3',
-    productTitle: 'Body Wash',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
-    productImage: '/assets/products/LilyBodywash 5L.jpg',
+    productId: 'prod-dishwash',
+    productTitle: 'Dish Wash',
+    regularPrice: 165.0,
+    sellingPrice: 129.0,
+    productImage: '/assets/products/1L Dish Wash Pouch.jpg',
     videoPoster: '/assets/products/stoppable-video03.jpg',
+    videoUrl: '/assets/Dishwash.mp4',
     isShopTheLook: true,
     progress: 30
   },
   {
     id: 'shoppable-4',
-    productTitle: 'Liquid Matic',
+    productId: 'prod-wet-wipes',
+    productTitle: 'Wet Wipes',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: '/assets/products/shoppable-thumb-4.jpg',
+    productImage: '/assets/products/Orange Wet Wipes.jpg',
     videoPoster: '/assets/products/stoppable-video04.jpg',
+    videoUrl: '/assets/Wet Wipes WiZ.mp4',
     isShopTheLook: false,
     progress: 30
   }
 ];
 
-export interface BlogPostItem {
-  id: string;
-  date: string;
-  title: string;
-  excerpt: string;
-  tags: string[];
-  image: string | null;
-  imagePosition: 'top' | 'bottom';
-}
-
-export const DEFAULT_BLOG_POSTS: BlogPostItem[] = [
-  {
-    id: 'blog-1',
-    date: 'February 23, 2026',
-    title: 'Glow Naturally With Hydrating Skin Rituals',
-    excerpt: 'Healthy, radiant skin begins with one simple principle deep, consistent hydration....',
-    tags: ['Facial', 'Lotion', 'Minimal'],
-    image: '/assets/Blog01.jpg',
-    imagePosition: 'bottom'
-  },
-  {
-    id: 'blog-2',
-    date: 'February 23, 2026',
-    title: 'Flawless Foundation Secrets For Radiant Skin',
-    excerpt: 'When it comes to achieving radiant skin, flawless foundation application...',
-    tags: ['Facial', 'Minimal', 'Product'],
-    image: '/assets/Blog02.jpg',
-    imagePosition: 'top'
-  },
-  {
-    id: 'blog-3',
-    date: 'February 23, 2026',
-    title: 'Golden Hour Makeup For Effortless Beauty',
-    excerpt: 'Golden hour, that magical time of day when the sun...',
-    tags: ['Beauty', 'Minimal', 'Product'],
-    image: '/assets/Blog03.jpg',
-    imagePosition: 'bottom'
-  }
-];
+export type BlogPostItem = BlogPost;
+export const DEFAULT_BLOG_POSTS: BlogPost[] = INITIAL_BLOG_POSTS;
 
 export interface CustomerReviewItem {
   id: string;
@@ -217,94 +189,23 @@ export const HomePage: React.FC = () => {
   });
 
 
-  // Latest Blog Posts state with Add/Delete thumbnail support
-  const [blogPosts, setBlogPosts] = useState<BlogPostItem[]>(() => {
-    try {
-      const saved = localStorage.getItem('wiz_blog_posts_v2');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((p) => {
-            if (p.image === '/assets/blog-post-1.jpg') return { ...p, image: '/assets/Blog01.jpg' };
-            if (p.image === '/assets/blog-post-2.jpg') return { ...p, image: '/assets/Blog02.jpg' };
-            if (p.image === '/assets/blog-post-3.jpg') return { ...p, image: '/assets/Blog03.jpg' };
-            return p;
-          });
-        }
-      }
-    } catch {
-      // fallback
-    }
-    return DEFAULT_BLOG_POSTS;
-  });
-
-  const [activeBlogModal, setActiveBlogModal] = useState<{
-    postId: string;
-    mode: 'add' | 'edit';
-  } | null>(null);
-
-  const [blogImageUrlInput, setBlogImageUrlInput] = useState('');
-  const blogFileInputRef = React.useRef<HTMLInputElement>(null);
-
-  const handleDeleteBlogThumbnail = (id: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    const updated = blogPosts.map((p) => (p.id === id ? { ...p, image: null } : p));
-    setBlogPosts(updated);
-    try {
-      localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleOpenBlogModal = (postId: string, mode: 'add' | 'edit', e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    const current = blogPosts.find((p) => p.id === postId);
-    setBlogImageUrlInput(current?.image || '');
-    setActiveBlogModal({ postId, mode });
-  };
-
-  const handleSaveBlogThumbnail = (newImageUrl: string) => {
-    if (!activeBlogModal) return;
-    const updated = blogPosts.map((p) =>
-      p.id === activeBlogModal.postId ? { ...p, image: newImageUrl.trim() || null } : p
-    );
-    setBlogPosts(updated);
-    try {
-      localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
-    setActiveBlogModal(null);
-    setBlogImageUrlInput('');
-  };
-
-  const handleResetBlogPosts = () => {
-    setBlogPosts(DEFAULT_BLOG_POSTS);
-    try {
-      localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(DEFAULT_BLOG_POSTS));
-    } catch {
-      // ignore
-    }
-  };
-
-  const handleBlogFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          handleSaveBlogThumbnail(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // Latest Blog Posts loaded cleanly from storeService (syncs with /blog & Admin)
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>(() =>
+    INITIAL_BLOG_POSTS.map((post) => ({
+      ...post,
+      image: post.image ? resolveAssetUrl(post.image) : null
+    }))
+  );
 
   useEffect(() => {
     getProducts().then(setProducts);
     getCategories().then(setCategories);
     getGeneralSettings().then(setSettings);
+    getBlogPosts().then((loaded) => {
+      if (loaded && loaded.length > 0) {
+        setBlogPosts(loaded.filter((b) => b.published !== false));
+      }
+    });
   }, []);
 
   // Track and display last 4 products clicked/viewed by the user
@@ -3835,11 +3736,11 @@ export const HomePage: React.FC = () => {
       <VariantMatrixAccordion products={products} />
 
       {/* =========================================================================
-          SECTION 14: LATEST BLOG POSTS (Exact Match to Reference Layout Design)
+          SECTION 14: LATEST BLOG POSTS (Clickable cards landing on /blog/:slug)
           ========================================================================= */}
       <section className="w-full py-16 bg-white">
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
-          {/* Section Header: Heading positioned strictly on the left side */}
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
+          {/* Section Header: Heading on left, View All Blogs link on right */}
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b border-gray-100">
             <div>
               <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight text-left font-['Poppins',sans-serif]">
@@ -3849,76 +3750,94 @@ export const HomePage: React.FC = () => {
                 Expert skincare rituals, minimalist beauty formulas, and radiant skin advice
               </p>
             </div>
+
+            <Link
+              to="/blog"
+              className="text-xs sm:text-sm font-semibold text-[#7a49a6] hover:text-[#5f3786] transition-colors inline-flex items-center gap-1.5 group self-start sm:self-auto"
+            >
+              <span>View All Blogs</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
 
-        {/* 3-Column Grid divided by thin vertical borders */}
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-white">
-          {blogPosts.map((post) => {
-            const isImageTop = post.imagePosition === 'top';
+          {/* 3-Column Grid divided by thin vertical borders */}
+          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200 bg-white">
+            {blogPosts.slice(0, 3).map((post, idx) => {
+              const isImageTop = (post.imagePosition || (idx % 2 === 1 ? 'top' : 'bottom')) === 'top';
+              const targetUrl = `/blog/${post.slug || post.id}`;
 
-            const textBlock = (
-              <div
-                key={`text-${post.id}`}
-                className="flex flex-col items-center text-center px-4 py-8 sm:px-6 flex-1 justify-center"
-              >
-                <div className="inline-flex items-center px-4 py-1 rounded-full text-xs text-gray-600 bg-gray-50 border border-gray-200/90 mb-4 font-normal tracking-wide">
-                  {post.date}
-                </div>
-                <h3 className="text-xl sm:text-[22px] font-semibold text-gray-900 leading-snug mb-3 text-center max-w-[280px] mx-auto hover:text-[#7a49a6] transition-colors cursor-pointer font-['Poppins',sans-serif]">
-                  {post.title}
-                </h3>
-                <p className="text-xs text-gray-500 text-center leading-relaxed max-w-[280px] mx-auto mb-5">
-                  {post.excerpt}
-                </p>
-                <div className="flex flex-wrap items-center justify-center gap-2">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full px-3.5 py-0.5 text-xs text-gray-700 bg-white border border-gray-200 hover:border-gray-300 transition-colors shadow-2xs"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            );
-
-            const imageBlock = (
-              <div
-                key={`image-${post.id}`}
-                className="p-4 sm:p-6 flex items-center justify-center"
-              >
-                {post.image ? (
-                  <div className="relative group w-full max-w-[360px] aspect-square overflow-hidden bg-gray-50 shadow-2xs border border-gray-100">
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      className="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300"
-                    />
+              const textBlock = (
+                <div
+                  key={`text-${post.id}`}
+                  className="flex flex-col items-center text-center px-4 py-8 sm:px-6 flex-1 justify-center"
+                >
+                  <div className="inline-flex items-center px-4 py-1 rounded-full text-xs text-gray-600 bg-gray-50 border border-gray-200/90 mb-4 font-normal tracking-wide">
+                    {post.date}
                   </div>
-                ) : (
-                  <div className="w-full max-w-[360px] aspect-square bg-gray-50 border border-gray-100 flex items-center justify-center" />
-                )}
-              </div>
-            );
+                  <h3 className="text-xl sm:text-[22px] font-semibold text-gray-900 leading-snug mb-3 text-center max-w-[280px] mx-auto group-hover/blog:text-[#7a49a6] transition-colors font-['Poppins',sans-serif]">
+                    {post.title}
+                  </h3>
+                  <p className="text-xs text-gray-500 text-center leading-relaxed max-w-[280px] mx-auto mb-5 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
+                    {(post.tags || []).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full px-3.5 py-0.5 text-xs text-gray-700 bg-white border border-gray-200 group-hover/blog:border-gray-300 transition-colors shadow-2xs"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#7a49a6] group-hover/blog:text-[#5f3786] transition-colors">
+                    <span>Read Article</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/blog:translate-x-1" />
+                  </span>
+                </div>
+              );
 
-            return (
-              <article key={post.id} className="flex flex-col justify-between">
-                {isImageTop ? (
-                  <>
-                    {imageBlock}
-                    {textBlock}
-                  </>
-                ) : (
-                  <>
-                    {textBlock}
-                    {imageBlock}
-                  </>
-                )}
-              </article>
-            );
-          })}
-        </div>
+              const imageBlock = (
+                <div
+                  key={`image-${post.id}`}
+                  className="p-4 sm:p-6 flex items-center justify-center"
+                >
+                  {post.image ? (
+                    <div className="relative w-full max-w-[360px] aspect-square overflow-hidden bg-gray-50 shadow-2xs border border-gray-100">
+                      <img
+                        src={resolveAssetUrl(post.image)}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover/blog:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full max-w-[360px] aspect-square bg-gray-50 border border-gray-100 flex items-center justify-center" />
+                  )}
+                </div>
+              );
+
+              return (
+                <article key={post.id} className="flex flex-col justify-between">
+                  <Link
+                    to={targetUrl}
+                    className="group/blog flex flex-col justify-between h-full cursor-pointer focus:outline-none hover:bg-gray-50/40 transition-colors"
+                  >
+                    {isImageTop ? (
+                      <>
+                        {imageBlock}
+                        {textBlock}
+                      </>
+                    ) : (
+                      <>
+                        {textBlock}
+                        {imageBlock}
+                      </>
+                    )}
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
         </div>
       </section>
 

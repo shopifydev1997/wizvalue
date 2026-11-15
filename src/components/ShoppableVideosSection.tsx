@@ -8,6 +8,7 @@ import {
   Pause
 } from 'lucide-react';
 import { Product } from '../types';
+import { resolveAssetUrl } from '../lib/storeService';
 
 export interface ShoppableVideoItem {
   id: string;
@@ -24,35 +25,43 @@ export interface ShoppableVideoItem {
 export const DEFAULT_SHOPPABLE_VIDEOS: ShoppableVideoItem[] = [
   {
     id: 'shoppable-1',
+    productId: 'prod-handwash',
     productTitle: 'Hand Wash',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
+    regularPrice: 120.0,
+    sellingPrice: 96.0,
     productImage: '/assets/products/Lavender-Handwash-1L.jpg',
-    videoPoster: '/assets/products/stoppable-video01.jpg'
+    videoPoster: '/assets/products/stoppable-video01.jpg',
+    videoUrl: '/assets/Handwash (2).mp4'
   },
   {
     id: 'shoppable-2',
-    productTitle: 'Wet Wipes',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
-    productImage: '/assets/products/shoppable-thumb-2.jpg',
-    videoPoster: '/assets/products/stoppable-video02.jpg'
+    productId: 'prod-floor-cleaner',
+    productTitle: 'Floor Cleaner',
+    regularPrice: 199.0,
+    sellingPrice: 149.0,
+    productImage: '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
+    videoPoster: '/assets/products/stoppable-video02.jpg',
+    videoUrl: '/assets/Floor Cleaner.mp4'
   },
   {
     id: 'shoppable-3',
-    productTitle: 'Body Wash',
-    regularPrice: 150.0,
-    sellingPrice: 99.0,
-    productImage: '/assets/products/LilyBodywash 5L.jpg',
-    videoPoster: '/assets/products/stoppable-video03.jpg'
+    productId: 'prod-dishwash',
+    productTitle: 'Dish Wash',
+    regularPrice: 165.0,
+    sellingPrice: 129.0,
+    productImage: '/assets/products/1L Dish Wash Pouch.jpg',
+    videoPoster: '/assets/products/stoppable-video03.jpg',
+    videoUrl: '/assets/Dishwash.mp4'
   },
   {
     id: 'shoppable-4',
-    productTitle: 'Liquid Matic',
+    productId: 'prod-wet-wipes',
+    productTitle: 'Wet Wipes',
     regularPrice: 150.0,
     sellingPrice: 99.0,
-    productImage: '/assets/products/shoppable-thumb-4.jpg',
-    videoPoster: '/assets/products/stoppable-video04.jpg'
+    productImage: '/assets/products/Orange Wet Wipes.jpg',
+    videoPoster: '/assets/products/stoppable-video04.jpg',
+    videoUrl: '/assets/Wet Wipes WiZ.mp4'
   }
 ];
 
@@ -75,28 +84,14 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Shoppable Videos state with localStorage persistence
+  // Shoppable Videos state with localStorage persistence (v6 includes MP4 videoUrl assets)
   const [shoppableVideos, setShoppableVideos] = useState<ShoppableVideoItem[]>(() => {
     try {
-      const saved = localStorage.getItem('wiz_shoppable_videos_v5');
+      const saved = localStorage.getItem('wiz_shoppable_videos_v6');
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item: ShoppableVideoItem) => {
-            if (item.videoPoster === '/assets/products/shoppable-video-1.jpg') {
-              return { ...item, videoPoster: '/assets/products/stoppable-video01.jpg' };
-            }
-            if (item.videoPoster === '/assets/products/shoppable-video-2.jpg') {
-              return { ...item, videoPoster: '/assets/products/stoppable-video02.jpg' };
-            }
-            if (item.videoPoster === '/assets/products/shoppable-video-3.jpg') {
-              return { ...item, videoPoster: '/assets/products/stoppable-video03.jpg' };
-            }
-            if (item.videoPoster === '/assets/products/shoppable-video-4.jpg') {
-              return { ...item, videoPoster: '/assets/products/stoppable-video04.jpg' };
-            }
-            return item;
-          });
+          return parsed;
         }
       }
     } catch {
@@ -105,7 +100,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
     return DEFAULT_SHOPPABLE_VIDEOS;
   });
 
-  // Video playback states
+  // Video playback states (default to playing for items with local MP4 videoUrl)
   const [playingVideoMap, setPlayingVideoMap] = useState<Record<string, boolean>>({});
   const [mutedVideoMap, setMutedVideoMap] = useState<Record<string, boolean>>({});
   const videoElementsRef = useRef<Record<string, HTMLVideoElement | null>>({});
@@ -145,9 +140,11 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
   };
 
   // Toggle Video Playback
-  const handleTogglePlay = (videoId: string, e: React.MouseEvent) => {
+  const handleTogglePlay = (videoId: string, hasVideoUrl: boolean, e: React.MouseEvent) => {
     e.stopPropagation();
-    const isCurrentlyPlaying = !!playingVideoMap[videoId];
+    const isCurrentlyPlaying = hasVideoUrl
+      ? playingVideoMap[videoId] !== false
+      : playingVideoMap[videoId] === true;
     const newPlayState = !isCurrentlyPlaying;
 
     setPlayingVideoMap((prev) => ({
@@ -186,7 +183,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
   const handleResetDefaults = () => {
     setShoppableVideos(DEFAULT_SHOPPABLE_VIDEOS);
     try {
-      localStorage.setItem('wiz_shoppable_videos_v5', JSON.stringify(DEFAULT_SHOPPABLE_VIDEOS));
+      localStorage.setItem('wiz_shoppable_videos_v6', JSON.stringify(DEFAULT_SHOPPABLE_VIDEOS));
     } catch {
       // ignore
     }
@@ -316,7 +313,10 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
             className="flex items-stretch overflow-x-auto gap-[18px] no-scrollbar scroll-smooth pb-2 w-full"
           >
             {shoppableVideos.map((video) => {
-              const isPlaying = playingVideoMap[video.id] === true;
+              const hasLocalVideo = Boolean(video.videoUrl);
+              const isPlaying = hasLocalVideo
+                ? playingVideoMap[video.id] !== false
+                : playingVideoMap[video.id] === true;
               const isMuted = mutedVideoMap[video.id] !== false; // default muted for autoplay compliance
 
               // Resolve dynamic product thumbnail and details from backend uploaded products
@@ -327,7 +327,9 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
               const displaySellingPrice = backendProduct?.sellingPrice || video.sellingPrice;
 
               // Product thumbnail packshot dynamically from uploaded product or video definition
-              const displayThumbnail = backendProduct?.images?.[0] || video.productImage;
+              const displayThumbnail = resolveAssetUrl(backendProduct?.images?.[0] || video.productImage);
+              const resolvedVideoUrl = video.videoUrl ? resolveAssetUrl(video.videoUrl) : undefined;
+              const resolvedPosterUrl = resolveAssetUrl(video.videoPoster);
 
               const instagramShortcode = extractInstagramShortcode(video.instagramUrl);
 
@@ -347,24 +349,26 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
                         allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                         allowFullScreen
                       />
-                    ) : video.videoUrl && isPlaying ? (
-                      // Direct HTML5 video when playing
+                    ) : resolvedVideoUrl ? (
+                      // Direct HTML5 video player (auto-plays muted loop; Play/Pause controls toggle playback)
                       <video
                         ref={(el) => {
                           videoElementsRef.current[video.id] = el;
                         }}
-                        src={video.videoUrl}
-                        poster={video.videoPoster}
+                        src={resolvedVideoUrl}
+                        poster={resolvedPosterUrl}
                         autoPlay
                         loop
                         muted={isMuted}
                         playsInline
-                        className="w-full h-full object-cover select-none"
+                        preload="metadata"
+                        onClick={(e) => handleTogglePlay(video.id, hasLocalVideo, e)}
+                        className="w-full h-full object-cover select-none cursor-pointer"
                       />
                     ) : (
-                      // Clean Poster / Video / Image preview
+                      // Clean Poster / Image fallback when no videoUrl is set
                       <img
-                        src={video.videoPoster}
+                        src={resolvedPosterUrl}
                         alt={displayTitle}
                         className="w-full h-full object-cover select-none pointer-events-none transition-transform duration-500 group-hover:scale-[1.02]"
                         draggable={false}
@@ -396,7 +400,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
                     {/* Pause/Play Round White Button */}
                     <button
                       type="button"
-                      onClick={(e) => handleTogglePlay(video.id, e)}
+                      onClick={(e) => handleTogglePlay(video.id, hasLocalVideo, e)}
                       className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white text-neutral-900 hover:bg-neutral-100 flex items-center justify-center transition-transform hover:scale-105 shadow-md cursor-pointer"
                       style={{ borderRadius: '9999px' }}
                       title={isPlaying ? 'Pause video' : 'Play video'}

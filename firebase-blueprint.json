@@ -186,6 +186,29 @@
         "timestamp": { "type": "string" }
       },
       "required": ["eventType", "timestamp"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "WiZ editorial blog article for skin care, personal care, and home hygiene",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "slug": { "type": "string", "maxLength": 200 },
+        "title": { "type": "string", "maxLength": 220 },
+        "excerpt": { "type": "string", "maxLength": 600 },
+        "content": { "type": "string", "maxLength": 25000 },
+        "author": { "type": "string", "maxLength": 120 },
+        "date": { "type": "string", "maxLength": 64 },
+        "readTime": { "type": "string", "maxLength": 40 },
+        "category": { "type": "string", "maxLength": 80 },
+        "tags": { "type": "array" },
+        "image": { "type": "string", "maxLength": 1000000 },
+        "imagePosition": { "type": "string", "enum": ["top", "bottom"] },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "slug", "title", "excerpt", "content", "date", "category"]
     }
   },
   "firestore": {
@@ -228,6 +251,10 @@
     "/test/{docId}": {
       "schema": { "$ref": "#/entities/AnalyticsEvent" },
       "description": "Connectivity test ping path"
+    },
+    "/blogs/{blogId}": {
+      "schema": { "$ref": "#/entities/BlogPost" },
+      "description": "Blog articles displayed on the blog page and homepage"
     }
   }
 }
