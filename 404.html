@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WiZ Home Hygiene &amp; Personal Care</title>
+    <script>
+      // Single Page App redirect for GitHub Pages (root branch fallback -> dist-static)
+      (function() {
+        var path = window.location.pathname;
+        var segments = path.split('/').filter(Boolean);
+        var distIdx = segments.indexOf('dist-static');
+
+        if (distIdx !== -1) {
+          var distBase = '/' + segments.slice(0, distIdx + 1).join('/');
+          var distSub = segments.slice(distIdx + 1).join('/');
+          window.location.replace(distBase + '/#/' + distSub);
+          return;
+        }
+
+        var isGH = window.location.hostname.endsWith('github.io');
+        var repo = isGH && segments.length > 0 ? '/' + segments[0] : '';
+        var subpath = isGH ? segments.slice(1).join('/') : segments.join('/');
+
+        if (subpath === 'docs' || subpath.startsWith('docs/') || subpath === '404' || subpath === '404.html') {
+          subpath = '';
+        }
+
+        window.location.replace(repo + '/dist-static/#/' + subpath);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Redirecting to WiZ Hygiene Store...</p>
+  </body>
+</html>

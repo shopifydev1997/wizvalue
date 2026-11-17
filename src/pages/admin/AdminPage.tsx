@@ -47,9 +47,9 @@ import {
   getGeneralSettings,
   saveGeneralSettings,
   getAnalyticsEvents,
-  seedInitialDataIfEmpty,
-  resolveAssetUrl
+  seedInitialDataIfEmpty
 } from '../../lib/storeService';
+import { normalizeAssetPath, resolveAssetUrl } from '../../lib/imageAsset';
 import { Product, Category, OrderEnquiry, BulkEnquiry, Coupon, Freebie, GeneralSettings, AnalyticsEvent, HeaderBanner, MegaMenuHighlight } from '../../types';
 import { DEFAULT_PACKAGING_PRESETS } from '../../lib/initialData';
 import { useAuth } from '../../context/AuthContext';
@@ -165,9 +165,10 @@ export const AdminPage: React.FC = () => {
   });
 
   const handleSaveBestsellerBg = (url: string) => {
-    setBestsellerBg(url);
+    const canonical = normalizeAssetPath(url);
+    setBestsellerBg(canonical);
     try {
-      localStorage.setItem('wiz_bestseller_bg_image_v2', url);
+      localStorage.setItem('wiz_bestseller_bg_image_v2', canonical);
     } catch {}
     triggerNotice('success', 'Our Bestsellers background image updated!');
   };
@@ -190,9 +191,10 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSavePcareThumb = (slotKey: string, url: string) => {
+    const canonical = normalizeAssetPath(url);
     const updated = {
       ...pcareThumbs,
-      [slotKey]: { ...pcareThumbs[slotKey], image: url }
+      [slotKey]: { ...pcareThumbs[slotKey], image: canonical }
     };
     setPcareThumbs(updated);
     try {
@@ -228,9 +230,10 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSaveLovedEssentialsBg = (url: string) => {
-    setLovedEssentialsBg(url);
+    const canonical = normalizeAssetPath(url);
+    setLovedEssentialsBg(canonical);
     try {
-      localStorage.setItem('wiz_most_loved_essentials_bg_v5', url);
+      localStorage.setItem('wiz_most_loved_essentials_bg_v5', canonical);
     } catch {}
     triggerNotice('success', 'Our Most Loved Essentials background updated!');
   };
@@ -253,7 +256,8 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleSaveBlogThumb = (id: number, url: string) => {
-    const updated = blogThumbnails.map((b) => (b.id === id ? { ...b, image: url } : b));
+    const canonical = normalizeAssetPath(url);
+    const updated = blogThumbnails.map((b) => (b.id === id ? { ...b, image: canonical } : b));
     setBlogThumbnails(updated);
     try {
       localStorage.setItem('wiz_blog_posts_v2', JSON.stringify(updated));
@@ -264,7 +268,7 @@ export const AdminPage: React.FC = () => {
           const targetId = `blog-${id}`;
           localStorage.setItem(
             'wiz_blog_posts_v3',
-            JSON.stringify(v3List.map((p: any) => (p.id === targetId ? { ...p, image: url } : p)))
+            JSON.stringify(v3List.map((p: any) => (p.id === targetId ? { ...p, image: canonical } : p)))
           );
         }
       }

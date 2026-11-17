@@ -12,7 +12,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { Product, ProductVariant } from '../types';
-import { getProducts, resolveAssetUrl } from '../lib/storeService';
+import { getProducts } from '../lib/storeService';
+import { DEFAULT_PRODUCT_IMAGE, resolveAssetUrl } from '../lib/imageAsset';
 import { useCart } from '../context/CartContext';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { WhatsAppOrderButton } from '../components/WhatsAppOrderButton';
@@ -322,7 +323,7 @@ export const ProductDetailPage: React.FC = () => {
             {/* Main Stage Image */}
             <div className="flex-1 w-full relative aspect-square bg-[#f9faf9] border border-gray-200 p-8 flex items-center justify-center overflow-hidden group">
               <img
-                src={resolveAssetUrl(activeImage)}
+                src={resolveAssetUrl(activeImage, DEFAULT_PRODUCT_IMAGE)}
                 alt={product.name}
                 className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
               />

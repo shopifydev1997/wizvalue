@@ -9,18 +9,35 @@
       (function() {
         var path = window.location.pathname;
         var segments = path.split('/').filter(Boolean);
-        var repo = segments.length > 0 ? segments[0] : '';
-        var subpath = segments.slice(1).join('/');
+        var distIdx = segments.indexOf('dist-static');
+
+        if (distIdx !== -1) {
+          var distBase = '/' + segments.slice(0, distIdx + 1).join('/');
+          var distSub = segments.slice(distIdx + 1).join('/');
+          window.location.replace(distBase + '/#/' + distSub);
+          return;
+        }
+
+        var isProjectSite =
+          window.location.hostname.endsWith('github.io') &&
+          segments.length > 1;
+        var repo = window.location.hostname.endsWith('github.io') && segments.length > 0 ? segments[0] : '';
+        var subpath = isProjectSite ? segments.slice(1).join('/') : segments.join('/');
 
         // Strip any loop fragments like 'docs' or '404'
         if (subpath === 'docs' || subpath.startsWith('docs/') || subpath === '404') {
           subpath = '';
         }
 
-        var base = window.location.hostname.endsWith('github.io') && repo ? '/' + repo : '';
+        var base = window.location.hostname.endsWith('github.io') && repo && segments.length >= 1 && segments[0] !== '404.html'
+          ? (isProjectSite ? '/' + repo : '/' + repo)
+          : '';
+        // If user/org site (single segment that isn't a file), avoid looping onto non-repo segment when 404 on root
+        if (window.location.hostname.endsWith('github.io') && segments.length === 1 && /\.[a-z0-9]+$/i.test(segments[0])) {
+          base = '';
+        }
         var targetRoute = subpath ? '/' + subpath : '/';
 
-        // Redirect cleanly without stacking hashes
         window.location.replace(base + '/#' + targetRoute);
       })();
     </script>

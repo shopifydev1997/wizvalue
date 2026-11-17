@@ -5,7 +5,7 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { QuickViewModal } from './QuickViewModal';
 import { recordRecentlyViewed } from '../lib/recentlyViewed';
-import { resolveAssetUrl } from '../lib/storeService';
+import { DEFAULT_PRODUCT_IMAGE, resolveAssetUrl } from '../lib/imageAsset';
 
 interface ProductCardProps {
   product: Product;
@@ -63,9 +63,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     setTimeout(() => setAddedNotice(false), 2000);
   };
 
-  const mainImage =
-    resolveAssetUrl((preferredVariant && preferredVariant.image) || product.images[0]) ||
-    resolveAssetUrl('/assets/products/Orange Wet Wipes.jpg');
+  const mainImage = resolveAssetUrl(
+    (preferredVariant && preferredVariant.image) || product.images[0],
+    DEFAULT_PRODUCT_IMAGE
+  );
 
   return (
     <>

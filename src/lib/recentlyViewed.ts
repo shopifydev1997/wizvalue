@@ -1,4 +1,5 @@
 import { Product } from '../types';
+import { normalizeAssetPath, resolveAssetUrl } from './imageAsset';
 
 const RECENTLY_VIEWED_KEY = 'wiz_recently_viewed_products';
 const MAX_ITEMS = 4;
@@ -17,8 +18,19 @@ export const recordRecentlyViewed = (product: Product): void => {
     // Filter out duplicate if it already exists
     items = items.filter((p) => p.id !== product.id && p.slug !== product.slug);
 
+    const canonicalProduct: Product = {
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map(normalizeAssetPath) : [],
+      variants: Array.isArray(product.variants)
+        ? product.variants.map((v) => ({
+            ...v,
+            image: v.image ? normalizeAssetPath(v.image) : v.image
+          }))
+        : product.variants
+    };
+
     // Prepend new product to the beginning
-    items.unshift(product);
+    items.unshift(canonicalProduct);
 
     // Keep only the last 4 clicked products
     if (items.length > MAX_ITEMS) {
@@ -44,7 +56,17 @@ export const getRecentlyViewed = (): Product[] => {
     const stored = localStorage.getItem(RECENTLY_VIEWED_KEY);
     if (!stored) return [];
     const parsed = JSON.parse(stored);
-    return Array.isArray(parsed) ? parsed.slice(0, MAX_ITEMS) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.slice(0, MAX_ITEMS).map((p: Product) => ({
+      ...p,
+      images: Array.isArray(p.images) ? p.images.map((img) => resolveAssetUrl(img)) : [],
+      variants: Array.isArray(p.variants)
+        ? p.variants.map((v) => ({
+            ...v,
+            image: v.image ? resolveAssetUrl(v.image) : v.image
+          }))
+        : p.variants
+    }));
   } catch (err) {
     console.warn('Failed to parse recently viewed products:', err);
     return [];

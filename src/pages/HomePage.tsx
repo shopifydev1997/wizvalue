@@ -24,7 +24,8 @@ import {
   ImageIcon
 } from 'lucide-react';
 import { Product, Category, GeneralSettings, HeaderBanner, BlogPost } from '../types';
-import { getProducts, getCategories, getGeneralSettings, getBlogPosts, resolveAssetUrl } from '../lib/storeService';
+import { getProducts, getCategories, getGeneralSettings, getBlogPosts } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 import { INITIAL_BLOG_POSTS } from '../lib/initialData';
 import { ProductCard } from '../components/ProductCard';
 import { VariantMatrixAccordion } from '../components/VariantMatrixAccordion';

@@ -29,6 +29,14 @@ import {
   AnalyticsEvent,
   BlogPost
 } from '../types';
+import {
+  resolveAssetUrl,
+  getImageAssetUrl,
+  normalizeAssetPath,
+  normalizeBrandLogoPath
+} from './imageAsset';
+
+export { resolveAssetUrl, getImageAssetUrl, normalizeAssetPath, normalizeBrandLogoPath };
 
 const SETTINGS_DOC_PATH = 'settings/general';
 const LOCAL_PRODUCTS_KEY = 'wiz_stored_products';
@@ -69,82 +77,6 @@ export function cleanFirestoreData<T>(obj: T): T {
 }
 
 /**
- * Normalizes asset paths so they resolve correctly across all hosting environments:
- * - Local / AI Studio development (root '/')
- * - Production on root domain (Vercel, Netlify, Cloud Run)
- * - Subdirectory deployments (e.g. GitHub Pages https://<user>.github.io/<repo>/)
- */
-export function resolveAssetUrl(url?: string | null): string {
-  if (!url) return '';
-  const trimmed = url.trim();
-  if (!trimmed) return '';
-
-  // Preserve absolute external protocols and inline data/blob URIs
-  if (/^(https?:|\/\/|data:|blob:)/i.test(trimmed)) {
-    return trimmed;
-  }
-
-  // Extract normalized path relative to assets/
-  let clean = trimmed;
-  const assetsMarkerIdx = clean.toLowerCase().indexOf('assets/');
-  if (assetsMarkerIdx !== -1) {
-    const prefix = clean.slice(0, assetsMarkerIdx);
-    if (
-      prefix === '' ||
-      prefix === '/' ||
-      prefix === './' ||
-      /^\/?public\/$/i.test(prefix) ||
-      /^\/[^/]+\/(?:dist-static\/)?$/i.test(prefix)
-    ) {
-      clean = clean.slice(assetsMarkerIdx + 'assets/'.length);
-    }
-  } else {
-    clean = clean.replace(/^(\/?public\/)/i, '').replace(/^(\.\/|\/)+/, '');
-    if (clean.toLowerCase().startsWith('assets/')) {
-      clean = clean.slice('assets/'.length);
-    }
-  }
-
-  const encodedClean = clean
-    .split('/')
-    .filter(Boolean)
-    .map((seg) => {
-      try {
-        return encodeURI(decodeURI(seg));
-      } catch {
-        return encodeURI(seg);
-      }
-    })
-    .join('/');
-
-  // Determine deployment base prefix dynamically for GitHub Pages, dist-static, and root hosting
-  if (typeof window !== 'undefined') {
-    const isGitHubPages = window.location.hostname.endsWith('github.io');
-    const segments = window.location.pathname.split('/').filter(Boolean);
-    const distIdx = segments.indexOf('dist-static');
-
-    if (isGitHubPages) {
-      if (distIdx !== -1) {
-        return `/${segments.slice(0, distIdx + 1).join('/')}/assets/${encodedClean}`;
-      }
-      const repo = segments.length > 0 && segments[0] !== 'assets' ? segments[0] : '';
-      if (repo) {
-        return `/${repo}/assets/${encodedClean}`;
-      }
-      return `/assets/${encodedClean}`;
-    }
-
-    if (distIdx !== -1) {
-      return `/${segments.slice(0, distIdx + 1).join('/')}/assets/${encodedClean}`;
-    }
-  }
-
-  const base = import.meta.env.BASE_URL || '/';
-  const normalizedBase = base === './' || base === '.' ? '/' : base.endsWith('/') ? base : `${base}/`;
-  return `${normalizedBase}assets/${encodedClean}`;
-}
-
-/**
  * Loads General Settings from Firestore or returns default settings
  */
 export async function getGeneralSettings(): Promise<GeneralSettings> {
@@ -166,19 +98,12 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
     console.warn('Could not read settings/general from Firestore, using initial settings:', error);
   }
 
-  const normalizeBrandLogo = (logo?: string) => {
-    if (!logo) return '/assets/WiZ-Logo-NEW-1.png';
-    if (logo.includes('WiZ-Logo-NEW.png') || logo.includes('wiz-footer-logo-extracted')) {
-      return '/assets/WiZ-Logo-NEW-1.png';
-    }
-    return logo;
-  };
-
   return {
     ...merged,
-    headerLogo: resolveAssetUrl(normalizeBrandLogo(merged.headerLogo)),
-    footerLogo: resolveAssetUrl(normalizeBrandLogo(merged.footerLogo)),
+    headerLogo: resolveAssetUrl(normalizeBrandLogoPath(merged.headerLogo)),
+    footerLogo: resolveAssetUrl(normalizeBrandLogoPath(merged.footerLogo)),
     footerImage: resolveAssetUrl(merged.footerImage),
+    favicon: resolveAssetUrl(merged.favicon),
     headerBanners: Array.isArray(merged.headerBanners)
       ? merged.headerBanners.map((b) => ({
           ...b,
@@ -196,7 +121,18 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
                 : v
             ])
           )
-        : merged.megaMenuHighlights
+        : merged.megaMenuHighlights,
+    megaMenuLeftImages:
+      typeof merged.megaMenuLeftImages === 'object' && merged.megaMenuLeftImages !== null
+        ? Object.fromEntries(
+            Object.entries(merged.megaMenuLeftImages).map(([k, v]) => [
+              k,
+              v && typeof v === 'object' && 'imageUrl' in v
+                ? { ...v, imageUrl: resolveAssetUrl((v as { imageUrl?: string }).imageUrl) }
+                : v
+            ])
+          )
+        : merged.megaMenuLeftImages
   };
 }
 
@@ -208,6 +144,39 @@ export async function saveGeneralSettings(settings: GeneralSettings): Promise<vo
   const path = SETTINGS_DOC_PATH;
   const cleanData = cleanFirestoreData({
     ...settings,
+    headerLogo: settings.headerLogo ? normalizeBrandLogoPath(settings.headerLogo) : settings.headerLogo,
+    footerLogo: settings.footerLogo ? normalizeBrandLogoPath(settings.footerLogo) : settings.footerLogo,
+    footerImage: settings.footerImage ? normalizeAssetPath(settings.footerImage) : settings.footerImage,
+    favicon: settings.favicon ? normalizeAssetPath(settings.favicon) : settings.favicon,
+    headerBanners: Array.isArray(settings.headerBanners)
+      ? settings.headerBanners.map((b) => ({
+          ...b,
+          imageUrl: normalizeAssetPath(b.imageUrl),
+          thumbnailUrl: b.thumbnailUrl ? normalizeAssetPath(b.thumbnailUrl) : b.thumbnailUrl
+        }))
+      : settings.headerBanners,
+    megaMenuHighlights:
+      typeof settings.megaMenuHighlights === 'object' && settings.megaMenuHighlights !== null
+        ? Object.fromEntries(
+            Object.entries(settings.megaMenuHighlights).map(([k, v]) => [
+              k,
+              v && typeof v === 'object' && 'imageUrl' in v
+                ? { ...v, imageUrl: normalizeAssetPath((v as { imageUrl?: string }).imageUrl) }
+                : v
+            ])
+          )
+        : settings.megaMenuHighlights,
+    megaMenuLeftImages:
+      typeof settings.megaMenuLeftImages === 'object' && settings.megaMenuLeftImages !== null
+        ? Object.fromEntries(
+            Object.entries(settings.megaMenuLeftImages).map(([k, v]) => [
+              k,
+              v && typeof v === 'object' && 'imageUrl' in v
+                ? { ...v, imageUrl: normalizeAssetPath((v as { imageUrl?: string }).imageUrl) }
+                : v
+            ])
+          )
+        : settings.megaMenuLeftImages,
     updatedAt: new Date().toISOString()
   });
 
@@ -407,7 +376,7 @@ export async function getProducts(): Promise<Product[]> {
 
       return {
         ...p,
-        images: Array.isArray(p.images) ? p.images.map(resolveAssetUrl) : [],
+        images: Array.isArray(p.images) ? p.images.map((img) => resolveAssetUrl(img)) : [],
         packagingSize: basePack,
         variants: normalizedVariants
       };
@@ -424,6 +393,7 @@ export async function saveProduct(product: Product): Promise<Product> {
   const normalizedVariants = Array.isArray(product.variants)
     ? product.variants.map((v) => ({
         ...v,
+        image: v.image ? normalizeAssetPath(v.image) : v.image,
         packagingSize: v.packagingSize
           ? normalizePackagingSize(v.packagingSize, product.category)
           : normalizePackagingSize(v.name, product.category)
@@ -433,6 +403,7 @@ export async function saveProduct(product: Product): Promise<Product> {
   const cleanProduct = cleanFirestoreData({
     ...product,
     id: productId,
+    images: Array.isArray(product.images) ? product.images.map(normalizeAssetPath) : [],
     packagingSize: product.packagingSize
       ? normalizePackagingSize(product.packagingSize, product.category)
       : '',
@@ -578,7 +549,8 @@ export async function getCategories(): Promise<Category[]> {
 export async function saveCategory(category: Category): Promise<Category> {
   const cleanCategory = cleanFirestoreData({
     ...category,
-    id: category.id || `cat-${Date.now()}`
+    id: category.id || `cat-${Date.now()}`,
+    image: normalizeAssetPath(category.image)
   });
 
   try {
@@ -1262,6 +1234,7 @@ export async function saveBlogPost(post: BlogPost): Promise<BlogPost> {
       ...post,
       id,
       slug,
+      image: post.image ? normalizeAssetPath(post.image) : post.image,
       createdAt: post.createdAt || now,
       updatedAt: now
     })

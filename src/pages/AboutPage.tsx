@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Factory, ShieldCheck, Award } from 'lucide-react';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
-import { resolveAssetUrl } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 
 interface Milestone {
   year: string;

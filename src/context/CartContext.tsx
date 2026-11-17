@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { CartItem, Coupon, Freebie, OrderEnquiry } from '../types';
 import { getCoupons, getFreebies, createOrderEnquiry, getGeneralSettings } from '../lib/storeService';
+import { normalizeAssetPath } from '../lib/imageAsset';
 
 interface CustomerDetails {
   name: string;
@@ -42,7 +43,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>(() => {
     try {
       const stored = localStorage.getItem(CART_STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+      if (!stored) return [];
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed)
+        ? parsed.map((item: CartItem) => ({
+            ...item,
+            image: item.image ? normalizeAssetPath(item.image) : item.image
+          }))
+        : [];
     } catch {
       return [];
     }
@@ -126,16 +134,20 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [subtotal, freebiesList]);
 
   const addToCart = (newItem: CartItem) => {
+    const normalizedItem: CartItem = {
+      ...newItem,
+      image: newItem.image ? normalizeAssetPath(newItem.image) : newItem.image
+    };
     setItems((prev) => {
       const existingIndex = prev.findIndex(
-        (i) => i.productId === newItem.productId && i.variantId === newItem.variantId
+        (i) => i.productId === normalizedItem.productId && i.variantId === normalizedItem.variantId
       );
       if (existingIndex > -1) {
         const copy = [...prev];
-        copy[existingIndex].quantity += newItem.quantity;
+        copy[existingIndex].quantity += normalizedItem.quantity;
         return copy;
       }
-      return [...prev, newItem];
+      return [...prev, normalizedItem];
     });
   };
 

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { resolveAssetUrl } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 
 interface ProductCardData {
   id: string;

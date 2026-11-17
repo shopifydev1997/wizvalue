@@ -5,7 +5,7 @@ import { Product, ProductVariant } from '../types';
 import { useCart } from '../context/CartContext';
 import { WhatsAppOrderButton } from './WhatsAppOrderButton';
 import { MarketplaceButtons } from './MarketplaceButtons';
-import { resolveAssetUrl } from '../lib/storeService';
+import { DEFAULT_PRODUCT_IMAGE, resolveAssetUrl } from '../lib/imageAsset';
 
 interface QuickViewModalProps {
   product: Product;
@@ -66,7 +66,7 @@ export const QuickViewModal: React.FC<QuickViewModalProps> = ({ product, onClose
           {/* Image */}
           <div className="aspect-square bg-gray-50 border border-gray-200 p-6 flex items-center justify-center">
             <img
-              src={resolveAssetUrl(currentImage)}
+              src={resolveAssetUrl(currentImage, DEFAULT_PRODUCT_IMAGE)}
               alt={product.name}
               className="w-full h-full object-contain"
             />

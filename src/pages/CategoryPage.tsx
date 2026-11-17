@@ -13,7 +13,8 @@ import {
   Tag
 } from 'lucide-react';
 import { Product, Category, GeneralSettings } from '../types';
-import { getProducts, getCategories, getGeneralSettings, normalizePackagingSize, resolveAssetUrl } from '../lib/storeService';
+import { getProducts, getCategories, getGeneralSettings, normalizePackagingSize } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 import { DEFAULT_PACKAGING_PRESETS } from '../lib/initialData';
 import { ProductCard } from '../components/ProductCard';
 import { Breadcrumbs } from '../components/Breadcrumbs';

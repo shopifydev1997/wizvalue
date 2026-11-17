@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
-import { resolveAssetUrl } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 
 interface VariantMatrixAccordionProps {
   products: Product[];

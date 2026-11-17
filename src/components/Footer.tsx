@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Check } from 'lucide-react';
-import { getGeneralSettings, resolveAssetUrl } from '../lib/storeService';
+import { getGeneralSettings } from '../lib/storeService';
+import { DEFAULT_BRAND_LOGO, resolveAssetUrl } from '../lib/imageAsset';
 
 const DEFAULT_FOOTER_THUMBNAIL = '/assets/products/lemon-handwash-footer.jpg';
 const STORAGE_KEY = 'wiz_footer_customer_thumbnail_v2';
 
-const DEFAULT_FOOTER_LOGO = '/assets/WiZ-Logo-NEW-1.png';
+const DEFAULT_FOOTER_LOGO = DEFAULT_BRAND_LOGO;
 const LOGO_STORAGE_KEY = 'wiz_footer_logo_v3';
 
 export const Footer: React.FC = () => {

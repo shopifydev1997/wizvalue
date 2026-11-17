@@ -11,7 +11,8 @@ import {
   BookOpen
 } from 'lucide-react';
 import { BlogPost } from '../types';
-import { getBlogPostBySlugOrId, getBlogPosts, resolveAssetUrl } from '../lib/storeService';
+import { getBlogPostBySlugOrId, getBlogPosts } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
 

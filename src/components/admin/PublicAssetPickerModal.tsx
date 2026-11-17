@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, X, Check, FolderOpen, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { PublicAssetItem, fetchPublicAssets, FALLBACK_PUBLIC_ASSETS } from '../../lib/assetLibrary';
-import { resolveAssetUrl } from '../../lib/storeService';
+import { normalizeAssetPath, resolveAssetUrl } from '../../lib/imageAsset';
 
 interface PublicAssetPickerModalProps {
   isOpen: boolean;
@@ -176,7 +176,7 @@ export const PublicAssetPickerModal: React.FC<PublicAssetPickerModalProps> = ({
                 <div
                   key={`${asset.path}-${idx}`}
                   onClick={() => {
-                    onSelect(asset.path);
+                    onSelect(normalizeAssetPath(asset.path));
                     onClose();
                   }}
                   className={`group relative border p-2 flex flex-col justify-between cursor-pointer transition-all hover:shadow-md ${

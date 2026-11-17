@@ -8,7 +8,7 @@ import {
   Pause
 } from 'lucide-react';
 import { Product } from '../types';
-import { resolveAssetUrl } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 
 export interface ShoppableVideoItem {
   id: string;

@@ -21,7 +21,8 @@ import {
 import { useCart } from '../context/CartContext';
 import { useCoinWallet } from '../context/CoinWalletContext';
 import { CoinWalletModal } from './CoinWalletModal';
-import { getGeneralSettings, saveGeneralSettings, getProducts, getCategories, resolveAssetUrl } from '../lib/storeService';
+import { getGeneralSettings, saveGeneralSettings, getProducts, getCategories } from '../lib/storeService';
+import { DEFAULT_BRAND_LOGO, resolveAssetUrl } from '../lib/imageAsset';
 import { GeneralSettings, MegaMenuHighlight, Product, Category } from '../types';
 
 export const Header: React.FC = () => {
@@ -357,10 +358,10 @@ export const Header: React.FC = () => {
           <div className="flex items-center space-x-2 shrink-0">
             {settings?.showHeaderLogo !== false ? (
               <Link to="/" className="flex items-center space-x-2 group">
-                {(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png') ? (
+                {(settings?.headerLogo || DEFAULT_BRAND_LOGO) ? (
                   <>
                     <img
-                      src={resolveAssetUrl(settings?.headerLogo || '/assets/WiZ-Logo-NEW-1.png')}
+                      src={resolveAssetUrl(settings?.headerLogo, DEFAULT_BRAND_LOGO)}
                       alt={settings?.websiteName || 'WiZ'}
                       className="h-9 sm:h-10 max-w-[160px] object-contain transition-transform group-hover:scale-105"
                       onLoad={(e) => {
@@ -370,7 +371,7 @@ export const Header: React.FC = () => {
                       }}
                       onError={(e) => {
                         const img = e.currentTarget;
-                        const defaultLogo = resolveAssetUrl('/assets/WiZ-Logo-NEW-1.png');
+                        const defaultLogo = resolveAssetUrl(DEFAULT_BRAND_LOGO);
                         if (!img.dataset.logoRetried && img.getAttribute('src') !== defaultLogo) {
                           img.dataset.logoRetried = 'true';
                           img.setAttribute('src', defaultLogo);

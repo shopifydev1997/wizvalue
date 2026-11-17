@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { DEFAULT_PRODUCT_IMAGE, resolveAssetUrl } from '../lib/imageAsset';
 
 interface SEOProps {
   title?: string;
@@ -12,7 +13,7 @@ export function useSEO({
   title,
   description = 'WiZ Home Hygiene & Personal Care - Premium disinfectants, wet wipes, handwash, dishwash, and personal care products with direct WhatsApp and marketplace order options.',
   canonicalUrl,
-  image = '/assets/products/Orange Wet Wipes.jpg',
+  image = DEFAULT_PRODUCT_IMAGE,
   noIndex = false
 }: SEOProps) {
   useEffect(() => {
@@ -32,6 +33,8 @@ export function useSEO({
       meta.content = content;
     };
 
+    const resolvedImage = resolveAssetUrl(image, DEFAULT_PRODUCT_IMAGE);
+
     // 2. Meta description
     setMetaTag('name', 'description', description);
 
@@ -41,7 +44,7 @@ export function useSEO({
     // 4. OpenGraph tags
     setMetaTag('property', 'og:title', finalTitle);
     setMetaTag('property', 'og:description', description);
-    setMetaTag('property', 'og:image', image);
+    setMetaTag('property', 'og:image', resolvedImage);
     setMetaTag('property', 'og:type', 'website');
     if (canonicalUrl) {
       setMetaTag('property', 'og:url', canonicalUrl);
@@ -51,7 +54,7 @@ export function useSEO({
     setMetaTag('name', 'twitter:card', 'summary_large_image');
     setMetaTag('name', 'twitter:title', finalTitle);
     setMetaTag('name', 'twitter:description', description);
-    setMetaTag('name', 'twitter:image', image);
+    setMetaTag('name', 'twitter:image', resolvedImage);
 
     // 6. Canonical link tag
     let linkCanonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;

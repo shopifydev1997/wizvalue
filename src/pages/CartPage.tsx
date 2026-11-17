@@ -15,7 +15,7 @@ import { useCart } from '../context/CartContext';
 import { useCoinWallet } from '../context/CoinWalletContext';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
-import { resolveAssetUrl } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 
 export const CartPage: React.FC = () => {
   useSEO({

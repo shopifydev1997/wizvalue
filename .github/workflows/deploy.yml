@@ -29,19 +29,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
+      - name: Setup Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: '22'
 
       - name: Install Dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Setup GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
       - name: Build Production Website
         run: npm run build
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v5
+        env:
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3

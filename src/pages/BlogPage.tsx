@@ -19,9 +19,9 @@ import {
   getBlogPosts,
   saveBlogPost,
   deleteBlogPost,
-  slugifyBlogTitle,
-  resolveAssetUrl
+  slugifyBlogTitle
 } from '../lib/storeService';
+import { resolveAssetUrl } from '../lib/imageAsset';
 import { FALLBACK_PUBLIC_ASSETS } from '../lib/assetLibrary';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
