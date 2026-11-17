@@ -158,9 +158,9 @@ export const AdminPage: React.FC = () => {
       // fallback
     }
     return [
-      { id: 1, title: 'Clean Beauty Rituals for Radiant Skin Everyday', image: '/assets/Blog01.jpg', date: 'October 12, 2026' },
-      { id: 2, title: 'Gentle pH Balance Formulas That Protect Daily', image: '/assets/Blog02.jpg', date: 'October 18, 2026' },
-      { id: 3, title: 'Nourishing Body Care Routines for All Seasons', image: '/assets/Blog03.jpg', date: 'October 24, 2026' }
+      { id: 1, title: 'Personal Hygiene Market Gives Birth', image: '/assets/aistudio/Reetesh-Sir-01_7339a95e.jpg', date: 'November 21, 2022' },
+      { id: 2, title: 'Women Leading The Entrepreneur', image: '/assets/aistudio/Manish-Maam_d22e9dde.jpg', date: 'November 18, 2022' },
+      { id: 3, title: 'Global Handwashing Day', image: '/assets/aistudio/Handwash-Day_19b06b7d.jpg', date: 'November 15, 2022' }
     ];
   });
 
@@ -294,9 +294,9 @@ export const AdminPage: React.FC = () => {
 
   const handleResetBlogThumbs = () => {
     const def = [
-      { id: 1, title: 'Glow Naturally With Hydrating Skin Rituals', image: '/assets/Blog01.jpg', date: 'February 23, 2026' },
-      { id: 2, title: 'Flawless Foundation Secrets For Radiant Skin', image: '/assets/Blog02.jpg', date: 'February 23, 2026' },
-      { id: 3, title: 'Golden Hour Makeup For Effortless Beauty', image: '/assets/Blog03.jpg', date: 'February 23, 2026' }
+      { id: 1, title: 'Personal Hygiene Market Gives Birth', image: '/assets/aistudio/Reetesh-Sir-01_7339a95e.jpg', date: 'November 21, 2022' },
+      { id: 2, title: 'Women Leading The Entrepreneur', image: '/assets/aistudio/Manish-Maam_d22e9dde.jpg', date: 'November 18, 2022' },
+      { id: 3, title: 'Global Handwashing Day', image: '/assets/aistudio/Handwash-Day_19b06b7d.jpg', date: 'November 15, 2022' }
     ];
     setBlogThumbnails(def);
     try {

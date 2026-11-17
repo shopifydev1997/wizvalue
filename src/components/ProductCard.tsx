@@ -10,14 +10,23 @@ import { resolveAssetUrl } from '../lib/storeService';
 interface ProductCardProps {
   product: Product;
   showCategory?: boolean;
+  preferredVariantId?: string;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory = false }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  showCategory = false,
+  preferredVariantId
+}) => {
   const { addToCart } = useCart();
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  const defaultVariant = product.variants[0] || {
+  const preferredVariant = preferredVariantId
+    ? product.variants.find((v) => v.id === preferredVariantId)
+    : undefined;
+
+  const defaultVariant = preferredVariant || product.variants[0] || {
     id: 'default',
     name: product.packagingSize || 'Standard',
     sku: product.sku,
@@ -26,6 +35,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory 
     stock: product.stock,
     packagingSize: product.packagingSize || ''
   };
+
+  const productUrl = preferredVariant
+    ? `/product/${product.slug}?variant=${encodeURIComponent(preferredVariant.id)}`
+    : `/product/${product.slug}`;
+
+  const displaySellingPrice = preferredVariant ? preferredVariant.sellingPrice : product.sellingPrice;
+  const displayRegularPrice = preferredVariant ? preferredVariant.regularPrice : product.regularPrice;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -47,7 +63,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory 
     setTimeout(() => setAddedNotice(false), 2000);
   };
 
-  const mainImage = resolveAssetUrl(product.images[0]) || resolveAssetUrl('/assets/products/Orange Wet Wipes.jpg');
+  const mainImage =
+    resolveAssetUrl((preferredVariant && preferredVariant.image) || product.images[0]) ||
+    resolveAssetUrl('/assets/products/Orange Wet Wipes.jpg');
 
   return (
     <>
@@ -56,7 +74,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory 
           {/* Image & Badges */}
           <div className="relative aspect-square w-full overflow-hidden bg-gray-50 flex items-center justify-center p-4">
             <Link
-              to={`/product/${product.slug}`}
+              to={productUrl}
               onClick={() => recordRecentlyViewed(product)}
               className="w-full h-full flex items-center justify-center"
             >
@@ -123,22 +141,28 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, showCategory 
 
             <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-1 hover:text-[#7a49a6] transition-colors text-left">
               <Link
-                to={`/product/${product.slug}`}
+                to={productUrl}
                 onClick={() => recordRecentlyViewed(product)}
               >
                 {product.name}
               </Link>
             </h3>
 
+            {preferredVariant && (
+              <span className="mt-1 inline-block text-[10px] font-semibold uppercase tracking-wider text-[#7a49a6] bg-purple-50 px-2 py-0.5 border border-purple-100">
+                {preferredVariant.packagingSize || preferredVariant.name}
+              </span>
+            )}
+
             {/* Price formatting matching reference: ₹125.00 ₹99 */}
             <div className="mt-1.5 flex items-center justify-start space-x-2">
-              {product.regularPrice > product.sellingPrice && (
+              {displayRegularPrice > displaySellingPrice && (
                 <span className="text-xs text-gray-400 line-through font-normal">
-                  ₹{product.regularPrice.toFixed(2)}
+                  ₹{displayRegularPrice.toFixed(2)}
                 </span>
               )}
               <span className="text-sm font-semibold text-gray-900">
-                ₹{product.sellingPrice.toFixed(2)}
+                ₹{displaySellingPrice.toFixed(2)}
               </span>
             </div>
           </div>

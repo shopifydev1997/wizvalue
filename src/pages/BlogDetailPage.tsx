@@ -175,7 +175,8 @@ export const BlogDetailPage: React.FC = () => {
             <img
               src={resolveAssetUrl(post.image)}
               alt={post.title}
-              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover object-top"
             />
           </div>
         )}
@@ -244,7 +245,8 @@ export const BlogDetailPage: React.FC = () => {
                         <img
                           src={resolveAssetUrl(item.image)}
                           alt={item.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          referrerPolicy="no-referrer"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                         />
                       )}
                     </div>

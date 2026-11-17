@@ -230,19 +230,33 @@ export async function saveGeneralSettings(settings: GeneralSettings): Promise<vo
  * Normalizes raw/shortened packaging size strings (e.g. '500 ml', '1 Litre')
  * to standard Quick Packaging Presets as configured in the backend admin panel.
  */
-export function normalizePackagingSize(rawSize: string, category?: string): string {
+export function normalizePackagingSize(rawSize: string, _category?: string): string {
   if (!rawSize) return '';
   const trimmed = rawSize.trim();
   const lower = trimmed.toLowerCase();
 
+  // Laundry Top Load / Front Load distinct packaging formats
+  if (lower.includes('top load') && lower.includes('front load')) return '1 Litre Top Load & Front Load Pouch';
+  if (lower.includes('2') && lower.includes('top load')) return '2 Litre Top Load Pouch';
+  if (lower.includes('2') && lower.includes('front load')) return '2 Litre Front Load Pouch';
+  if (lower.includes('5') && lower.includes('top load')) return '5 Litre Can Top Load';
+  if (lower.includes('5') && lower.includes('front load')) return '5 Litre Can Front Load';
+
+  // Sanitizer 2ml sachet pack of 500
+  if (lower.includes('2ml') || lower.includes('2 ml') || lower.includes('pack of 500')) {
+    return '2ml Pouch pack of 500';
+  }
+
   // Presets mapping
-  if (lower === '500 ml bottle' || lower === '500ml bottle') return '500 ml Bottle';
+  if (lower === '500 ml bottle' || lower === '500ml bottle' || lower === '500 ml pump bottle') return '500 ml Bottle';
   if (lower === '750 ml bottle' || lower === '750ml bottle') return '750 ml Bottle';
   if (lower === '1 litre pouch' || lower === '1 liter pouch' || lower === '1l pouch' || lower === '1 litre refill pouch') return '1 Litre Pouch';
-  if (lower === '1 litre bottle' || lower === '1 liter bottle' || lower === '1l bottle' || lower === '1 litre angled bottle') return '1 Litre Bottle';
+  if (lower === '1 litre bottle' || lower === '1 liter bottle' || lower === '1l bottle' || lower === '1 litre angled bottle' || lower === '1 litre pump bottle') return '1 Litre Bottle';
   if (lower === '2 litre can' || lower === '2 liter can' || lower === '2l can' || lower === '2 litre bottle') return '2 Litre Can';
-  if (lower === '5 litre can' || lower === '5 liter can' || lower === '5l can' || lower === '5 litre heavy duty can' || lower === '5 litre commercial can') return '5 Litre Can';
+  if (lower === '5 litre can' || lower === '5 liter can' || lower === '5l can' || lower === '5 litre heavy duty can' || lower === '5 litre commercial can' || lower === '5 litre bulk can' || lower === '5 litre heavy can') return '5 Litre Can';
   if (lower.includes('80 pull') || lower.includes('wipes')) return '80 Pulls Pack';
+  if (lower === 'pack of 2') return 'Pack of 2';
+  if (lower === 'pack of 4' && !(_category || '').toLowerCase().includes('paper')) return 'Pack of 4';
   if (lower.includes('pack of 4') || lower.includes('facial tissue')) return 'Pack of 4 Boxes';
   if (lower.includes('pack of 8')) return 'Pack of 8 Boxes';
 
@@ -256,10 +270,6 @@ export function normalizePackagingSize(rawSize: string, category?: string): stri
   }
 
   if (lower === '1 litre' || lower === '1 liter' || lower === '1l') {
-    const cat = (category || '').toLowerCase();
-    if (cat.includes('toilet') || cat.includes('glass')) {
-      return '1 Litre Bottle';
-    }
     return '1 Litre Pouch';
   }
 
@@ -278,9 +288,25 @@ export function normalizePackagingSize(rawSize: string, category?: string): stri
   return trimmed;
 }
 
+const isDiscontinuedProductOrVariant = (
+  categoryOrName: string,
+  sizeOrName: string
+): boolean => {
+  const cat = categoryOrName.toLowerCase();
+  const sz = sizeOrName.toLowerCase();
+  if (cat.includes('sanitizer')) {
+    return /\b(50|200)\s*ml\b/.test(sz);
+  }
+  if (cat.includes('toilet')) {
+    return /\b750\s*ml\b/.test(sz);
+  }
+  return false;
+};
+
 /**
  * Loads Products from Firestore or falls back to INITIAL_PRODUCTS,
- * overlaying any locally saved/edited products.
+ * overlaying any locally saved/edited products while reconciling new catalog variants
+ * and removing discontinued SKUs.
  */
 export async function getProducts(): Promise<Product[]> {
   const firestoreProducts: Product[] = [];
@@ -314,6 +340,8 @@ export async function getProducts(): Promise<Product[]> {
     }
   } catch {}
 
+  const initialById = new Map<string, Product>(INITIAL_PRODUCTS.map((p) => [p.id, p]));
+
   // Merge map: INITIAL_PRODUCTS -> Firestore -> Local overrides
   const map = new Map<string, Product>();
   INITIAL_PRODUCTS.forEach((p) => map.set(p.id, p));
@@ -321,21 +349,69 @@ export async function getProducts(): Promise<Product[]> {
   localProducts.forEach((p) => map.set(p.id, p));
 
   const finalProducts = Array.from(map.values())
-    .filter((p) => !deletedIds.has(p.id))
-    .map((p) => ({
-      ...p,
-      images: Array.isArray(p.images) ? p.images.map(resolveAssetUrl) : [],
-      packagingSize: p.packagingSize ? normalizePackagingSize(p.packagingSize, p.category) : p.packagingSize,
-      variants: Array.isArray(p.variants)
-        ? p.variants.map((v) => ({
-            ...v,
-            image: v.image ? resolveAssetUrl(v.image) : v.image,
-            packagingSize: v.packagingSize
-              ? normalizePackagingSize(v.packagingSize, p.category)
-              : normalizePackagingSize(v.name, p.category)
-          }))
-        : p.variants
-    }));
+    .filter((p) => {
+      if (deletedIds.has(p.id)) return false;
+      // Remove any standalone discontinued SKU products (Sanitizer 50ml/200ml, Toilet Cleaner 750ml)
+      if (isDiscontinuedProductOrVariant(p.category || p.name || '', `${p.name} ${p.slug} ${p.packagingSize || ''}`)) {
+        return false;
+      }
+      return true;
+    })
+    .map((p) => {
+      const initialMatch = initialById.get(p.id);
+      const rawVariants = Array.isArray(p.variants) ? [...p.variants] : [];
+      const supersededIds = new Set(['var-lm-2l', 'var-lm-5l', 'var-gc-500']);
+
+      // Filter out discontinued variants (50ml/200ml Sanitizer, 750ml Toilet Cleaner) and superseded generic seeds
+      const cleanedVariants = rawVariants
+        .filter((v) => !isDiscontinuedProductOrVariant(p.category || p.name || '', `${v.name || ''} ${v.packagingSize || ''} ${v.sku || ''}`))
+        .filter((v) => !(initialMatch && supersededIds.has(v.id)))
+        .map((v) => {
+          // Upgrade legacy un-distinguished 1L variants for Toilet Cleaner & Glass Cleaner to 1 Litre Pouch
+          if ((p.id === 'prod-toilet-cleaner' && v.id === 'var-tc-1l') || (p.id === 'prod-glass-cleaner' && v.id === 'var-gc-1l')) {
+            return {
+              ...v,
+              name: '1 Litre Refill Pouch',
+              packagingSize: '1 Litre Pouch'
+            };
+          }
+          if (p.id === 'prod-laundry-detergent' && v.id === 'var-lm-1l') {
+            return {
+              ...v,
+              name: '1 Litre Top Load & Front Load Pouch',
+              packagingSize: '1 Litre Top Load & Front Load Pouch'
+            };
+          }
+          return v;
+        });
+
+      // Reconcile new catalog variants from INITIAL_PRODUCTS if missing in legacy DB/localStorage seeds
+      if (initialMatch && Array.isArray(initialMatch.variants)) {
+        initialMatch.variants.forEach((initVar) => {
+          const exists = cleanedVariants.some((cv) => cv.id === initVar.id);
+          if (!exists) {
+            cleanedVariants.push(initVar);
+          }
+        });
+      }
+
+      const normalizedVariants = cleanedVariants.map((v) => ({
+        ...v,
+        image: v.image ? resolveAssetUrl(v.image) : v.image,
+        packagingSize: v.packagingSize
+          ? normalizePackagingSize(v.packagingSize, p.category)
+          : normalizePackagingSize(v.name, p.category)
+      }));
+
+      const basePack = p.packagingSize ? normalizePackagingSize(p.packagingSize, p.category) : p.packagingSize;
+
+      return {
+        ...p,
+        images: Array.isArray(p.images) ? p.images.map(resolveAssetUrl) : [],
+        packagingSize: basePack,
+        variants: normalizedVariants
+      };
+    });
   return finalProducts;
 }
 
@@ -1008,8 +1084,19 @@ export async function seedInitialDataIfEmpty(): Promise<void> {
     }
 
     const blogSnap = await getDocs(collection(db, 'blogs'));
-    if (blogSnap.empty) {
-      console.log('Seeding initial blog posts into Firestore...');
+    const legacySeedTitles = new Set([
+      'Glow Naturally With Hydrating Skin Rituals',
+      'Flawless Foundation Secrets For Radiant Skin',
+      'Golden Hour Makeup For Effortless Beauty',
+      'Clean Beauty Rituals for Radiant Skin Everyday',
+      'Gentle pH Balance Formulas That Protect Daily',
+      'Nourishing Body Care Routines for All Seasons'
+    ]);
+    const shouldSeedUpdatedBlogs =
+      blogSnap.empty ||
+      blogSnap.docs.every((d) => legacySeedTitles.has(String(d.data()?.title || '')));
+    if (shouldSeedUpdatedBlogs) {
+      console.log('Seeding updated blog posts into Firestore...');
       for (const blog of INITIAL_BLOG_POSTS) {
         await setDoc(doc(db, 'blogs', blog.id), cleanFirestoreData(blog));
       }
@@ -1112,12 +1199,24 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     }
   } catch {}
 
+  const legacySeedTitles = new Set([
+    'Glow Naturally With Hydrating Skin Rituals',
+    'Flawless Foundation Secrets For Radiant Skin',
+    'Golden Hour Makeup For Effortless Beauty',
+    'Clean Beauty Rituals for Radiant Skin Everyday',
+    'Gentle pH Balance Formulas That Protect Daily',
+    'Nourishing Body Care Routines for All Seasons'
+  ]);
+  const isUneditedLegacySeed = (b: { id: string; title: string }) =>
+    legacySeedTitles.has(b.title);
+
   const map = new Map<string, BlogPost>();
   INITIAL_BLOG_POSTS.forEach((b, i) => map.set(b.id, normalizeBlogPost(b, i)));
 
-  // Overlay any legacy v2 thumbnail adjustments safely without erasing content/tags
+  // Overlay any user-edited legacy v2 adjustments without overwriting updated defaults
   legacyBlogs.forEach((b, i) => {
     const norm = normalizeBlogPost(b, i);
+    if (isUneditedLegacySeed(norm)) return;
     const prev = map.get(norm.id);
     map.set(norm.id, {
       ...prev,
@@ -1129,8 +1228,12 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     });
   });
 
-  firestoreBlogs.forEach((b) => map.set(b.id, b));
-  localBlogs.forEach((b) => map.set(b.id, b));
+  firestoreBlogs.forEach((b) => {
+    if (!isUneditedLegacySeed(b)) map.set(b.id, b);
+  });
+  localBlogs.forEach((b) => {
+    if (!isUneditedLegacySeed(b)) map.set(b.id, b);
+  });
 
   return Array.from(map.values())
     .filter((b) => !deletedIds.has(b.id))

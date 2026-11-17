@@ -28,6 +28,9 @@ import { useSEO } from '../hooks/useSEO';
 
 const BLOG_CATEGORIES = [
   'All',
+  'Industry & Market',
+  'Leadership & Media',
+  'Hygiene Essentials',
   'Skin Care',
   'Personal Care',
   'Beauty Rituals',
@@ -36,9 +39,9 @@ const BLOG_CATEGORIES = [
 ];
 
 const QUICK_COVER_PRESETS = [
-  { label: 'Blog Rituals 01', path: '/assets/Blog01.jpg' },
-  { label: 'Blog Beauty 02', path: '/assets/Blog02.jpg' },
-  { label: 'Blog Lifestyle 03', path: '/assets/Blog03.jpg' },
+  { label: 'Hygiene Startups', path: '/assets/aistudio/Reetesh-Sir-01_7339a95e.jpg' },
+  { label: 'Women Leadership', path: '/assets/aistudio/Manish-Maam_d22e9dde.jpg' },
+  { label: 'Handwashing Day', path: '/assets/aistudio/Handwash-Day_19b06b7d.jpg' },
   { label: 'Wet Wipes Care', path: '/assets/products/Rose Water Wet Wipes in Bloom.png' },
   { label: 'Bodywash Care', path: '/assets/products/Bodywash-M1.jpg' },
   { label: 'Handwash Care', path: '/assets/products/Fresh Orange Hand Wash Advertisement-1.png' }
@@ -355,7 +358,8 @@ export const BlogPage: React.FC = () => {
                       <img
                         src={resolveAssetUrl(post.image)}
                         alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">

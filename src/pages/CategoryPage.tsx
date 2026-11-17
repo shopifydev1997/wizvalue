@@ -81,13 +81,13 @@ export const CategoryPage: React.FC = () => {
   const [settings, setSettings] = useState<GeneralSettings | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
-  // Accordion open/close state for all 5 filter tabs
+  // Accordion open/close state: Categories expanded, all other Filters collapsed initially
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
     categories: true,
-    sizes: true,
-    fragrance: true,
-    price: true,
-    availability: true
+    sizes: false,
+    fragrance: false,
+    price: false,
+    availability: false
   });
 
   const toggleAccordion = (key: string) => {
@@ -103,17 +103,43 @@ export const CategoryPage: React.FC = () => {
   const [availability, setAvailability] = useState<'all' | 'in-stock' | 'out-of-stock'>('all');
   const [sortBy, setSortBy] = useState('featured');
 
-  // Load initial parameters from URL (e.g. ?size=500ml+Bottle or ?fragrance=Lemon)
+  // Canonicalize packaging size strings (Liter/Litre, spacing, &/and) for reliable filtering
+  const canonicalSizeKey = (val: string) =>
+    val
+      .toLowerCase()
+      .replace(/liter/g, 'litre')
+      .replace(/&/g, 'and')
+      .replace(/(\d)\s+(ml|l|litre)\b/g, '$1$2')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  // Collapse filter accordions (except Categories) and clear stale price/availability when switching category pages
+  useEffect(() => {
+    setOpenAccordions({
+      categories: true,
+      sizes: false,
+      fragrance: false,
+      price: false,
+      availability: false
+    });
+    setPriceBucket('all');
+    setCustomMinPrice('');
+    setCustomMaxPrice('');
+    setAvailability('all');
+  }, [slug]);
+
+  // Load initial parameters from URL and reset cleanly on route change
   useEffect(() => {
     const sizeParam = searchParams.get('size');
     if (sizeParam) {
-      setSelectedSizes([sizeParam]);
+      const normalized = normalizePackagingSize(sizeParam, (slug || 'household-cleaners').toLowerCase());
+      setSelectedSizes([normalized || sizeParam]);
+    } else {
+      setSelectedSizes([]);
     }
     const fragranceParam = searchParams.get('fragrance');
-    if (fragranceParam) {
-      setSelectedFragrances([fragranceParam]);
-    }
-  }, [searchParams]);
+    setSelectedFragrances(fragranceParam ? [fragranceParam] : []);
+  }, [searchParams, slug]);
 
   useEffect(() => {
     getProducts().then(setProducts);
@@ -154,10 +180,15 @@ export const CategoryPage: React.FC = () => {
     };
   }, [currentSlug, categories]);
 
+  const activeHeading =
+    selectedSizes.length === 1
+      ? `${currentCategory?.name || 'Category'} ${selectedSizes[0]}`
+      : currentCategory?.name || 'Category';
+
   // SEO Friendly Metadata & Canonical URL
   useSEO({
-    title: `${currentCategory?.name || 'Category'} | WiZ Care`,
-    description: `Shop genuine WiZ ${currentCategory?.name || 'Hygiene'} products. 99.9% germ protection, multiple packaging sizes, authentic factory prices, and direct WhatsApp order.`,
+    title: `${activeHeading} | WiZ Care`,
+    description: `Shop genuine WiZ ${activeHeading} products. 99.9% germ protection, multiple packaging sizes, authentic factory prices, and direct WhatsApp order.`,
     canonicalUrl: typeof window !== 'undefined' ? `${window.location.origin}/category/${currentSlug}` : `https://wizcare.in/category/${currentSlug}`
   });
 
@@ -194,7 +225,28 @@ export const CategoryPage: React.FC = () => {
     });
   }, [currentSlug, products]);
 
-  // Available Packaging Sizes dynamically extracted from backend product admin panel Quick Packaging Presets
+  // Helper to get applicable prices for a product within the current category
+  const getCategoryProductPrices = (p: Product): number[] => {
+    const prices = new Set<number>();
+    if (currentSlug === '1l-5l-bulk' && Array.isArray(p.variants) && p.variants.length > 0) {
+      p.variants.forEach((v) => {
+        const sizeLabel = normalizePackagingSize(v.packagingSize || v.name, p.category).toLowerCase();
+        if (/\b(1|2|5)\s*litre\b/.test(sizeLabel)) {
+          prices.add(v.sellingPrice);
+        }
+      });
+    } else {
+      if (typeof p.sellingPrice === 'number') prices.add(p.sellingPrice);
+      if (Array.isArray(p.variants)) {
+        p.variants.forEach((v) => {
+          if (typeof v.sellingPrice === 'number') prices.add(v.sellingPrice);
+        });
+      }
+    }
+    return Array.from(prices);
+  };
+
+  // Available Packaging Sizes dynamically extracted strictly from products in this category
   const availableSizes = useMemo(() => {
     const backendPresets = settings?.packagingPresets || DEFAULT_PACKAGING_PRESETS;
     const sizeMap = new Map<string, number>();
@@ -219,6 +271,8 @@ export const CategoryPage: React.FC = () => {
         // Exclude raw un-normalized fragments (like raw '500 ml' or '1 Litre')
         const lower = size.toLowerCase();
         if (lower === '500 ml' || lower === '1 litre' || lower === '750 ml' || lower === '2 litre') return;
+        // On 1L & 5L Bulk category page, only list bulk 1L/2L/5L packaging filters
+        if (currentSlug === '1l-5l-bulk' && !/\b(1|2|5)\s*litre\b/i.test(lower)) return;
         sizeMap.set(size, (sizeMap.get(size) || 0) + 1);
       });
     });
@@ -237,13 +291,17 @@ export const CategoryPage: React.FC = () => {
       if (idxB !== -1) return 1;
       return b.count - a.count;
     });
-  }, [baseCategoryProducts, settings]);
+  }, [baseCategoryProducts, settings, currentSlug]);
 
-  // Available Fragrances dynamically extracted strictly from products in this category
+  // Available Fragrances dynamically extracted strictly from products in categories that use fragrance
   const availableFragrances = useMemo(() => {
+    // Paper products (tissues/towels) are not filtered by fragrance
+    if (currentSlug === 'paper-products') return [];
+
     const fragMap = new Map<string, number>();
 
     baseCategoryProducts.forEach((p) => {
+      if (p.category === 'Paper Products') return;
       const productFrags = new Set<string>();
       if (p.fragrance && p.fragrance.trim()) {
         productFrags.add(p.fragrance.trim());
@@ -257,6 +315,8 @@ export const CategoryPage: React.FC = () => {
       }
 
       productFrags.forEach((frag) => {
+        const lower = frag.toLowerCase();
+        if (lower === 'n/a' || lower === 'none') return;
         fragMap.set(frag, (fragMap.get(frag) || 0) + 1);
       });
     });
@@ -267,7 +327,61 @@ export const CategoryPage: React.FC = () => {
     });
 
     return results.sort((a, b) => b.count - a.count || a.fragrance.localeCompare(b.fragrance));
+  }, [baseCategoryProducts, currentSlug]);
+
+  // Available Price Tiers dynamically computed from products & variants in the active category
+  const { availablePriceBuckets, categoryMinPrice, categoryMaxPrice } = useMemo(() => {
+    const tiers = [
+      { label: 'Under ₹100', value: 'under-100', match: (price: number) => price < 100 },
+      { label: '₹100 to ₹200', value: '100-200', match: (price: number) => price >= 100 && price <= 200 },
+      { label: '₹200 to ₹500', value: '200-500', match: (price: number) => price > 200 && price <= 500 },
+      { label: 'Above ₹500', value: 'above-500', match: (price: number) => price > 500 }
+    ];
+
+    let minP = Infinity;
+    let maxP = -Infinity;
+
+    const bucketResults = tiers
+      .map((tier) => {
+        let count = 0;
+        baseCategoryProducts.forEach((p) => {
+          const prices = getCategoryProductPrices(p);
+          prices.forEach((pr) => {
+            if (pr < minP) minP = pr;
+            if (pr > maxP) maxP = pr;
+          });
+          if (prices.some(tier.match)) count += 1;
+        });
+        return { label: tier.label, value: tier.value, count };
+      })
+      .filter((b) => b.count > 0);
+
+    return {
+      availablePriceBuckets: bucketResults,
+      categoryMinPrice: Number.isFinite(minP) ? minP : 0,
+      categoryMaxPrice: Number.isFinite(maxP) ? maxP : 0
+    };
+  }, [baseCategoryProducts, currentSlug]);
+
+  // Dynamic Availability counts for the active category
+  const { inStockCount, outOfStockCount } = useMemo(() => {
+    let inStock = 0;
+    let outOfStock = 0;
+    baseCategoryProducts.forEach((p) => {
+      if (p.isSoldout || p.stock <= 0) outOfStock += 1;
+      else inStock += 1;
+    });
+    return { inStockCount: inStock, outOfStockCount: outOfStock };
   }, [baseCategoryProducts]);
+
+  // Show filter accordions only when relevant options exist for the selected product category
+  const showSizesFilter = availableSizes.length > 0;
+  const showFragranceFilter = availableFragrances.length > 0;
+  const showPriceFilter =
+    baseCategoryProducts.length > 0 &&
+    (availablePriceBuckets.length > 1 || categoryMaxPrice > categoryMinPrice || priceBucket !== 'all' || Boolean(customMinPrice) || Boolean(customMaxPrice));
+  const showAvailabilityFilter =
+    (inStockCount > 0 && outOfStockCount > 0) || availability !== 'all';
 
   // Filtered and Sorted Products
   const filteredProducts = useMemo(() => {
@@ -278,30 +392,31 @@ export const CategoryPage: React.FC = () => {
           const productSizes = new Set<string>();
           if (p.packagingSize) {
             const norm = normalizePackagingSize(p.packagingSize, p.category);
-            if (norm) productSizes.add(norm.toLowerCase());
+            if (norm) productSizes.add(canonicalSizeKey(norm));
+            productSizes.add(canonicalSizeKey(p.packagingSize));
           }
           if (Array.isArray(p.variants)) {
             p.variants.forEach((v) => {
               const raw = v.packagingSize || v.name;
               if (raw) {
                 const norm = normalizePackagingSize(raw, p.category);
-                if (norm) productSizes.add(norm.toLowerCase());
+                if (norm) productSizes.add(canonicalSizeKey(norm));
+                productSizes.add(canonicalSizeKey(raw));
               }
             });
           }
 
           const hasMatchingSize = selectedSizes.some((sel) => {
-            const cleanSel = sel.toLowerCase();
+            const cleanSel = canonicalSizeKey(normalizePackagingSize(sel, p.category) || sel);
+            const rawCleanSel = canonicalSizeKey(sel);
             for (const ps of productSizes) {
               if (
                 ps === cleanSel ||
+                ps === rawCleanSel ||
                 ps.includes(cleanSel) ||
                 cleanSel.includes(ps) ||
-                (cleanSel.includes('500 ml bottle') && (ps.includes('500') || ps.includes('500ml'))) ||
-                (cleanSel.includes('1 litre pouch') && (ps.includes('1l') || ps.includes('1 litre') || ps.includes('1 liter'))) ||
-                (cleanSel.includes('5 litre can') && (ps.includes('5l') || ps.includes('5 litre') || ps.includes('5 liter'))) ||
-                (cleanSel.includes('750 ml bottle') && ps.includes('750')) ||
-                (cleanSel.includes('2 litre can') && (ps.includes('2l') || ps.includes('2 litre')))
+                ps.includes(rawCleanSel) ||
+                rawCleanSel.includes(ps)
               ) {
                 return true;
               }
@@ -337,15 +452,18 @@ export const CategoryPage: React.FC = () => {
           if (!hasMatchingFrag) return false;
         }
 
-        // Price Bucket Filter
-        if (priceBucket === 'under-100' && p.sellingPrice >= 100) return false;
-        if (priceBucket === '100-200' && (p.sellingPrice < 100 || p.sellingPrice > 200)) return false;
-        if (priceBucket === '200-500' && (p.sellingPrice < 200 || p.sellingPrice > 500)) return false;
-        if (priceBucket === 'above-500' && p.sellingPrice <= 500) return false;
+        // Price Bucket & Custom Min/Max Filter (checks product and variant prices)
+        const productPrices = getCategoryProductPrices(p);
+        if (priceBucket === 'under-100' && !productPrices.some((pr) => pr < 100)) return false;
+        if (priceBucket === '100-200' && !productPrices.some((pr) => pr >= 100 && pr <= 200)) return false;
+        if (priceBucket === '200-500' && !productPrices.some((pr) => pr > 200 && pr <= 500)) return false;
+        if (priceBucket === 'above-500' && !productPrices.some((pr) => pr > 500)) return false;
 
-        // Custom Min/Max Price
-        if (customMinPrice && p.sellingPrice < parseFloat(customMinPrice)) return false;
-        if (customMaxPrice && p.sellingPrice > parseFloat(customMaxPrice)) return false;
+        if (customMinPrice || customMaxPrice) {
+          const minVal = customMinPrice ? parseFloat(customMinPrice) : -Infinity;
+          const maxVal = customMaxPrice ? parseFloat(customMaxPrice) : Infinity;
+          if (!productPrices.some((pr) => pr >= minVal && pr <= maxVal)) return false;
+        }
 
         // Availability Filter
         if (availability === 'in-stock' && (p.isSoldout || p.stock <= 0)) return false;
@@ -368,7 +486,8 @@ export const CategoryPage: React.FC = () => {
     customMinPrice,
     customMaxPrice,
     availability,
-    sortBy
+    sortBy,
+    currentSlug
   ]);
 
   const toggleSize = (size: string) => {
@@ -484,10 +603,18 @@ export const CategoryPage: React.FC = () => {
             <Breadcrumbs
               light
               className="p-0 max-w-none"
-              items={[
-                { label: 'Shop', path: '/shop' },
-                { label: currentCategory?.name || 'Category' }
-              ]}
+              items={
+                selectedSizes.length === 1
+                  ? [
+                      { label: 'Shop', path: '/shop' },
+                      { label: currentCategory?.name || 'Category', path: `/category/${currentSlug}` },
+                      { label: selectedSizes[0] }
+                    ]
+                  : [
+                      { label: 'Shop', path: '/shop' },
+                      { label: currentCategory?.name || 'Category' }
+                    ]
+              }
             />
           </div>
 
@@ -501,7 +628,7 @@ export const CategoryPage: React.FC = () => {
             </div>
 
             <h1 className="text-2xl sm:text-4xl lg:text-5xl font-['Poppins'] font-semibold text-white tracking-tight drop-shadow-sm">
-              {currentCategory?.name}
+              {activeHeading}
             </h1>
 
             <p className="text-xs sm:text-sm text-gray-200 max-w-2xl leading-relaxed line-clamp-2 drop-shadow-xs">
@@ -661,36 +788,34 @@ export const CategoryPage: React.FC = () => {
               )}
             </div>
 
-            {/* ACCORDION 2: PACKAGING SIZES */}
-            <div className="py-2">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('sizes')}
-                className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
-                    Packaging Sizes
-                  </span>
-                  {selectedSizes.length > 0 && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      {selectedSizes.length}
+            {/* ACCORDION 2: PACKAGING SIZES (Only if category has size filters) */}
+            {showSizesFilter && (
+              <div className="py-2">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('sizes')}
+                  className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
+                      Packaging Sizes
                     </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
-                    openAccordions.sizes ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
+                    {selectedSizes.length > 0 && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        {selectedSizes.length}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
+                      openAccordions.sizes ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
 
-              {openAccordions.sizes && (
-                <div className="pb-3 pt-1 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
-                  {availableSizes.length === 0 ? (
-                    <span className="text-gray-400 text-[11px] italic">No packaging sizes available</span>
-                  ) : (
-                    availableSizes.map(({ size, count }) => {
+                {openAccordions.sizes && (
+                  <div className="pb-3 pt-1 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                    {availableSizes.map(({ size, count }) => {
                       const isChecked = selectedSizes.includes(size);
 
                       return (
@@ -714,45 +839,43 @@ export const CategoryPage: React.FC = () => {
                           </span>
                         </label>
                       );
-                    })
-                  )}
-                </div>
-              )}
-            </div>
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
-            {/* ACCORDION 3: FRAGRANCE */}
-            <div className="py-2">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('fragrance')}
-                className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
-                    Fragrance
-                  </span>
-                  {selectedFragrances.length > 0 && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      {selectedFragrances.length}
+            {/* ACCORDION 3: FRAGRANCE (Only if category supports fragrance options) */}
+            {showFragranceFilter && (
+              <div className="py-2">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('fragrance')}
+                  className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
+                      Fragrance
                     </span>
-                  )}
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Sparkles className="w-3.5 h-3.5 text-[#7a49a6]" />
-                  <ChevronDown
-                    className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
-                      openAccordions.fragrance ? 'rotate-180 text-[#7a49a6]' : ''
-                    }`}
-                  />
-                </div>
-              </button>
+                    {selectedFragrances.length > 0 && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        {selectedFragrances.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Sparkles className="w-3.5 h-3.5 text-[#7a49a6]" />
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
+                        openAccordions.fragrance ? 'rotate-180 text-[#7a49a6]' : ''
+                      }`}
+                    />
+                  </div>
+                </button>
 
-              {openAccordions.fragrance && (
-                <div className="pb-3 pt-1 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
-                  {availableFragrances.length === 0 ? (
-                    <span className="text-gray-400 text-[11px] italic">No fragrance options for this category</span>
-                  ) : (
-                    availableFragrances.map(({ fragrance, count }) => {
+                {openAccordions.fragrance && (
+                  <div className="pb-3 pt-1 space-y-2 max-h-56 overflow-y-auto pr-1 text-xs">
+                    {availableFragrances.map(({ fragrance, count }) => {
                       const isChecked = selectedFragrances.includes(fragrance);
 
                       return (
@@ -776,134 +899,149 @@ export const CategoryPage: React.FC = () => {
                           </span>
                         </label>
                       );
-                    })
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* ACCORDION 4: PRICE (₹) */}
-            <div className="py-2">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('price')}
-                className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
-                    Price (₹)
-                  </span>
-                  {(priceBucket !== 'all' || customMinPrice || customMaxPrice) && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      Active
-                    </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
-                    openAccordions.price ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
-
-              {openAccordions.price && (
-                <div className="pb-3 pt-1 space-y-2 text-xs">
-                  {[
-                    { label: 'All Prices', value: 'all' },
-                    { label: 'Under ₹100', value: 'under-100' },
-                    { label: '₹100 to ₹200', value: '100-200' },
-                    { label: '₹200 to ₹500', value: '200-500' },
-                    { label: 'Above ₹500', value: 'above-500' }
-                  ].map((tier) => (
-                    <label
-                      key={tier.value}
-                      className="flex items-center space-x-2 text-gray-700 hover:text-black cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="priceTier"
-                        checked={priceBucket === tier.value}
-                        onChange={() => setPriceBucket(tier.value)}
-                        className="border-gray-300 text-[#7a49a6] focus:ring-[#7a49a6] cursor-pointer"
-                      />
-                      <span className={`text-[11px] ${priceBucket === tier.value ? 'font-bold text-[#7a49a6]' : ''}`}>
-                        {tier.label}
-                      </span>
-                    </label>
-                  ))}
-
-                  {/* Min / Max numeric inputs */}
-                  <div className="pt-2 flex items-center space-x-2">
-                    <input
-                      type="number"
-                      placeholder="Min ₹"
-                      value={customMinPrice}
-                      onChange={(e) => setCustomMinPrice(e.target.value)}
-                      className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
-                    />
-                    <span className="text-gray-400">-</span>
-                    <input
-                      type="number"
-                      placeholder="Max ₹"
-                      value={customMaxPrice}
-                      onChange={(e) => setCustomMaxPrice(e.target.value)}
-                      className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
-                    />
+                    })}
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
 
-            {/* ACCORDION 5: AVAILABILITY */}
-            <div className="py-2">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('availability')}
-                className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
-                    Availability
-                  </span>
-                  {availability !== 'all' && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      Active
+            {/* ACCORDION 4: PRICE (₹) (Only matching price ranges in this category) */}
+            {showPriceFilter && (
+              <div className="py-2">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('price')}
+                  className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
+                      Price (₹)
                     </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
-                    openAccordions.availability ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
-
-              {openAccordions.availability && (
-                <div className="pb-3 pt-1 space-y-2 text-xs">
-                  {[
-                    { label: 'All Items', value: 'all' },
-                    { label: 'In Stock Only', value: 'in-stock' },
-                    { label: 'Out of Stock', value: 'out-of-stock' }
-                  ].map((item) => (
-                    <label
-                      key={item.value}
-                      className="flex items-center space-x-2 text-gray-700 hover:text-black cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="availability"
-                        checked={availability === item.value}
-                        onChange={() => setAvailability(item.value as any)}
-                        className="border-gray-300 text-[#7a49a6] focus:ring-[#7a49a6] cursor-pointer"
-                      />
-                      <span className={`text-[11px] ${availability === item.value ? 'font-bold text-[#7a49a6]' : ''}`}>
-                        {item.label}
+                    {(priceBucket !== 'all' || customMinPrice || customMaxPrice) && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        Active
                       </span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
+                      openAccordions.price ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
+
+                {openAccordions.price && (
+                  <div className="pb-3 pt-1 space-y-2 text-xs">
+                    {[
+                      { label: 'All Prices', value: 'all', count: baseCategoryProducts.length },
+                      ...availablePriceBuckets
+                    ].map((tier) => (
+                      <label
+                        key={tier.value}
+                        className="flex items-center justify-between text-gray-700 hover:text-black cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="priceTier"
+                            checked={priceBucket === tier.value}
+                            onChange={() => setPriceBucket(tier.value)}
+                            className="border-gray-300 text-[#7a49a6] focus:ring-[#7a49a6] cursor-pointer"
+                          />
+                          <span className={`text-[11px] ${priceBucket === tier.value ? 'font-bold text-[#7a49a6]' : ''}`}>
+                            {tier.label}
+                          </span>
+                        </div>
+                        {tier.value !== 'all' && (
+                          <span className="text-[10px] text-gray-400 group-hover:text-gray-600 font-mono">
+                            {tier.count}
+                          </span>
+                        )}
+                      </label>
+                    ))}
+
+                    {/* Min / Max numeric inputs scoped to category range */}
+                    <div className="pt-2 flex items-center space-x-2">
+                      <input
+                        type="number"
+                        placeholder={categoryMinPrice > 0 ? `Min ₹${categoryMinPrice}` : 'Min ₹'}
+                        value={customMinPrice}
+                        onChange={(e) => setCustomMinPrice(e.target.value)}
+                        className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
+                      />
+                      <span className="text-gray-400">-</span>
+                      <input
+                        type="number"
+                        placeholder={categoryMaxPrice > 0 ? `Max ₹${categoryMaxPrice}` : 'Max ₹'}
+                        value={customMaxPrice}
+                        onChange={(e) => setCustomMaxPrice(e.target.value)}
+                        className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ACCORDION 5: AVAILABILITY (Shown only if category has mixed stock states) */}
+            {showAvailabilityFilter && (
+              <div className="py-2">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('availability')}
+                  className="w-full flex items-center justify-between py-2.5 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900 group-hover:text-[#7a49a6] transition-colors">
+                      Availability
+                    </span>
+                    {availability !== 'all' && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 group-hover:text-[#7a49a6] transition-transform duration-200 ${
+                      openAccordions.availability ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
+
+                {openAccordions.availability && (
+                  <div className="pb-3 pt-1 space-y-2 text-xs">
+                    {[
+                      { label: 'All Items', value: 'all', count: baseCategoryProducts.length },
+                      ...(inStockCount > 0 ? [{ label: 'In Stock Only', value: 'in-stock', count: inStockCount }] : []),
+                      ...(outOfStockCount > 0 ? [{ label: 'Out of Stock', value: 'out-of-stock', count: outOfStockCount }] : [])
+                    ].map((item) => (
+                      <label
+                        key={item.value}
+                        className="flex items-center justify-between text-gray-700 hover:text-black cursor-pointer group"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="availability"
+                            checked={availability === item.value}
+                            onChange={() => setAvailability(item.value as 'all' | 'in-stock' | 'out-of-stock')}
+                            className="border-gray-300 text-[#7a49a6] focus:ring-[#7a49a6] cursor-pointer"
+                          />
+                          <span className={`text-[11px] ${availability === item.value ? 'font-bold text-[#7a49a6]' : ''}`}>
+                            {item.label}
+                          </span>
+                        </div>
+                        {item.value !== 'all' && (
+                          <span className="text-[10px] text-gray-400 group-hover:text-gray-600 font-mono">
+                            {item.count}
+                          </span>
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </aside>
 
           {/* =========================================================================
@@ -1024,9 +1162,45 @@ export const CategoryPage: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredProducts.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
+                {filteredProducts.map((p) => {
+                  let preferredVariantId: string | undefined;
+                  if (selectedSizes.length === 1 && Array.isArray(p.variants)) {
+                    const targetKey = canonicalSizeKey(normalizePackagingSize(selectedSizes[0], p.category) || selectedSizes[0]);
+                    const matchedVar =
+                      p.variants.find((v) => {
+                        const vPack = canonicalSizeKey(normalizePackagingSize(v.packagingSize || v.name, p.category));
+                        return vPack === targetKey;
+                      }) ||
+                      p.variants.find((v) => {
+                        const vPack = canonicalSizeKey(normalizePackagingSize(v.packagingSize || v.name, p.category));
+                        return vPack.includes(targetKey) || targetKey.includes(vPack);
+                      });
+                    preferredVariantId = matchedVar?.id;
+                  } else if (currentSlug === '1l-5l-bulk' && Array.isArray(p.variants)) {
+                    const bulkVar = p.variants.find((v) =>
+                      /\b(1|2|5)\s*litre\b/i.test(normalizePackagingSize(v.packagingSize || v.name, p.category))
+                    );
+                    preferredVariantId = bulkVar?.id;
+                  } else if (priceBucket !== 'all' && Array.isArray(p.variants)) {
+                    const priceMatch = (pr: number) => {
+                      if (priceBucket === 'under-100') return pr < 100;
+                      if (priceBucket === '100-200') return pr >= 100 && pr <= 200;
+                      if (priceBucket === '200-500') return pr > 200 && pr <= 500;
+                      if (priceBucket === 'above-500') return pr > 500;
+                      return true;
+                    };
+                    if (!priceMatch(p.sellingPrice)) {
+                      preferredVariantId = p.variants.find((v) => priceMatch(v.sellingPrice))?.id;
+                    }
+                  }
+                  return (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      preferredVariantId={preferredVariantId}
+                    />
+                  );
+                })}
               </div>
             )}
           </main>
@@ -1110,35 +1284,33 @@ export const CategoryPage: React.FC = () => {
             </div>
 
             {/* ACCORDION 2: PACKAGING SIZES (Mobile) */}
-            <div className="border-b border-gray-200 pb-3">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('sizes')}
-                className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
-                    Packaging Sizes
-                  </span>
-                  {selectedSizes.length > 0 && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      {selectedSizes.length}
+            {showSizesFilter && (
+              <div className="border-b border-gray-200 pb-3">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('sizes')}
+                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
+                      Packaging Sizes
                     </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                    openAccordions.sizes ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
+                    {selectedSizes.length > 0 && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        {selectedSizes.length}
+                      </span>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      openAccordions.sizes ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
 
-              {openAccordions.sizes && (
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs pt-2">
-                  {availableSizes.length === 0 ? (
-                    <span className="text-gray-400 text-[11px] italic">No packaging sizes available</span>
-                  ) : (
-                    availableSizes.map(({ size, count }) => (
+                {openAccordions.sizes && (
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs pt-2">
+                    {availableSizes.map(({ size, count }) => (
                       <label key={size} className="flex items-center justify-between cursor-pointer py-0.5">
                         <div className="flex items-center space-x-2">
                           <input
@@ -1153,45 +1325,43 @@ export const CategoryPage: React.FC = () => {
                         </div>
                         <span className="text-[10px] text-gray-400 font-mono">{count}</span>
                       </label>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ACCORDION 3: FRAGRANCE (Mobile) */}
-            <div className="border-b border-gray-200 pb-3">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('fragrance')}
-                className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
-                    Fragrance
-                  </span>
-                  {selectedFragrances.length > 0 && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      {selectedFragrances.length}
+            {showFragranceFilter && (
+              <div className="border-b border-gray-200 pb-3">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('fragrance')}
+                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
+                      Fragrance
                     </span>
-                  )}
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Sparkles className="w-3.5 h-3.5 text-[#7a49a6]" />
-                  <ChevronDown
-                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                      openAccordions.fragrance ? 'rotate-180 text-[#7a49a6]' : ''
-                    }`}
-                  />
-                </div>
-              </button>
+                    {selectedFragrances.length > 0 && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        {selectedFragrances.length}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <Sparkles className="w-3.5 h-3.5 text-[#7a49a6]" />
+                    <ChevronDown
+                      className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                        openAccordions.fragrance ? 'rotate-180 text-[#7a49a6]' : ''
+                      }`}
+                    />
+                  </div>
+                </button>
 
-              {openAccordions.fragrance && (
-                <div className="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs pt-2">
-                  {availableFragrances.length === 0 ? (
-                    <span className="text-gray-400 text-[11px] italic">No fragrance options for this category</span>
-                  ) : (
-                    availableFragrances.map(({ fragrance, count }) => (
+                {openAccordions.fragrance && (
+                  <div className="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs pt-2">
+                    {availableFragrances.map(({ fragrance, count }) => (
                       <label key={fragrance} className="flex items-center justify-between cursor-pointer py-0.5">
                         <div className="flex items-center space-x-2">
                           <input
@@ -1206,133 +1376,144 @@ export const CategoryPage: React.FC = () => {
                         </div>
                         <span className="text-[10px] text-gray-400 font-mono">{count}</span>
                       </label>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ACCORDION 4: PRICE (₹) (Mobile) */}
-            <div className="border-b border-gray-200 pb-3">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('price')}
-                className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
-                    Price (₹)
-                  </span>
-                  {(priceBucket !== 'all' || customMinPrice || customMaxPrice) && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      Active
+            {showPriceFilter && (
+              <div className="border-b border-gray-200 pb-3">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('price')}
+                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
+                      Price (₹)
                     </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                    openAccordions.price ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
-
-              {openAccordions.price && (
-                <div className="space-y-2 text-xs pt-2">
-                  {[
-                    { label: 'All Prices', value: 'all' },
-                    { label: 'Under ₹100', value: 'under-100' },
-                    { label: '₹100 to ₹200', value: '100-200' },
-                    { label: '₹200 to ₹500', value: '200-500' },
-                    { label: 'Above ₹500', value: 'above-500' }
-                  ].map((tier) => (
-                    <label
-                      key={tier.value}
-                      className="flex items-center space-x-2 text-gray-700 hover:text-black cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="priceTierMobile"
-                        checked={priceBucket === tier.value}
-                        onChange={() => setPriceBucket(tier.value)}
-                        className="border-gray-300 text-[#7a49a6]"
-                      />
-                      <span className={priceBucket === tier.value ? 'font-bold text-[#7a49a6]' : ''}>
-                        {tier.label}
+                    {(priceBucket !== 'all' || customMinPrice || customMaxPrice) && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        Active
                       </span>
-                    </label>
-                  ))}
-
-                  <div className="pt-2 flex items-center space-x-2">
-                    <input
-                      type="number"
-                      placeholder="Min ₹"
-                      value={customMinPrice}
-                      onChange={(e) => setCustomMinPrice(e.target.value)}
-                      className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
-                    />
-                    <span className="text-gray-400">-</span>
-                    <input
-                      type="number"
-                      placeholder="Max ₹"
-                      value={customMaxPrice}
-                      onChange={(e) => setCustomMaxPrice(e.target.value)}
-                      className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
-                    />
+                    )}
                   </div>
-                </div>
-              )}
-            </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      openAccordions.price ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
+
+                {openAccordions.price && (
+                  <div className="space-y-2 text-xs pt-2">
+                    {[
+                      { label: 'All Prices', value: 'all', count: baseCategoryProducts.length },
+                      ...availablePriceBuckets
+                    ].map((tier) => (
+                      <label
+                        key={tier.value}
+                        className="flex items-center justify-between text-gray-700 hover:text-black cursor-pointer"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="priceTierMobile"
+                            checked={priceBucket === tier.value}
+                            onChange={() => setPriceBucket(tier.value)}
+                            className="border-gray-300 text-[#7a49a6]"
+                          />
+                          <span className={priceBucket === tier.value ? 'font-bold text-[#7a49a6]' : ''}>
+                            {tier.label}
+                          </span>
+                        </div>
+                        {tier.value !== 'all' && (
+                          <span className="text-[10px] text-gray-400 font-mono">{tier.count}</span>
+                        )}
+                      </label>
+                    ))}
+
+                    <div className="pt-2 flex items-center space-x-2">
+                      <input
+                        type="number"
+                        placeholder={categoryMinPrice > 0 ? `Min ₹${categoryMinPrice}` : 'Min ₹'}
+                        value={customMinPrice}
+                        onChange={(e) => setCustomMinPrice(e.target.value)}
+                        className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
+                      />
+                      <span className="text-gray-400">-</span>
+                      <input
+                        type="number"
+                        placeholder={categoryMaxPrice > 0 ? `Max ₹${categoryMaxPrice}` : 'Max ₹'}
+                        value={customMaxPrice}
+                        onChange={(e) => setCustomMaxPrice(e.target.value)}
+                        className="w-1/2 p-1.5 border border-gray-300 text-[11px]"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* ACCORDION 5: AVAILABILITY (Mobile) */}
-            <div className="border-b border-gray-200 pb-3">
-              <button
-                type="button"
-                onClick={() => toggleAccordion('availability')}
-                className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
-              >
-                <div className="flex items-center space-x-2">
-                  <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
-                    Availability
-                  </span>
-                  {availability !== 'all' && (
-                    <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
-                      Active
+            {showAvailabilityFilter && (
+              <div className="border-b border-gray-200 pb-3">
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion('availability')}
+                  className="w-full flex items-center justify-between py-2 text-left group cursor-pointer select-none"
+                >
+                  <div className="flex items-center space-x-2">
+                    <span className="font-['Poppins'] font-semibold text-xs uppercase tracking-wider text-gray-900">
+                      Availability
                     </span>
-                  )}
-                </div>
-                <ChevronDown
-                  className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
-                    openAccordions.availability ? 'rotate-180 text-[#7a49a6]' : ''
-                  }`}
-                />
-              </button>
-
-              {openAccordions.availability && (
-                <div className="space-y-2 text-xs pt-2">
-                  {[
-                    { label: 'All Items', value: 'all' },
-                    { label: 'In Stock Only', value: 'in-stock' },
-                    { label: 'Out of Stock', value: 'out-of-stock' }
-                  ].map((item) => (
-                    <label
-                      key={item.value}
-                      className="flex items-center space-x-2 text-gray-700 hover:text-black cursor-pointer"
-                    >
-                      <input
-                        type="radio"
-                        name="availabilityMobile"
-                        checked={availability === item.value}
-                        onChange={() => setAvailability(item.value as any)}
-                        className="border-gray-300 text-[#7a49a6]"
-                      />
-                      <span className={availability === item.value ? 'font-bold text-[#7a49a6]' : ''}>
-                        {item.label}
+                    {availability !== 'all' && (
+                      <span className="text-[10px] bg-[#7a49a6] text-white px-1.5 py-0.2 rounded-full font-bold">
+                        Active
                       </span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
+                    )}
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                      openAccordions.availability ? 'rotate-180 text-[#7a49a6]' : ''
+                    }`}
+                  />
+                </button>
+
+                {openAccordions.availability && (
+                  <div className="space-y-2 text-xs pt-2">
+                    {[
+                      { label: 'All Items', value: 'all', count: baseCategoryProducts.length },
+                      ...(inStockCount > 0 ? [{ label: 'In Stock Only', value: 'in-stock', count: inStockCount }] : []),
+                      ...(outOfStockCount > 0 ? [{ label: 'Out of Stock', value: 'out-of-stock', count: outOfStockCount }] : [])
+                    ].map((item) => (
+                      <label
+                        key={item.value}
+                        className="flex items-center justify-between text-gray-700 hover:text-black cursor-pointer"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            name="availabilityMobile"
+                            checked={availability === item.value}
+                            onChange={() => setAvailability(item.value as 'all' | 'in-stock' | 'out-of-stock')}
+                            className="border-gray-300 text-[#7a49a6]"
+                          />
+                          <span className={availability === item.value ? 'font-bold text-[#7a49a6]' : ''}>
+                            {item.label}
+                          </span>
+                        </div>
+                        {item.value !== 'all' && (
+                          <span className="text-[10px] text-gray-400 font-mono">{item.count}</span>
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Mobile Apply / Reset Buttons */}
             <div className="pt-4 border-t border-gray-200 flex items-center space-x-3">

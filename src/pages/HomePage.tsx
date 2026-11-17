@@ -3612,8 +3612,8 @@ export const HomePage: React.FC = () => {
             {/* Left Lifestyle Photo */}
             <div className="relative aspect-[682/512] md:aspect-auto md:h-full bg-gray-100 overflow-hidden">
               <img
-                src={resolveAssetUrl('/assets/products/flash-deal-lifestyle.jpg')}
-                alt="WiZ Handwash Lavender Refill Pouch Complete Beauty Care"
+                src={resolveAssetUrl('/assets/products/handwash-pouch01.jpg')}
+                alt="WiZ Handwash Refill Pouch Complete Beauty Care"
                 className="w-full h-full object-cover object-center pointer-events-none"
                 loading="lazy"
                 draggable={false}
@@ -3747,7 +3747,7 @@ export const HomePage: React.FC = () => {
                 Latest Blog Posts
               </h2>
               <p className="text-xs text-gray-500 mt-1 text-left">
-                Expert skincare rituals, minimalist beauty formulas, and radiant skin advice
+                Industry news, leadership stories, and everyday hygiene perspectives from Cossmic &amp; WiZ
               </p>
             </div>
 
@@ -3765,30 +3765,27 @@ export const HomePage: React.FC = () => {
             {blogPosts.slice(0, 3).map((post, idx) => {
               const isImageTop = (post.imagePosition || (idx % 2 === 1 ? 'top' : 'bottom')) === 'top';
               const targetUrl = `/blog/${post.slug || post.id}`;
+              const byline =
+                post.tags && post.tags.length > 0
+                  ? post.tags.join(' | ')
+                  : post.author;
 
               const textBlock = (
                 <div
                   key={`text-${post.id}`}
                   className="flex flex-col items-center text-center px-4 py-8 sm:px-6 flex-1 justify-center"
                 >
-                  <div className="inline-flex items-center px-4 py-1 rounded-full text-xs text-gray-600 bg-gray-50 border border-gray-200/90 mb-4 font-normal tracking-wide">
+                  <div className="text-xs font-medium text-gray-500 mb-3 tracking-wide">
                     {post.date}
                   </div>
-                  <h3 className="text-xl sm:text-[22px] font-semibold text-gray-900 leading-snug mb-3 text-center max-w-[280px] mx-auto group-hover/blog:text-[#7a49a6] transition-colors font-['Poppins',sans-serif]">
+                  <h3 className="text-xl sm:text-[22px] font-semibold text-gray-900 leading-snug mb-3 text-center max-w-[300px] mx-auto group-hover/blog:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] text-balance">
                     {post.title}
                   </h3>
-                  <p className="text-xs text-gray-500 text-center leading-relaxed max-w-[280px] mx-auto mb-5 line-clamp-3">
+                  <p className="text-xs sm:text-[13px] text-gray-600 text-center leading-relaxed max-w-[300px] mx-auto mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
-                  <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
-                    {(post.tags || []).map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full px-3.5 py-0.5 text-xs text-gray-700 bg-white border border-gray-200 group-hover/blog:border-gray-300 transition-colors shadow-2xs"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                  <div className="text-xs font-medium text-gray-700 mb-4 tracking-wide">
+                    {byline}
                   </div>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#7a49a6] group-hover/blog:text-[#5f3786] transition-colors">
                     <span>Read Article</span>
@@ -3807,7 +3804,8 @@ export const HomePage: React.FC = () => {
                       <img
                         src={resolveAssetUrl(post.image)}
                         alt={post.title}
-                        className="w-full h-full object-cover group-hover/blog:scale-105 transition-transform duration-300"
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover object-top group-hover/blog:scale-105 transition-transform duration-300"
                       />
                     </div>
                   ) : (

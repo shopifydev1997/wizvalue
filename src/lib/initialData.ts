@@ -99,7 +99,7 @@ export const INITIAL_SETTINGS: GeneralSettings = {
       title: 'WiZ Ultra-Soft Facial Tissues (Pack of 3)',
       subtitle: '100% virgin pulp, 200 pulls 2-ply super absorbent softness.',
       imageUrl: '/assets/aistudio/menu-dd-paper.jpg',
-      link: '/product/wiz-facial-tissues-3pack',
+      link: '/product/wiz-facial-tissue-pack-of-4',
       badge: 'TOP CHOICE',
       price: '₹140.00'
     },
@@ -346,14 +346,11 @@ export const INITIAL_PRODUCTS: Product[] = [
     ingredients: 'Aqua, Sodium Laureth Sulfate, Cocamidopropyl Betaine, Glycerin, Sodium Chloride, Benzalkonium Chloride, Fragrance, Citric Acid, Tetrasodium EDTA.',
     images: [
       '/assets/Lemon-Handwash01.jpg',
-      'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80',
-      '/assets/products/Orange Wet Wipes.jpg',
-      'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800&auto=format&fit=crop&q=80',
-      '/assets/products/Lemon Bodywash 5L.jpg',
-      '/assets/products/1L Dish Wash Pouch.jpg',
-      '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
-      '/assets/products/Glass-Cleaner 1L.jpg',
-      '/assets/products/Top Load - Liquid Matic 2L.jpg'
+      '/assets/products/Lavender-Handwash-1L.jpg',
+      '/assets/products/handwash-pouch01.jpg',
+      '/assets/products/Orange Handwash 5L.jpg',
+      '/assets/products/Orange Handwash 500ml-1.jpg',
+      '/assets/products/pouch-handwash-lavender-1l.jpg'
     ],
     regularPrice: 125,
     sellingPrice: 99,
@@ -361,28 +358,38 @@ export const INITIAL_PRODUCTS: Product[] = [
     packagingSize: '500 ml Bottle',
     fragrance: 'Neem & Aloe Vera',
     fragrances: ['Neem & Aloe Vera', 'Citrus Lemon', 'Lavender'],
-    stock: 180,
+    stock: 250,
     isFeatured: true,
     isBestseller: true,
     isSoldout: false,
     amazonUrl: 'https://www.amazon.in/s?k=wiz+handwash',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20handwash',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20handwash',
-    seoTitle: 'WiZ Anti-Bacterial Handwash 500ml & 5L | WiZ Care India',
-    seoDescription: 'Order WiZ Antibacterial Handwash in 500ml, 1L pouch and 5L can online. Best prices, instant WhatsApp order, Pan-India shipping.',
+    seoTitle: 'WiZ Anti-Bacterial Handwash 500ml, 1L & 5L | WiZ Care India',
+    seoDescription: 'Order WiZ Antibacterial Handwash in 500ml bottle, 1L bottle, 1L pouch and 5L can online. Best prices, instant WhatsApp order, Pan-India shipping.',
     published: true,
     rating: 4.9,
     reviewsCount: 98,
     variants: [
       {
         id: 'var-hw-500',
-        name: '500 ml Pump Bottle',
+        name: '500 ml Bottle',
         sku: 'WIZ-HW-500',
         regularPrice: 165,
         sellingPrice: 96,
         stock: 90,
         packagingSize: '500 ml Bottle',
-        image: 'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80'
+        image: '/assets/products/Orange Handwash 500ml-1.jpg'
+      },
+      {
+        id: 'var-hw-1l-bottle',
+        name: '1 Litre Bottle',
+        sku: 'WIZ-HW-1LB',
+        regularPrice: 210,
+        sellingPrice: 159,
+        stock: 70,
+        packagingSize: '1 Litre Bottle',
+        image: '/assets/products/Lavender-Handwash-1L.jpg'
       },
       {
         id: 'var-hw-1l',
@@ -392,7 +399,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 149,
         stock: 60,
         packagingSize: '1 Litre Pouch',
-        image: 'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80'
+        image: '/assets/products/handwash-pouch01.jpg'
       },
       {
         id: 'var-hw-5l',
@@ -402,7 +409,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 480,
         stock: 30,
         packagingSize: '5 Litre Can',
-        image: 'https://images.unsplash.com/photo-1608248597359-00f735878484?w=800&auto=format&fit=crop&q=80'
+        image: '/assets/products/Orange Handwash 5L.jpg'
       }
     ]
   },
@@ -424,7 +431,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Take 1 teaspoon (4-5 ml) of WiZ Gel in a small bowl with water. Dip sponge or scrub pad, squeeze to generate rich lather, and wash utensils. Rinse with water.',
     ingredients: 'Aqua, Anionic Surfactants, Amphoteric Surfactants, Natural Citrus Limon Extract, Glycerin, Colorant, Fragrance.',
     images: [
-      '/assets/products/1L Dish Wash Pouch.jpg'
+      '/assets/products/1L Dish Wash Pouch.jpg',
+      '/assets/products/household-dishwash-750.jpg',
+      '/assets/products/pouch-dishwash-lemon-1l.jpg'
     ],
     regularPrice: 150,
     sellingPrice: 93,
@@ -439,7 +448,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     amazonUrl: 'https://www.amazon.in/s?k=wiz+dishwash',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20dishwash',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20dishwash',
-    seoTitle: 'WiZ Lemon Dishwash Gel 750ml & 5L | WiZ Care',
+    seoTitle: 'WiZ Lemon Dishwash Gel 750ml, 1L & 5L | WiZ Care',
     seoDescription: 'WiZ Active Lemon Dishwash Gel for tough grease and stain removal. Order online via WhatsApp or Amazon.',
     published: true,
     rating: 4.7,
@@ -453,7 +462,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 120,
         packagingSize: '750 ml Bottle',
-        image: '/assets/products/1L Dish Wash Pouch.jpg'
+        image: '/assets/products/household-dishwash-750.jpg'
       },
       {
         id: 'var-dw-1l',
@@ -463,7 +472,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 129,
         stock: 60,
         packagingSize: '1 Litre Pouch',
-        image: '/assets/products/1L Dish Wash Pouch.jpg'
+        image: '/assets/products/pouch-dishwash-lemon-1l.jpg'
       },
       {
         id: 'var-dw-5l',
@@ -495,7 +504,9 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Dilute 1 capful (approx. 20 ml) in half a bucket (4 litres) of water. Mop surface gently. For heavy stains, use undiluted and wipe with wet mop after 5 minutes.',
     ingredients: 'Benzalkonium Chloride, Non-ionic Surfactants, Fragrance, Colorant, Purified Water.',
     images: [
-      '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+      '/assets/products/Lemon-Floor-Cleaner 1L.jpg',
+      '/assets/products/household-floor-cleaner-750.jpg',
+      '/assets/products/pouch-floor-cleaner-rose-1l.jpg'
     ],
     regularPrice: 160,
     sellingPrice: 99,
@@ -510,7 +521,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     amazonUrl: 'https://www.amazon.in/s?k=wiz+floor+cleaner',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20floor%20cleaner',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20floor%20cleaner',
-    seoTitle: 'WiZ Lavender Floor Cleaner 1L & 5L | WiZ Hygiene',
+    seoTitle: 'WiZ Lavender Floor Cleaner 750ml, 1L & 5L | WiZ Hygiene',
     seoDescription: 'Buy WiZ Disinfectant Floor Cleaner with Lavender aroma. Kills 99.9% germs, marble-safe. WhatsApp ordering available.',
     published: true,
     rating: 4.8,
@@ -524,7 +535,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 93,
         stock: 75,
         packagingSize: '750 ml Bottle',
-        image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+        image: '/assets/products/household-floor-cleaner-750.jpg'
       },
       {
         id: 'var-fc-1l',
@@ -534,7 +545,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 99,
         stock: 80,
         packagingSize: '1 Litre Pouch',
-        image: '/assets/products/Lemon-Floor-Cleaner 1L.jpg'
+        image: '/assets/products/pouch-floor-cleaner-rose-1l.jpg'
       },
       {
         id: 'var-fc-5l',
@@ -567,22 +578,26 @@ export const INITIAL_PRODUCTS: Product[] = [
     ingredients: 'Bio-enzymes, Optical Brighteners, Surfactant Complex, Fabric Softening Agents, Fragrance.',
     images: [
       '/assets/products/wiz-liquid-matic-card.jpg',
-      '/assets/products/Top Load - Liquid Matic 2L.jpg'
+      '/assets/products/Top Load - Liquid Matic 2L.jpg',
+      '/assets/products/WiZ Liquid Matic Fresh Laundry Refill.png',
+      '/assets/products/LiquidMatic-M1.jpg',
+      '/assets/products/5L-TL-mockup.webp',
+      '/assets/products/LiquidMatic-M2.jpg'
     ],
-    regularPrice: 125,
-    sellingPrice: 99,
+    regularPrice: 200,
+    sellingPrice: 159,
     discountPercent: 21,
-    packagingSize: '2 Litre Can',
+    packagingSize: '1 Litre Top Load & Front Load Pouch',
     fragrance: 'Fresh Linen',
     fragrances: ['Fresh Linen', 'Lavender Breeze'],
-    stock: 0,
+    stock: 160,
     isFeatured: true,
     isBestseller: true,
-    isSoldout: true,
+    isSoldout: false,
     amazonUrl: 'https://www.amazon.in/s?k=wiz+liquid+matic',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20detergent',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20detergent',
-    seoTitle: 'WiZ Liquid Matic Laundry Detergent 2L & 5L | WiZ Store',
+    seoTitle: 'WiZ Liquid Matic Laundry Detergent 1L, 2L & 5L | WiZ Store',
     seoDescription: 'High efficiency WiZ Liquid Matic laundry detergent for top & front load washers. Instant WhatsApp order enquiry.',
     published: true,
     rating: 4.8,
@@ -590,33 +605,53 @@ export const INITIAL_PRODUCTS: Product[] = [
     variants: [
       {
         id: 'var-lm-1l',
-        name: '1 Litre Refill Pouch',
+        name: '1 Litre Top Load & Front Load Pouch',
         sku: 'WIZ-LM-1L',
         regularPrice: 200,
         sellingPrice: 159,
         stock: 50,
-        packagingSize: '1 Litre Pouch',
-        image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
+        packagingSize: '1 Litre Top Load & Front Load Pouch',
+        image: '/assets/products/WiZ Liquid Matic Fresh Laundry Refill.png'
       },
       {
-        id: 'var-lm-2l',
-        name: '2 Litre Bottle',
-        sku: 'WIZ-LM-2L',
+        id: 'var-lm-2l-tl',
+        name: '2 Litre Top Load Pouch',
+        sku: 'WIZ-LM-2L-TL',
         regularPrice: 250,
         sellingPrice: 199,
-        stock: 30,
-        packagingSize: '2 Litre Can',
+        stock: 35,
+        packagingSize: '2 Litre Top Load Pouch',
         image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
       },
       {
-        id: 'var-lm-5l',
-        name: '5 Litre Heavy Saver Can',
-        sku: 'WIZ-LM-5L',
+        id: 'var-lm-2l-fl',
+        name: '2 Litre Front Load Pouch',
+        sku: 'WIZ-LM-2L-FL',
+        regularPrice: 275,
+        sellingPrice: 219,
+        stock: 30,
+        packagingSize: '2 Litre Front Load Pouch',
+        image: '/assets/products/LiquidMatic-M1.jpg'
+      },
+      {
+        id: 'var-lm-5l-tl',
+        name: '5 Litre Can Top Load',
+        sku: 'WIZ-LM-5L-TL',
         regularPrice: 999,
         sellingPrice: 799,
-        stock: 15,
-        packagingSize: '5 Litre Can',
-        image: '/assets/products/Top Load - Liquid Matic 2L.jpg'
+        stock: 25,
+        packagingSize: '5 Litre Can Top Load',
+        image: '/assets/products/5L-TL-mockup.webp'
+      },
+      {
+        id: 'var-lm-5l-fl',
+        name: '5 Litre Can Front Load',
+        sku: 'WIZ-LM-5L-FL',
+        regularPrice: 1050,
+        sellingPrice: 849,
+        stock: 20,
+        packagingSize: '5 Litre Can Front Load',
+        image: '/assets/products/LiquidMatic-M2.jpg'
       }
     ]
   },
@@ -633,41 +668,53 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Formulated with 70% v/v Isopropyl Alcohol as per WHO norms',
       'Kills 99.9% of disease-causing pathogens in 15 seconds',
       'Non-sticky, fast-drying texture with gentle skin conditioners',
-      'Bulk 5L can perfect for clinics, corporate offices, and refills'
+      'Available in single-use 2ml Pouch Pack of 500, 500ml bottle, and 5L bulk can'
     ],
     usageInstructions: 'Apply 3-5 ml of liquid on dry palms. Rub vigorously covering palm, back of hands, fingers, and nails until dry. Do not wipe off.',
     ingredients: 'Isopropyl Alcohol 70% v/v, Glycerol, Hydrogen Peroxide, Fragrance, Purified Water.',
     images: [
-      '/assets/products/Sanitizer.jpg'
+      '/assets/products/Sanitizer.jpg',
+      '/assets/products/Fresh Mint Hand Sanitizer Still Life.png',
+      '/assets/products/household-hand-sanitizer-5l.jpg'
     ],
     regularPrice: 165,
     sellingPrice: 96,
     discountPercent: 42,
-    packagingSize: '5 Litre Can',
+    packagingSize: '500 ml Bottle',
     fragrance: 'Unscented Natural',
     fragrances: ['Unscented Natural', 'Lemon Fresh'],
-    stock: 65,
+    stock: 110,
     isFeatured: false,
     isBestseller: true,
     isSoldout: false,
     amazonUrl: 'https://www.amazon.in/s?k=wiz+hand+sanitizer',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20sanitizer',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20sanitizer',
-    seoTitle: 'WiZ Hand Sanitizer 70% IPA 500ml & 5L | WiZ Care',
-    seoDescription: 'Order WiZ 70% Alcohol Hand Sanitizer online in India. Bulk 5L cans and pocket sizes available for fast delivery.',
+    seoTitle: 'WiZ Hand Sanitizer 70% IPA 2ml Pack, 500ml & 5L | WiZ Care',
+    seoDescription: 'Order WiZ 70% Alcohol Hand Sanitizer online in India. 2ml sachet pack of 500, 500ml bottle, and bulk 5L cans available.',
     published: true,
     rating: 4.9,
     reviewsCount: 54,
     variants: [
       {
+        id: 'var-hs-2ml-500',
+        name: '2ml Pouch Pack of 500',
+        sku: 'WIZ-HS-2ML500',
+        regularPrice: 500,
+        sellingPrice: 399,
+        stock: 45,
+        packagingSize: '2ml Pouch pack of 500',
+        image: '/assets/products/Sanitizer.jpg'
+      },
+      {
         id: 'var-hs-500',
-        name: '500 ml Dispenser',
+        name: '500 ml Bottle',
         sku: 'WIZ-HS-500',
         regularPrice: 165,
         sellingPrice: 96,
         stock: 35,
         packagingSize: '500 ml Bottle',
-        image: '/assets/products/Sanitizer.jpg'
+        image: '/assets/products/Fresh Mint Hand Sanitizer Still Life.png'
       },
       {
         id: 'var-hs-5l',
@@ -677,7 +724,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 699,
         stock: 30,
         packagingSize: '5 Litre Can',
-        image: '/assets/products/Sanitizer.jpg'
+        image: '/assets/products/household-hand-sanitizer-5l.jpg'
       }
     ]
   },
@@ -694,17 +741,18 @@ export const INITIAL_PRODUCTS: Product[] = [
       'Thick cling formula stays on bowl surfaces for maximum contact time',
       'Removes yellow hard-water stains and rust scales with ease',
       'Kills 99.9% of bacteria and viral pathogens',
-      'Angled nozzle bottle reaches under the rim effortlessly'
+      'Available in economical 1 Litre Refill Pouch and 5 Litre Heavy Can'
     ],
-    usageInstructions: 'Twist cap to open. Squeeze liquid under the rim and around the bowl. Leave for 20 minutes, brush lightly, then flush for a sparkling clean toilet.',
+    usageInstructions: 'Pour/refill into dispensing bottle, squeeze under the rim and around the bowl. Leave for 20 minutes, brush lightly, then flush for a sparkling clean toilet.',
     ingredients: 'Hydrochloric Acid 10.5% w/v, Cetyl Trimethyl Ammonium Chloride, Methyl Salicylate, Acid Blue 80, Purified Water.',
     images: [
-      '/assets/products/Toilet-Cleaner 1L.jpg'
+      '/assets/products/Toilet-Cleaner 1L.jpg',
+      '/assets/products/household-toilet-cleaner-1l.jpg'
     ],
     regularPrice: 150,
     sellingPrice: 93,
     discountPercent: 38,
-    packagingSize: '1 Litre Bottle',
+    packagingSize: '1 Litre Pouch',
     fragrance: 'Power Pine',
     fragrances: ['Power Pine', 'Ocean Breeze'],
     stock: 140,
@@ -714,20 +762,20 @@ export const INITIAL_PRODUCTS: Product[] = [
     amazonUrl: 'https://www.amazon.in/s?k=wiz+toilet+cleaner',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20toilet%20cleaner',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20toilet%20cleaner',
-    seoTitle: 'WiZ Disinfectant Toilet Cleaner 1L & 5L | WiZ Care',
-    seoDescription: 'Order WiZ Thick Power Toilet Cleaner online. Eliminates limescale and 99.9% germs. Easy WhatsApp ordering.',
+    seoTitle: 'WiZ Disinfectant Toilet Cleaner 1L Pouch & 5L Can | WiZ Care',
+    seoDescription: 'Order WiZ Thick Power Toilet Cleaner online in 1 Litre Pouch and 5 Litre Can. Eliminates limescale and 99.9% germs.',
     published: true,
     rating: 4.8,
     reviewsCount: 68,
     variants: [
       {
         id: 'var-tc-1l',
-        name: '1 Litre Angled Bottle',
+        name: '1 Litre Refill Pouch',
         sku: 'WIZ-TC-1L',
         regularPrice: 150,
         sellingPrice: 93,
         stock: 100,
-        packagingSize: '1 Litre Bottle',
+        packagingSize: '1 Litre Pouch',
         image: '/assets/products/Toilet-Cleaner 1L.jpg'
       },
       {
@@ -738,7 +786,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         sellingPrice: 520,
         stock: 40,
         packagingSize: '5 Litre Can',
-        image: '/assets/products/Toilet-Cleaner 1L.jpg'
+        image: '/assets/products/household-toilet-cleaner-1l.jpg'
       }
     ]
   },
@@ -746,7 +794,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     id: 'prod-glass-cleaner',
     name: 'WiZ Sparkle Streak-Free Glass & Surface Cleaner',
     slug: 'wiz-sparkle-glass-cleaner-1l',
-    sku: 'WIZ-GC-1L',
+    sku: 'WIZ-GC-750',
     category: 'Glass Cleaner',
     subcategory: 'Household Cleaners',
     shortDescription: 'Shine boosters with streak-free formula for mirrors, glass dining tables, car windscreens, and television screens.',
@@ -760,45 +808,56 @@ export const INITIAL_PRODUCTS: Product[] = [
     usageInstructions: 'Spray evenly onto glass from a distance of 15-20 cm. Wipe off immediately with a clean, lint-free microfiber cloth or newspaper.',
     ingredients: 'Isopropanol, Ethylene Glycol Monobutyl Ether, Surfactant, Fragrance, Water.',
     images: [
-      '/assets/products/Glass-Cleaner 1L.jpg'
+      '/assets/products/Glass-Cleaner 1L.jpg',
+      '/assets/products/household-glass-cleaner-1l.jpg'
     ],
-    regularPrice: 150,
-    sellingPrice: 93,
-    discountPercent: 38,
-    packagingSize: '1 Litre Bottle',
+    regularPrice: 145,
+    sellingPrice: 99,
+    discountPercent: 32,
+    packagingSize: '750 ml Bottle',
     fragrance: 'Ocean Breeze',
     fragrances: ['Ocean Breeze'],
-    stock: 0,
+    stock: 110,
     isFeatured: false,
     isBestseller: false,
-    isSoldout: true,
+    isSoldout: false,
     amazonUrl: 'https://www.amazon.in/s?k=wiz+glass+cleaner',
     zeptoUrl: 'https://www.zeptonow.com/search?q=wiz%20glass%20cleaner',
     blinkitUrl: 'https://blinkit.com/s/?q=wiz%20glass%20cleaner',
-    seoTitle: 'WiZ Sparkle Glass Cleaner 1L | WiZ Care India',
-    seoDescription: 'Buy WiZ Sparkle Glass Cleaner for crystal streak-free shine on mirrors and glass. WhatsApp order available.',
+    seoTitle: 'WiZ Sparkle Glass Cleaner 750ml, 1L & 5L | WiZ Care India',
+    seoDescription: 'Buy WiZ Sparkle Glass Cleaner in 750ml bottle, 1L pouch, and 5L can for crystal streak-free shine on mirrors and glass.',
     published: true,
     rating: 4.6,
     reviewsCount: 39,
     variants: [
       {
-        id: 'var-gc-500',
-        name: '500 ml Trigger Spray',
-        sku: 'WIZ-GC-500',
-        regularPrice: 120,
-        sellingPrice: 79,
-        stock: 0,
-        packagingSize: '500 ml Bottle',
+        id: 'var-gc-750',
+        name: '750 ml Bottle',
+        sku: 'WIZ-GC-750',
+        regularPrice: 145,
+        sellingPrice: 99,
+        stock: 50,
+        packagingSize: '750 ml Bottle',
         image: '/assets/products/Glass-Cleaner 1L.jpg'
       },
       {
         id: 'var-gc-1l',
         name: '1 Litre Refill Pouch',
         sku: 'WIZ-GC-1L',
-        regularPrice: 150,
-        sellingPrice: 93,
-        stock: 0,
-        packagingSize: '1 Litre Bottle',
+        regularPrice: 165,
+        sellingPrice: 115,
+        stock: 40,
+        packagingSize: '1 Litre Pouch',
+        image: '/assets/products/household-glass-cleaner-1l.jpg'
+      },
+      {
+        id: 'var-gc-5l',
+        name: '5 Litre Can',
+        sku: 'WIZ-GC-5L',
+        regularPrice: 580,
+        sellingPrice: 420,
+        stock: 20,
+        packagingSize: '5 Litre Can',
         image: '/assets/products/Glass-Cleaner 1L.jpg'
       }
     ]
@@ -931,7 +990,7 @@ export const INITIAL_PRODUCTS: Product[] = [
         regularPrice: 250,
         sellingPrice: 189,
         stock: 40,
-        packagingSize: 'Pack of 8',
+        packagingSize: 'Pack of 8 Boxes',
         image: '/assets/products/Mint-Paper-Products.jpg'
       }
     ]
@@ -997,77 +1056,69 @@ export const INITIAL_FREEBIES: Freebie[] = [
 export const INITIAL_BLOG_POSTS: BlogPost[] = [
   {
     id: 'blog-1',
-    slug: 'glow-naturally-with-hydrating-skin-rituals',
-    date: 'February 23, 2026',
-    title: 'Glow Naturally With Hydrating Skin Rituals',
-    excerpt: 'Healthy, radiant skin begins with one simple principle: deep, consistent hydration that protects your skin barrier every day.',
-    content: `Healthy, radiant skin begins with one simple principle: deep, consistent hydration that nurtures your skin barrier from morning until night. Modern pollution, air-conditioned rooms, and harsh soap-based cleansers slowly strip essential lipids from your skin, leaving it tight and dull.
+    slug: 'personal-hygiene-market-gives-birth',
+    date: 'November 21, 2022',
+    title: 'Personal Hygiene Market Gives Birth',
+    excerpt: 'Abrupt Rise In Personal Hygiene Market Gives Birth To New Startups.',
+    content: `Abrupt rise in the personal hygiene market has sparked a wave of focused startups and consumer-first formulations across India. Over the past few years, everyday hygiene has shifted from an occasional necessity to a core household priority spanning hand hygiene, gentle skin cleansing, and travel-ready sanitization.
 
-Choosing gentle, pH-balanced cleansers enriched with glycerin, botanical aloe vera, and vitamin E makes all the difference. Rather than harsh foaming agents that disrupt natural moisture, creamy soap-free bodywashes and conditioning handwashes lift away dust and bacteria while locking in lasting suppleness.
+While agile new entrants have brought fresh packaging and digital-first distribution to the category, sustained growth depends on dependable manufacturing standards, skin-safe chemistry, and honest factory-direct pricing. Households now look beyond short-term trends to reliable daily staples such as moisturizing antibacterial handwash refills, soothing wet wipes, and pH-balanced bodywashes.
 
-Build a mindful 3-step daily hydration ritual:
-1. Cleanse gently using lukewarm water and a nourishing cleanser like WiZ Deep Hydrating Aloe & Vitamin E Bodywash.
-2. Refresh on the move with alcohol-free wet wipes infused with soothing rose water or chamomile so sweat and grime never clog pores.
-3. Seal in hydration immediately after toweling off, when your skin is slightly damp, to preserve softness all day long.
+Backed by Cossmic Products Pvt Ltd’s decades of formulation and manufacturing expertise since 1978, WiZ combines institutional quality control with accessible pack formats—from convenient daily dispensers to economical 1L refill pouches and 5L cans.
 
-When your everyday hygiene essentials care for your skin as much as they protect it, a natural, effortless glow becomes part of your routine.`,
-    author: 'WiZ Skin Care Editorial',
+As awareness continues to expand across urban and tier-2/tier-3 markets alike, brands anchored in proven quality and fair value are shaping the long-term future of India’s personal hygiene landscape.`,
+    author: 'Sandeep Nair',
     readTime: '4 min read',
-    category: 'Skin Care',
-    tags: ['Facial', 'Lotion', 'Minimal'],
-    image: '/assets/Blog01.jpg',
+    category: 'Industry & Market',
+    tags: ['Sandeep Nair', 'Cossmic', 'WiZ'],
+    image: '/assets/aistudio/Reetesh-Sir-01_7339a95e.jpg',
     imagePosition: 'bottom',
     published: true,
-    createdAt: '2026-02-23T10:00:00.000Z'
+    createdAt: '2022-11-21T10:00:00.000Z'
   },
   {
     id: 'blog-2',
-    slug: 'flawless-foundation-secrets-for-radiant-skin',
-    date: 'February 23, 2026',
-    title: 'Flawless Foundation Secrets For Radiant Skin',
-    excerpt: 'When it comes to achieving radiant skin, flawless foundation application starts well before the first drop of makeup touches your face.',
-    content: `When it comes to achieving radiant skin, flawless foundation application actually starts well before makeup enters the picture. Even the finest serum tint or cushion foundation will settle unevenly if skin surface preparation is rushed.
+    slug: 'women-leading-the-entrepreneur',
+    date: 'November 18, 2022',
+    title: 'Women Leading The Entrepreneur',
+    excerpt: 'Women Leading The Entrepreneur Sector of India - By BUSINESS NEWS WEEK',
+    content: `Featured by Business News Week, women leaders across India are redefining entrepreneurship across FMCG, personal care, and modern retail distribution—bringing empathy, operational rigor, and customer-centric innovation to boardrooms and manufacturing floors alike.
 
-Start with a clean, calm canvas. Removing leftover sunscreen, oil, and travel dust using soft, dermatologist-tested cleansing wipes or mild facial cleansers prevents pilling and patchiness. Pair that with ultra-soft virgin-pulp facial tissues to blot excess moisture gently without micro-abrasions.
+In the fast-evolving personal and home hygiene segment, understanding real family routines—from safe ingredients for children and sensitive skin to eco-conscious refill formats that lower household plastic use—has become a decisive advantage. Female entrepreneurs and leadership teams are driving higher benchmarks in product safety, formulation transparency, and ethical brand building.
 
-Three simple prep habits makeup artists swear by:
-• Keep hands immaculate: Always wash with an antibacterial moisturizing handwash before touching your face or beauty sponges.
-• Layer lightweight moisture: Give hydrating lotions 2 to 3 minutes to absorb fully so base makeup glides seamlessly.
-• Press, don't drag: Whether applying tint or blotting midday shine with a clean 2-ply tissue, gentle pressing keeps the skin barrier calm and smooth.
+At Cossmic Products Pvt Ltd and WiZ, collaborative leadership empowers both product R&D and consumer outreach, ensuring every handwash, bodywash, wet wipe, and surface cleaner meets strict quality standards before reaching homes across India.
 
-Clean hygiene practices and minimalist prep steps naturally elevate how your skin looks and feels from dawn to evening.`,
-    author: 'WiZ Beauty Desk',
+Celebrating women leaders across India’s entrepreneurial ecosystem highlights how purposeful vision and hands-on execution continue to build trusted, enduring consumer brands.`,
+    author: 'Sandeep Nair',
     readTime: '5 min read',
-    category: 'Beauty Rituals',
-    tags: ['Facial', 'Minimal', 'Product'],
-    image: '/assets/Blog02.jpg',
+    category: 'Leadership & Media',
+    tags: ['Sandeep Nair', 'Cossmic', 'WiZ'],
+    image: '/assets/aistudio/Manish-Maam_d22e9dde.jpg',
     imagePosition: 'top',
     published: true,
-    createdAt: '2026-02-23T09:00:00.000Z'
+    createdAt: '2022-11-18T10:00:00.000Z'
   },
   {
     id: 'blog-3',
-    slug: 'golden-hour-makeup-for-effortless-beauty',
-    date: 'February 23, 2026',
-    title: 'Golden Hour Makeup For Effortless Beauty',
-    excerpt: 'Golden hour, that magical time of day when the sun bathes everything in warm light, inspires fresh, luminous, effortless routines.',
-    content: `Golden hour, that magical time of day when warm sunlight softens every contour, is the ideal inspiration for fresh, luminous, minimalist beauty and personal care.
+    slug: 'global-handwashing-day',
+    date: 'November 15, 2022',
+    title: 'Global Handwashing Day',
+    excerpt: 'Global Handwashing Day : Few Hygiene Essentials To Keep Handy',
+    content: `Global Handwashing Day is an important reminder that clean hands remain one of the simplest and most effective safeguards for family, school, and workplace health. Building consistent handwashing habits—especially among children before meals, after outdoor play, and during commutes—creates lasting protection against everyday germs.
 
-The secret behind golden-hour radiance isn't heavy coverage—it is skin that feels clean, comfortable, and fresh. Throughout warm afternoons and busy commutes, sweat, dust, and urban humidity can dim your skin's natural vitality.
+To make thorough hand hygiene effortless throughout the day, keep these essential items close at hand:
+1. Moisturizing Antibacterial Handwash: Choose a gentle, soothing formulation at every sink so frequent washing cleans effectively without drying out young or sensitive skin.
+2. Refreshing Cleansing Wet Wipes: Alcohol-free pocket and family-pack wipes help clean hands and faces cleanly when soap and running water are out of reach during travel or school hours.
+3. Pocket & Desk Hand Sanitizer: Keeping a fast-drying 70% IPA sanitizer near entrances, study desks, and workstations reinforces clean habits on the go.
 
-Keep these travel-ready freshness essentials within reach:
-• Refreshing Lemon Mint or Rose Water Wet Wipes to cool overheated skin and sweep away travel grime in seconds.
-• Travel-sized 70% IPA gentle moisturizing sanitizer so hands stay hygienic before refreshing your look outdoors.
-• Mild, aromatic botanical bodywash at home to unwind, wash away the day, and restore calm fragrance from citrus or lily blossoms.
-
-By pairing crisp home and personal hygiene with light, effortless beauty habits, you carry that calm golden-hour freshness wherever the day takes you.`,
-    author: 'WiZ Lifestyle Studio',
+At WiZ, we believe good hygiene should be simple, skin-kind, and affordable for every household and community.`,
+    author: 'Sandeep Nair',
     readTime: '4 min read',
-    category: 'Personal Care',
-    tags: ['Beauty', 'Minimal', 'Product'],
-    image: '/assets/Blog03.jpg',
+    category: 'Hygiene Essentials',
+    tags: ['Sandeep Nair', 'Cossmic', 'WiZ'],
+    image: '/assets/aistudio/Handwash-Day_19b06b7d.jpg',
     imagePosition: 'bottom',
     published: true,
-    createdAt: '2026-02-23T08:00:00.000Z'
+    createdAt: '2022-11-15T10:00:00.000Z'
   }
 ];

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useSearchParams, Link } from 'react-router-dom';
 import {
   Share2,
   Copy,
@@ -21,11 +21,34 @@ import { ProductCard } from '../components/ProductCard';
 import { useSEO } from '../hooks/useSEO';
 import { recordRecentlyViewed } from '../lib/recentlyViewed';
 
+const SLUG_ALIASES: Record<string, string> = {
+  'wiz-power-degreasing-dishwash-gel-750ml': 'wiz-liquid-dishwash-gel-lemon',
+  'wiz-disinfectant-floor-cleaner-500ml': 'wiz-lavender-floor-cleaner-1l',
+  'wiz-disinfectant-floor-cleaner-citrus-750ml': 'wiz-lavender-floor-cleaner-1l',
+  'wiz-glass-multi-surface-cleaner-500ml': 'wiz-sparkle-glass-cleaner-1l',
+  'wiz-toilet-cleaner-1l': 'wiz-disinfectant-toilet-cleaner-1l',
+  'wiz-hand-sanitizer-500ml': 'wiz-instant-hand-sanitizer-5l',
+  'wiz-instant-hand-sanitizer-gel-500ml': 'wiz-instant-hand-sanitizer-5l',
+  'wiz-moisturizing-bodywash-citrus-splash-300ml': 'wiz-nourishing-bodywash-aloe-500ml',
+  'wiz-facial-tissues-3pack': 'wiz-facial-tissue-pack-of-4'
+};
+
+const canonicalVariantToken = (val: string) =>
+  val
+    .toLowerCase()
+    .replace(/liter/g, 'litre')
+    .replace(/&/g, 'and')
+    .replace(/(\d)\s+(ml|l|litre)\b/g, '$1$2')
+    .replace(/\s+/g, ' ')
+    .trim();
+
 export const ProductDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
@@ -33,33 +56,99 @@ export const ProductDetailPage: React.FC = () => {
   const [addedNotice, setAddedNotice] = useState<boolean>(false);
 
   useEffect(() => {
+    let mounted = true;
+    setLoading(true);
     getProducts().then((data) => {
+      if (!mounted) return;
       setProducts(data);
-      const found = data.find((p) => p.slug === slug);
+
+      const rawSlug = (slug || '').toLowerCase();
+      // Do not resolve intentionally removed SKUs
+      const isRemovedSlug =
+        (rawSlug.includes('sanitizer') && /\b(50|200)ml\b/.test(rawSlug)) ||
+        (rawSlug.includes('toilet') && /\b750ml\b/.test(rawSlug));
+
+      let found: Product | undefined;
+      if (!isRemovedSlug) {
+        const mappedSlug = SLUG_ALIASES[rawSlug] || rawSlug;
+        found =
+          data.find((p) => p.slug.toLowerCase() === mappedSlug) ||
+          data.find((p) => p.slug.toLowerCase() === rawSlug) ||
+          data.find((p) => p.id.toLowerCase() === rawSlug);
+      }
+
       if (found) {
         setProduct(found);
         recordRecentlyViewed(found);
-        const defaultVar = found.variants[0] || {
-          id: 'default',
-          name: found.packagingSize || 'Standard Pack',
-          sku: found.sku,
-          regularPrice: found.regularPrice,
-          sellingPrice: found.sellingPrice,
-          stock: found.stock,
-          packagingSize: found.packagingSize || ''
-        };
-        setSelectedVariant(defaultVar);
-        setActiveImage(defaultVar.image || found.images[0] || '');
+      } else {
+        setProduct(null);
+        setSelectedVariant(null);
       }
+      setLoading(false);
     });
+    return () => {
+      mounted = false;
+    };
   }, [slug]);
+
+  // Synchronize selectedVariant whenever product or URL ?variant= / ?size= query changes
+  useEffect(() => {
+    if (!product) return;
+
+    const fallbackVar: ProductVariant = product.variants[0] || {
+      id: 'default',
+      name: product.packagingSize || 'Standard Pack',
+      sku: product.sku,
+      regularPrice: product.regularPrice,
+      sellingPrice: product.sellingPrice,
+      stock: product.stock,
+      packagingSize: product.packagingSize || ''
+    };
+
+    const variantParam = searchParams.get('variant');
+    const sizeParam = searchParams.get('size');
+
+    let matchedVar: ProductVariant | undefined;
+
+    if (variantParam && product.variants.length > 0) {
+      matchedVar = product.variants.find(
+        (v) => v.id.toLowerCase() === variantParam.toLowerCase()
+      );
+    }
+
+    if (!matchedVar && sizeParam && product.variants.length > 0) {
+      const target = canonicalVariantToken(sizeParam);
+      matchedVar = product.variants.find((v) => {
+        const vPack = canonicalVariantToken(v.packagingSize || '');
+        const vName = canonicalVariantToken(v.name || '');
+        return (
+          vPack === target ||
+          vName === target ||
+          vPack.includes(target) ||
+          target.includes(vPack) ||
+          vName.includes(target)
+        );
+      });
+    }
+
+    const chosen = matchedVar || fallbackVar;
+    setSelectedVariant(chosen);
+    setActiveImage(chosen.image || product.images[0] || '');
+    setQuantity(1);
+  }, [product, searchParams]);
 
   // Handle variant switch
   const handleVariantChange = (variant: ProductVariant) => {
     setSelectedVariant(variant);
     if (variant.image) {
       setActiveImage(variant.image);
+    } else if (product?.images[0]) {
+      setActiveImage(product.images[0]);
     }
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('variant', variant.id);
+    nextParams.delete('size');
+    setSearchParams(nextParams, { replace: true });
   };
 
   useSEO({
@@ -69,7 +158,7 @@ export const ProductDetailPage: React.FC = () => {
     canonicalUrl: typeof window !== 'undefined' ? `${window.location.origin}/product/${slug}` : `https://wizcare.in/product/${slug}`
   });
 
-  if (!product || !selectedVariant) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center p-8">
         <div className="text-center">
@@ -77,6 +166,33 @@ export const ProductDetailPage: React.FC = () => {
           <p className="text-xs text-gray-500 uppercase tracking-widest font-semibold">
             Loading Product Details...
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product || !selectedVariant) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-8 font-['Poppins',sans-serif]">
+        <div className="text-center max-w-md border border-gray-200 p-8 bg-gray-50">
+          <h1 className="text-lg font-bold text-gray-900">Product Page Unavailable</h1>
+          <p className="text-xs text-gray-600 mt-2 leading-relaxed">
+            This product or pack size is no longer available in our catalog. Explore all active WiZ hygiene essentials in our shop.
+          </p>
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <Link
+              to="/shop"
+              className="bg-[#7a49a6] hover:bg-black text-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors"
+            >
+              Browse Shop
+            </Link>
+            <Link
+              to="/"
+              className="border border-gray-300 bg-white hover:border-black text-gray-800 px-5 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors"
+            >
+              Go Home
+            </Link>
+          </div>
         </div>
       </div>
     );
