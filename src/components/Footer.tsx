@@ -65,10 +65,10 @@ export const Footer: React.FC = () => {
   return (
     <footer className="w-full bg-[#f8f0fc] text-gray-800 border-t border-[#ecdcf8] font-['Poppins',sans-serif]">
       {/* Upper Footer Container */}
-      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] pt-12 sm:pt-16 pb-8 text-left flex flex-col">
+      <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] pt-8 sm:pt-16 pb-6 sm:pb-8 text-left flex flex-col">
         {/* Newsletter Signup Row */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-12 sm:mb-16 w-full">
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight leading-snug max-w-xl">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 mb-7 sm:mb-16 w-full">
+          <h2 className="text-xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight leading-snug max-w-xl">
             Be the First to Know About Our New Launches and Special Offers!
           </h2>
 
@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
                 value={emailInput}
                 onChange={(e) => setEmailInput(e.target.value)}
                 placeholder="Enter your email"
-                className="w-full bg-white border border-gray-300 rounded-none px-4 py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#7a49a6] pr-12 shadow-2xs"
+                className="w-full bg-white border border-gray-300 rounded-none px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:border-[#7a49a6] pr-12 shadow-2xs"
               />
               <button
                 type="submit"
@@ -99,15 +99,15 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Brand Kicker Row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-          <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 mb-5 sm:mb-8">
+          <h2 className="text-xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 tracking-tight">
             Elevate Your Hygiene Routine
           </h2>
 
           <div>
             <Link
               to="/contact"
-              className="text-2xl sm:text-3xl lg:text-[34px] font-normal text-gray-900 border-b-2 border-gray-900 pb-0.5 inline-block hover:text-[#7a49a6] hover:border-[#7a49a6] transition-colors"
+              className="text-lg sm:text-3xl lg:text-[34px] font-normal text-gray-900 border-b-2 border-gray-900 pb-0.5 inline-block hover:text-[#7a49a6] hover:border-[#7a49a6] transition-colors"
             >
               Get in Touch
             </Link>
@@ -115,10 +115,10 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Subtle Horizontal Divider */}
-        <div className="h-[1px] w-full bg-[#ecdcf8] mb-10 sm:mb-12" />
+        <div className="h-[1px] w-full bg-[#ecdcf8] mb-6 sm:mb-12" />
 
         {/* Four Navigation Columns Flexbox Row */}
-        <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-8 lg:gap-14 pb-12 sm:pb-16 text-sm w-full">
+        <div className="flex flex-wrap md:flex-nowrap items-start justify-between gap-x-4 gap-y-6 sm:gap-8 lg:gap-14 pb-7 sm:pb-16 text-sm w-full">
           {/* Column 1: Why WiZ? */}
           <div className="w-[calc(50%-16px)] md:w-auto">
             <h3 className="font-semibold text-gray-900 text-[15px] mb-4">
@@ -247,7 +247,7 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Lower Content Row (Logo, Address, Customer Skincare Thumbnail) */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 pt-4 pb-10 w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-8 pt-2 sm:pt-4 pb-6 sm:pb-10 w-full">
           {/* Left Block: WiZ Logo */}
           <div className="w-full md:w-auto md:flex-1 flex items-center justify-start">
             {footerLogo ? (
@@ -255,7 +255,7 @@ export const Footer: React.FC = () => {
                 <img
                   src={resolveAssetUrl(footerLogo)}
                   alt="WiZ"
-                  className="h-20 sm:h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 hover:scale-[1.02]"
+                  className="h-14 sm:h-24 md:h-28 lg:h-32 w-auto object-contain transition-transform duration-300 hover:scale-[1.02]"
                   onLoad={(e) => {
                     e.currentTarget.style.display = '';
                     const fb = document.getElementById('wiz-logo-fallback');
@@ -321,7 +321,7 @@ export const Footer: React.FC = () => {
                 <img
                   src={resolveAssetUrl(footerThumbnail)}
                   alt="WiZ Customer Care"
-                  className="w-64 sm:w-72 md:w-64 lg:w-72 h-44 sm:h-48 md:h-44 lg:h-48 object-cover"
+                  className="w-56 sm:w-72 md:w-64 lg:w-72 h-36 sm:h-48 md:h-44 lg:h-48 object-cover"
                 />
               </div>
             </div>

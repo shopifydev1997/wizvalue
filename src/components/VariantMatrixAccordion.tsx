@@ -596,15 +596,15 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
   };
 
   return (
-    <section className="w-full bg-[#faf4ff] py-12 sm:py-16 lg:py-20 select-none overflow-hidden border-t border-b border-gray-200/60">
+    <section className="w-full bg-[#faf4ff] py-7 sm:py-16 lg:py-20 select-none overflow-hidden border-t border-b border-gray-200/60">
       <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
         {/* Top Header: Left Title "Order By Pack & Volume" + Subtitle */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4 mb-4 sm:mb-12">
           <div className="text-left">
-            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight font-['Poppins',sans-serif] leading-tight text-left">
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight font-['Poppins',sans-serif] leading-tight text-left">
               Order By Pack &amp; Volume
             </h2>
-            <p className="text-xs sm:text-sm text-gray-600 mt-2 font-['Poppins',sans-serif] text-left max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 font-['Poppins',sans-serif] text-left max-w-2xl leading-relaxed">
               Select bottle sizes, multipacks, 1L pouches, and 5L bulk cans directly for home or commercial sanitation.
             </p>
           </div>
@@ -645,11 +645,11 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
                     {/* Header Row */}
                     <div
                       onClick={() => setOpenCategoryId(isOpen ? '' : cat.id)}
-                      className="w-full flex items-center justify-between p-3.5 sm:p-4 text-left cursor-pointer hover:bg-neutral-50/70 transition-colors group select-none"
+                      className="w-full flex items-center justify-between p-3 sm:p-4 text-left cursor-pointer hover:bg-neutral-50/70 transition-colors group select-none"
                     >
-                      <div className="flex items-center space-x-3.5 sm:space-x-4 min-w-0">
+                      <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
                         {/* Category Packshot Thumbnail Container */}
-                        <div className="relative w-14 h-14 sm:w-16 sm:h-16 bg-[#f7f7f8] rounded-none shrink-0 flex items-center justify-center p-1 border border-gray-100">
+                        <div className="relative w-12 h-12 sm:w-16 sm:h-16 bg-[#f7f7f8] rounded-none shrink-0 flex items-center justify-center p-1 border border-gray-100">
                           {catImg && (
                             <img
                               src={resolveAssetUrl(catImg)}
@@ -691,7 +691,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
 
                     {/* Sub-Rows (Variants) when Expanded */}
                     {isOpen && (
-                      <div className="bg-neutral-50/40 px-3.5 sm:px-6 py-2 border-t border-gray-100 divide-y divide-gray-100/80">
+                      <div className="bg-neutral-50/40 px-3 sm:px-6 py-1.5 sm:py-2 border-t border-gray-100 divide-y divide-gray-100/80">
                         {cat.variants.map((variant, idx) => {
                           const qty = quantities[variant.id] || 1;
                           const isAdded = addedVariants[variant.id];
@@ -706,7 +706,7 @@ export const VariantMatrixAccordion: React.FC<VariantMatrixAccordionProps> = ({ 
                           return (
                             <div
                               key={variant.id}
-                              className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs"
+                              className="py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 text-xs"
                             >
                               {/* Left: Variant Packshot + Title + Price */}
                               <div className="flex items-center space-x-3 min-w-0">

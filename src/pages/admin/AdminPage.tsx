@@ -47,7 +47,10 @@ import {
   getGeneralSettings,
   saveGeneralSettings,
   getAnalyticsEvents,
-  seedInitialDataIfEmpty
+  seedInitialDataIfEmpty,
+  DEFAULT_FRAGRANCE_PRESETS,
+  extractProductFragrances,
+  normalizePackagingSize
 } from '../../lib/storeService';
 import { normalizeAssetPath, resolveAssetUrl } from '../../lib/imageAsset';
 import { Product, Category, OrderEnquiry, BulkEnquiry, Coupon, Freebie, GeneralSettings, AnalyticsEvent, HeaderBanner, MegaMenuHighlight } from '../../types';
@@ -95,7 +98,16 @@ export const AdminPage: React.FC = () => {
 
   // Editing modals / state
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [fragrancesInput, setFragrancesInput] = useState('');
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+
+  useEffect(() => {
+    if (editingProduct) {
+      setFragrancesInput((editingProduct.fragrances || []).join(', '));
+    } else {
+      setFragrancesInput('');
+    }
+  }, [editingProduct?.id]);
   const [editingBanner, setEditingBanner] = useState<HeaderBanner | null>(null);
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [editingFreebie, setEditingFreebie] = useState<Freebie | null>(null);
@@ -497,6 +509,17 @@ export const AdminPage: React.FC = () => {
         cleanImages.push('/assets/products/Lemon-Handwash01.jpg');
       }
 
+      const parsedFragranceInput = fragrancesInput
+        .split(',')
+        .map((f) => f.trim())
+        .filter(Boolean);
+      const primaryFrag = (editingProduct.fragrance || '').trim();
+      const mergedFragrances = extractProductFragrances({
+        ...editingProduct,
+        fragrance: primaryFrag,
+        fragrances: parsedFragranceInput.length > 0 ? parsedFragranceInput : editingProduct.fragrances
+      });
+
       const sanitizedProduct: Product = {
         ...editingProduct,
         id: editingProduct.id || `prod-${Date.now()}`,
@@ -506,11 +529,9 @@ export const AdminPage: React.FC = () => {
         regularPrice: Number(editingProduct.regularPrice) || 0,
         sellingPrice: Number(editingProduct.sellingPrice) || 0,
         stock: Number(editingProduct.stock) || 0,
-        packagingSize: (editingProduct.packagingSize || '').trim(),
-        fragrance: (editingProduct.fragrance || '').trim(),
-        fragrances: Array.isArray(editingProduct.fragrances)
-          ? editingProduct.fragrances.map((f) => (typeof f === 'string' ? f.trim() : '')).filter(Boolean)
-          : (editingProduct.fragrance ? [editingProduct.fragrance.trim()] : []),
+        packagingSize: normalizePackagingSize((editingProduct.packagingSize || '').trim(), editingProduct.category),
+        fragrance: primaryFrag || mergedFragrances[0] || '',
+        fragrances: mergedFragrances,
         images: cleanImages,
         published: Boolean(editingProduct.published),
         isBestseller: Boolean(editingProduct.isBestseller),
@@ -525,7 +546,7 @@ export const AdminPage: React.FC = () => {
                 regularPrice: Number(v.regularPrice) || Number(editingProduct.regularPrice) || 0,
                 sellingPrice: Number(v.sellingPrice) || Number(editingProduct.sellingPrice) || 0,
                 stock: Number(v.stock) || 50,
-                packagingSize: v.packagingSize || v.name || editingProduct.packagingSize || 'Standard'
+                packagingSize: normalizePackagingSize(v.packagingSize || v.name || editingProduct.packagingSize || 'Standard', editingProduct.category)
               }))
             : [
                 {
@@ -535,7 +556,7 @@ export const AdminPage: React.FC = () => {
                   regularPrice: Number(editingProduct.regularPrice) || 0,
                   sellingPrice: Number(editingProduct.sellingPrice) || 0,
                   stock: Number(editingProduct.stock) || 100,
-                  packagingSize: editingProduct.packagingSize || 'Standard'
+                  packagingSize: normalizePackagingSize(editingProduct.packagingSize || 'Standard', editingProduct.category)
                 }
               ]
       };
@@ -1034,7 +1055,7 @@ export const AdminPage: React.FC = () => {
                           regularPrice: 150,
                           sellingPrice: 99,
                           stock: 100,
-                          packagingSize: '500 ml'
+                          packagingSize: '500 ml Bottle'
                         }
                       ]
                     });
@@ -1207,16 +1228,16 @@ export const AdminPage: React.FC = () => {
                             <button
                               type="button"
                               onClick={async () => {
-                                const newP = prompt('Enter new packaging preset name (e.g. "250 ml Bottle", "3 Litre Can"):');
+                                const newP = prompt('Enter new packaging preset name (e.g. "250 ml Bottle", "2 Litre Pouch"):');
                                 if (newP && newP.trim()) {
-                                  const trimmed = newP.trim();
+                                  const normalized = normalizePackagingSize(newP.trim());
                                   const current = settings?.packagingPresets || DEFAULT_PACKAGING_PRESETS;
-                                  if (!current.includes(trimmed)) {
-                                    const updated = [...current, trimmed];
+                                  if (!current.includes(normalized)) {
+                                    const updated = [...current, normalized];
                                     const newSettings: GeneralSettings = { ...settings!, packagingPresets: updated };
                                     setSettings(newSettings);
                                     await saveGeneralSettings(newSettings);
-                                    triggerNotice('success', `Added "${trimmed}" to Quick Packaging Presets!`);
+                                    triggerNotice('success', `Added "${normalized}" to Quick Packaging Presets!`);
                                   }
                                 }
                               }}
@@ -1230,7 +1251,21 @@ export const AdminPage: React.FC = () => {
                               <button
                                 key={sz}
                                 type="button"
-                                onClick={() => setEditingProduct({ ...editingProduct, packagingSize: sz })}
+                                onClick={() => {
+                                  const prevSize = editingProduct.packagingSize;
+                                  const updatedVars =
+                                    editingProduct.variants.length === 1 &&
+                                    (!editingProduct.variants[0].packagingSize ||
+                                      editingProduct.variants[0].packagingSize === prevSize ||
+                                      editingProduct.variants[0].packagingSize === 'Standard')
+                                      ? [{ ...editingProduct.variants[0], packagingSize: sz }]
+                                      : editingProduct.variants;
+                                  setEditingProduct({
+                                    ...editingProduct,
+                                    packagingSize: sz,
+                                    variants: updatedVars
+                                  });
+                                }}
                                 className={`text-[10px] px-2 py-0.5 rounded transition-colors ${
                                   editingProduct.packagingSize === sz
                                     ? 'bg-amber-700 text-white font-bold'
@@ -1261,16 +1296,12 @@ export const AdminPage: React.FC = () => {
                             </label>
                             <input
                               type="text"
-                              placeholder="e.g. Neem &amp; Aloe Vera, Citrus Lemon, Lavender Blossom"
+                              placeholder="e.g. Neem & Aloe Vera, Citrus Lemon, Lavender Blossom"
                               value={editingProduct.fragrance || ''}
                               onChange={(e) => {
-                                const val = e.target.value;
-                                const existingList = editingProduct.fragrances || [];
-                                const updatedList = val ? (existingList.includes(val) ? existingList : [val, ...existingList]) : existingList;
                                 setEditingProduct({
                                   ...editingProduct,
-                                  fragrance: val,
-                                  fragrances: updatedList
+                                  fragrance: e.target.value
                                 });
                               }}
                               className="w-full p-2 border border-purple-300 bg-white text-xs"
@@ -1282,10 +1313,12 @@ export const AdminPage: React.FC = () => {
                             </label>
                             <input
                               type="text"
-                              placeholder="e.g. Neem &amp; Aloe Vera, Citrus Lemon, Ocean Breeze"
-                              value={(editingProduct.fragrances || []).join(', ')}
+                              placeholder="e.g. Neem & Aloe Vera, Citrus Lemon, Ocean Breeze"
+                              value={fragrancesInput}
                               onChange={(e) => {
-                                const arr = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                                const raw = e.target.value;
+                                setFragrancesInput(raw);
+                                const arr = raw.split(',').map((s) => s.trim()).filter(Boolean);
                                 setEditingProduct({
                                   ...editingProduct,
                                   fragrances: arr,
@@ -1301,31 +1334,26 @@ export const AdminPage: React.FC = () => {
                         <div className="pt-1">
                           <span className="text-[10px] text-gray-500 font-bold uppercase mr-2">Quick Scent Presets:</span>
                           <div className="inline-flex flex-wrap gap-1 mt-1">
-                            {[
-                              'Neem & Aloe Vera',
-                              'Citrus Lemon',
-                              'Active Lemon',
-                              'Lavender Blossom',
-                              'Ocean Breeze',
-                              'Power Pine',
-                              'Fresh Linen',
-                              'Aloe Vera & Chamomile',
-                              'Rose Blossom',
-                              'Unscented Natural'
-                            ].map((scent) => {
-                              const isSelected = (editingProduct.fragrances || []).includes(scent) || editingProduct.fragrance === scent;
+                            {DEFAULT_FRAGRANCE_PRESETS.map((scent) => {
+                              const currentList = fragrancesInput
+                                .split(',')
+                                .map((s) => s.trim())
+                                .filter(Boolean);
+                              const isSelected =
+                                currentList.some((s) => s.toLowerCase() === scent.toLowerCase()) ||
+                                (editingProduct.fragrance || '').toLowerCase() === scent.toLowerCase();
                               return (
                                 <button
                                   key={scent}
                                   type="button"
                                   onClick={() => {
-                                    const current = editingProduct.fragrances || (editingProduct.fragrance ? [editingProduct.fragrance] : []);
                                     let next: string[];
-                                    if (current.includes(scent)) {
-                                      next = current.filter(s => s !== scent);
+                                    if (currentList.some((s) => s.toLowerCase() === scent.toLowerCase())) {
+                                      next = currentList.filter((s) => s.toLowerCase() !== scent.toLowerCase());
                                     } else {
-                                      next = [...current, scent];
+                                      next = [...currentList, scent];
                                     }
+                                    setFragrancesInput(next.join(', '));
                                     setEditingProduct({
                                       ...editingProduct,
                                       fragrances: next,
@@ -1576,6 +1604,22 @@ export const AdminPage: React.FC = () => {
                           <label className="block font-bold uppercase tracking-wide">Variants List</label>
                           <span className="text-[10px] text-gray-500">Each variant packaging size populates category size filters</span>
                         </div>
+                        <datalist id="wiz-packaging-presets">
+                          {(settings?.packagingPresets || DEFAULT_PACKAGING_PRESETS).map((preset) => (
+                            <option key={preset} value={preset} />
+                          ))}
+                          <option value="250 ml Bottle" />
+                          <option value="2 Litre Pouch" />
+                          <option value="1 Litre Top Load & Front Load Pouch" />
+                          <option value="2 Litre Top Load Pouch" />
+                          <option value="2 Litre Front Load Pouch" />
+                          <option value="5 Litre Can Top Load" />
+                          <option value="5 Litre Can Front Load" />
+                          <option value="2ml Pouch pack of 500" />
+                          <option value="Pack of 2" />
+                          <option value="Pack of 4" />
+                          <option value="Pack of 8 Boxes" />
+                        </datalist>
                         <div className="space-y-2">
                           {editingProduct.variants.map((v, i) => (
                             <div key={v.id} className="grid grid-cols-5 gap-2 bg-gray-50 p-2 border border-gray-200 items-center">
@@ -1593,7 +1637,8 @@ export const AdminPage: React.FC = () => {
                               />
                               <input
                                 type="text"
-                                placeholder="Packaging Size (e.g. 1L, 5L)"
+                                list="wiz-packaging-presets"
+                                placeholder="Packaging Size (e.g. 1 Litre Pouch, 2 Litre Pouch)"
                                 value={v.packagingSize || ''}
                                 onChange={(e) => {
                                   const copy = [...editingProduct.variants];
@@ -1648,7 +1693,7 @@ export const AdminPage: React.FC = () => {
                                 regularPrice: editingProduct.regularPrice * 2,
                                 sellingPrice: editingProduct.sellingPrice * 1.8,
                                 stock: 50,
-                                packagingSize: '1 Litre'
+                                packagingSize: '1 Litre Pouch'
                               };
                               setEditingProduct({
                                 ...editingProduct,
@@ -3531,7 +3576,7 @@ export const AdminPage: React.FC = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
-                        { key: 'household', label: 'Household Cleaners', defaultTitle: 'Clean Home, Pure Life', defaultSub: 'Effective cleaners powered by nature', defaultCat: 'handwash' },
+                        { key: 'household', label: 'Household Cleaners', defaultTitle: 'Clean Home, Pure Life', defaultSub: 'Effective cleaners powered by nature', defaultCat: 'floor-cleaner' },
                         { key: 'personal', label: 'Personal Care', defaultTitle: 'Gentle on Skin', defaultSub: 'Dermatologically tested formulations', defaultCat: 'bodywash' },
                         { key: 'paper', label: 'Paper Products', defaultTitle: '100% Virgin Pulp', defaultSub: 'Ultra-soft, ultra-absorbent hygiene paper', defaultCat: 'paper-products' }
                       ].map((item) => {

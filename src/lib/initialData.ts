@@ -5,7 +5,7 @@ export const DEFAULT_PACKAGING_PRESETS: string[] = [
   '750 ml Bottle',
   '1 Litre Pouch',
   '1 Litre Bottle',
-  '2 Litre Can',
+  '2 Litre Pouch',
   '5 Litre Can',
   '80 Pulls Pack',
   'Pack of 4 Boxes'
@@ -333,7 +333,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     slug: 'wiz-anti-bacterial-handwash-500ml',
     sku: 'WIZ-HW-500',
     category: 'Handwash',
-    subcategory: 'Household Cleaners',
+    subcategory: 'Personal Care',
     shortDescription: 'Germ protection handwash with moisturizing glycerin and refreshing natural citrus and peach fragrance.',
     fullDescription: 'WiZ Anti-Bacterial Handwash delivers 99.9% proven protection against illness-causing germs while being gentle on hands. Infused with skin-hydrating glycerin and natural extracts, it washes away grime and bacteria without stripping your skin of essential oils, making it ideal for frequent washing throughout the day.',
     benefits: [
@@ -661,7 +661,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     slug: 'wiz-instant-hand-sanitizer-5l',
     sku: 'WIZ-HS-5L',
     category: 'Hand Sanitizer',
-    subcategory: 'Household Cleaners',
+    subcategory: 'Personal Care',
     shortDescription: 'WHO-recommended 70% Isopropyl Alcohol disinfectant sanitizing liquid for instant germ defense.',
     fullDescription: 'WiZ Hand Sanitizer provides quick, water-free sanitization with pharmaceutical-grade 70% Isopropyl Alcohol. Enriched with moisturizers to prevent skin dryness, it evaporates quickly leaving hands feeling clean, non-sticky, and refreshed.',
     benefits: [

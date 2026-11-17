@@ -13,32 +13,39 @@ import {
   Tag
 } from 'lucide-react';
 import { Product, Category, GeneralSettings } from '../types';
-import { getProducts, getCategories, getGeneralSettings, normalizePackagingSize } from '../lib/storeService';
+import {
+  getProducts,
+  getCategories,
+  getGeneralSettings,
+  normalizePackagingSize,
+  doesPackagingSizeMatch,
+  extractProductFragrances
+} from '../lib/storeService';
 import { resolveAssetUrl } from '../lib/imageAsset';
 import { DEFAULT_PACKAGING_PRESETS } from '../lib/initialData';
 import { ProductCard } from '../components/ProductCard';
 import { Breadcrumbs } from '../components/Breadcrumbs';
 import { useSEO } from '../hooks/useSEO';
 
-// Main tab category groupings matching the header navigation
+// Main tab category groupings for product category Filters sidebar & drawer
 const CATEGORY_GROUPS = [
   {
-    groupName: 'Household Cleaners',
+    groupName: 'Personal Care',
     items: [
       { name: 'Handwash', slug: 'handwash' },
       { name: 'Hand Sanitizer', slug: 'hand-sanitizer' },
+      { name: 'Wet Wipes', slug: 'wet-wipes' },
+      { name: 'Bodywash', slug: 'bodywash' }
+    ]
+  },
+  {
+    groupName: 'Household Cleaners',
+    items: [
       { name: 'Floor Cleaner', slug: 'floor-cleaner' },
       { name: 'Dish Wash', slug: 'dishwash' },
       { name: 'Glass Cleaner', slug: 'glass-cleaner' },
       { name: 'Toilet Cleaner', slug: 'toilet-cleaner' },
       { name: 'Laundry Detergent', slug: 'laundry-detergent' }
-    ]
-  },
-  {
-    groupName: 'Personal Care',
-    items: [
-      { name: 'Wet Wipes', slug: 'wet-wipes' },
-      { name: 'Bodywash', slug: 'bodywash' }
     ]
   },
   {
@@ -104,16 +111,6 @@ export const CategoryPage: React.FC = () => {
   const [availability, setAvailability] = useState<'all' | 'in-stock' | 'out-of-stock'>('all');
   const [sortBy, setSortBy] = useState('featured');
 
-  // Canonicalize packaging size strings (Liter/Litre, spacing, &/and) for reliable filtering
-  const canonicalSizeKey = (val: string) =>
-    val
-      .toLowerCase()
-      .replace(/liter/g, 'litre')
-      .replace(/&/g, 'and')
-      .replace(/(\d)\s+(ml|l|litre)\b/g, '$1$2')
-      .replace(/\s+/g, ' ')
-      .trim();
-
   // Collapse filter accordions (except Categories) and clear stale price/availability when switching category pages
   useEffect(() => {
     setOpenAccordions({
@@ -129,17 +126,20 @@ export const CategoryPage: React.FC = () => {
     setAvailability('all');
   }, [slug]);
 
-  // Load initial parameters from URL and reset cleanly on route change
+  // Load initial parameters from URL and keep synced on route/query change
   useEffect(() => {
-    const sizeParam = searchParams.get('size');
-    if (sizeParam) {
-      const normalized = normalizePackagingSize(sizeParam, (slug || 'household-cleaners').toLowerCase());
-      setSelectedSizes([normalized || sizeParam]);
+    const targetSlug = (slug || 'household-cleaners').toLowerCase();
+    const rawSizeParams = searchParams.getAll('size').flatMap((s) => s.split(',').map((x) => x.trim()).filter(Boolean));
+    if (rawSizeParams.length > 0) {
+      const normalizedSizes = rawSizeParams
+        .map((s) => normalizePackagingSize(s, targetSlug) || s)
+        .filter((s, idx, arr) => arr.indexOf(s) === idx);
+      setSelectedSizes(normalizedSizes);
     } else {
       setSelectedSizes([]);
     }
-    const fragranceParam = searchParams.get('fragrance');
-    setSelectedFragrances(fragranceParam ? [fragranceParam] : []);
+    const rawFragParams = searchParams.getAll('fragrance').flatMap((f) => f.split(',').map((x) => x.trim()).filter(Boolean));
+    setSelectedFragrances(rawFragParams);
   }, [searchParams, slug]);
 
   useEffect(() => {
@@ -199,21 +199,25 @@ export const CategoryPage: React.FC = () => {
 
     return products.filter((p) => {
       if (currentSlug === 'household-cleaners') {
+        const isPersonalCareProduct = ['Handwash', 'Hand Sanitizer', 'Wet Wipes', 'Bodywash'].includes(p.category);
         return (
-          p.subcategory === 'Household Cleaners' ||
-          ['Handwash', 'Dishwash', 'Floor Cleaner', 'Laundry Detergent', 'Toilet Cleaner', 'Glass Cleaner', 'Hand Sanitizer'].includes(p.category)
+          !isPersonalCareProduct &&
+          (p.subcategory === 'Household Cleaners' ||
+            ['Dishwash', 'Floor Cleaner', 'Laundry Detergent', 'Toilet Cleaner', 'Glass Cleaner'].includes(p.category))
         );
       }
       if (currentSlug === 'personal-care') {
-        return p.subcategory === 'Personal Care' || ['Wet Wipes', 'Bodywash'].includes(p.category);
+        return (
+          p.subcategory === 'Personal Care' ||
+          ['Handwash', 'Hand Sanitizer', 'Wet Wipes', 'Bodywash'].includes(p.category)
+        );
       }
       if (currentSlug === '1l-5l-bulk') {
+        const isBulkText = (text?: string) =>
+          Boolean(text && /\b(1|2|5)\s*(l|litre|liter)\b/i.test(text));
         return (
-          p.packagingSize?.includes('1L') ||
-          p.packagingSize?.includes('1 Litre') ||
-          p.packagingSize?.includes('5L') ||
-          p.packagingSize?.includes('5 Litre') ||
-          p.variants.some((v) => v.name.includes('1L') || v.name.includes('1 Litre') || v.name.includes('5L') || v.name.includes('5 Litre'))
+          isBulkText(p.packagingSize) ||
+          p.variants.some((v) => isBulkText(v.packagingSize) || isBulkText(v.name))
         );
       }
       if (currentSlug === 'paper-products') {
@@ -247,9 +251,11 @@ export const CategoryPage: React.FC = () => {
     return Array.from(prices);
   };
 
-  // Available Packaging Sizes dynamically extracted strictly from products in this category
+  // Available Packaging Sizes dynamically extracted from backend products & normalized against backend presets
   const availableSizes = useMemo(() => {
-    const backendPresets = settings?.packagingPresets || DEFAULT_PACKAGING_PRESETS;
+    const backendPresets = (settings?.packagingPresets || DEFAULT_PACKAGING_PRESETS).map((s) =>
+      normalizePackagingSize(s)
+    );
     const sizeMap = new Map<string, number>();
 
     baseCategoryProducts.forEach((p) => {
@@ -269,9 +275,8 @@ export const CategoryPage: React.FC = () => {
       }
 
       productSizes.forEach((size) => {
-        // Exclude raw un-normalized fragments (like raw '500 ml' or '1 Litre')
         const lower = size.toLowerCase();
-        if (lower === '500 ml' || lower === '1 litre' || lower === '750 ml' || lower === '2 litre') return;
+        if (!lower || lower === 'standard' || lower === 'standard pack') return;
         // On 1L & 5L Bulk category page, only list bulk 1L/2L/5L packaging filters
         if (currentSlug === '1l-5l-bulk' && !/\b(1|2|5)\s*litre\b/i.test(lower)) return;
         sizeMap.set(size, (sizeMap.get(size) || 0) + 1);
@@ -290,44 +295,33 @@ export const CategoryPage: React.FC = () => {
       if (idxA !== -1 && idxB !== -1) return idxA - idxB;
       if (idxA !== -1) return -1;
       if (idxB !== -1) return 1;
-      return b.count - a.count;
+      return b.count - a.count || a.size.localeCompare(b.size);
     });
   }, [baseCategoryProducts, settings, currentSlug]);
 
-  // Available Fragrances dynamically extracted strictly from products in categories that use fragrance
+  // Available Fragrances dynamically extracted strictly from backend product scent fields
   const availableFragrances = useMemo(() => {
     // Paper products (tissues/towels) are not filtered by fragrance
     if (currentSlug === 'paper-products') return [];
 
-    const fragMap = new Map<string, number>();
+    const fragCounts = new Map<string, { label: string; count: number }>();
 
     baseCategoryProducts.forEach((p) => {
-      if (p.category === 'Paper Products') return;
-      const productFrags = new Set<string>();
-      if (p.fragrance && p.fragrance.trim()) {
-        productFrags.add(p.fragrance.trim());
-      }
-      if (Array.isArray(p.fragrances)) {
-        p.fragrances.forEach((f) => {
-          if (f && typeof f === 'string' && f.trim()) {
-            productFrags.add(f.trim());
-          }
-        });
-      }
-
-      productFrags.forEach((frag) => {
-        const lower = frag.toLowerCase();
-        if (lower === 'n/a' || lower === 'none') return;
-        fragMap.set(frag, (fragMap.get(frag) || 0) + 1);
+      const frags = extractProductFragrances(p);
+      frags.forEach((frag) => {
+        const key = frag.toLowerCase();
+        const existing = fragCounts.get(key);
+        if (existing) {
+          existing.count += 1;
+        } else {
+          fragCounts.set(key, { label: frag, count: 1 });
+        }
       });
     });
 
-    const results: { fragrance: string; count: number }[] = [];
-    fragMap.forEach((count, fragrance) => {
-      results.push({ fragrance, count });
-    });
-
-    return results.sort((a, b) => b.count - a.count || a.fragrance.localeCompare(b.fragrance));
+    return Array.from(fragCounts.values())
+      .map(({ label, count }) => ({ fragrance: label, count }))
+      .sort((a, b) => b.count - a.count || a.fragrance.localeCompare(b.fragrance));
   }, [baseCategoryProducts, currentSlug]);
 
   // Available Price Tiers dynamically computed from products & variants in the active category
@@ -388,67 +382,29 @@ export const CategoryPage: React.FC = () => {
   const filteredProducts = useMemo(() => {
     return baseCategoryProducts
       .filter((p) => {
-        // Size Filter
+        // Size Filter (matches backend normalized sizes cleanly across product & variants)
         if (selectedSizes.length > 0) {
-          const productSizes = new Set<string>();
-          if (p.packagingSize) {
-            const norm = normalizePackagingSize(p.packagingSize, p.category);
-            if (norm) productSizes.add(canonicalSizeKey(norm));
-            productSizes.add(canonicalSizeKey(p.packagingSize));
-          }
+          const candidateSizes: string[] = [];
+          if (p.packagingSize) candidateSizes.push(p.packagingSize);
           if (Array.isArray(p.variants)) {
             p.variants.forEach((v) => {
-              const raw = v.packagingSize || v.name;
-              if (raw) {
-                const norm = normalizePackagingSize(raw, p.category);
-                if (norm) productSizes.add(canonicalSizeKey(norm));
-                productSizes.add(canonicalSizeKey(raw));
-              }
+              if (v.packagingSize) candidateSizes.push(v.packagingSize);
+              if (v.name) candidateSizes.push(v.name);
             });
           }
 
-          const hasMatchingSize = selectedSizes.some((sel) => {
-            const cleanSel = canonicalSizeKey(normalizePackagingSize(sel, p.category) || sel);
-            const rawCleanSel = canonicalSizeKey(sel);
-            for (const ps of productSizes) {
-              if (
-                ps === cleanSel ||
-                ps === rawCleanSel ||
-                ps.includes(cleanSel) ||
-                cleanSel.includes(ps) ||
-                ps.includes(rawCleanSel) ||
-                rawCleanSel.includes(ps)
-              ) {
-                return true;
-              }
-            }
-            return false;
-          });
+          const hasMatchingSize = selectedSizes.some((sel) =>
+            candidateSizes.some((cand) => doesPackagingSizeMatch(cand, sel, p.category))
+          );
           if (!hasMatchingSize) return false;
         }
 
-        // Fragrance Filter
+        // Fragrance Filter (matches backend primary fragrance & all fragrance options)
         if (selectedFragrances.length > 0) {
-          const productFrags = new Set<string>();
-          if (p.fragrance && p.fragrance.trim()) {
-            productFrags.add(p.fragrance.trim().toLowerCase());
-          }
-          if (Array.isArray(p.fragrances)) {
-            p.fragrances.forEach((f) => {
-              if (f && typeof f === 'string' && f.trim()) {
-                productFrags.add(f.trim().toLowerCase());
-              }
-            });
-          }
-
+          const productFrags = extractProductFragrances(p).map((f) => f.toLowerCase());
           const hasMatchingFrag = selectedFragrances.some((f) => {
-            const cleanFrag = f.toLowerCase();
-            for (const pf of productFrags) {
-              if (pf === cleanFrag || pf.includes(cleanFrag) || cleanFrag.includes(pf)) {
-                return true;
-              }
-            }
-            return false;
+            const cleanFrag = f.trim().toLowerCase();
+            return productFrags.some((pf) => pf === cleanFrag);
           });
           if (!hasMatchingFrag) return false;
         }
@@ -492,15 +448,25 @@ export const CategoryPage: React.FC = () => {
   ]);
 
   const toggleSize = (size: string) => {
-    setSelectedSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-    );
+    const nextSizes = selectedSizes.includes(size)
+      ? selectedSizes.filter((s) => s !== size)
+      : [...selectedSizes, size];
+    setSelectedSizes(nextSizes);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('size');
+    nextSizes.forEach((s) => nextParams.append('size', s));
+    setSearchParams(nextParams, { replace: true });
   };
 
   const toggleFragrance = (frag: string) => {
-    setSelectedFragrances((prev) =>
-      prev.includes(frag) ? prev.filter((f) => f !== frag) : [...prev, frag]
-    );
+    const nextFrags = selectedFragrances.includes(frag)
+      ? selectedFragrances.filter((f) => f !== frag)
+      : [...selectedFragrances, frag];
+    setSelectedFragrances(nextFrags);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('fragrance');
+    nextFrags.forEach((f) => nextParams.append('fragrance', f));
+    setSearchParams(nextParams, { replace: true });
   };
 
   const resetAllFilters = () => {
@@ -510,7 +476,7 @@ export const CategoryPage: React.FC = () => {
     setCustomMinPrice('');
     setCustomMaxPrice('');
     setAvailability('all');
-    setSearchParams({});
+    setSearchParams({}, { replace: true });
   };
 
   const totalActiveFilters =
@@ -1165,17 +1131,12 @@ export const CategoryPage: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredProducts.map((p) => {
                   let preferredVariantId: string | undefined;
-                  if (selectedSizes.length === 1 && Array.isArray(p.variants)) {
-                    const targetKey = canonicalSizeKey(normalizePackagingSize(selectedSizes[0], p.category) || selectedSizes[0]);
-                    const matchedVar =
-                      p.variants.find((v) => {
-                        const vPack = canonicalSizeKey(normalizePackagingSize(v.packagingSize || v.name, p.category));
-                        return vPack === targetKey;
-                      }) ||
-                      p.variants.find((v) => {
-                        const vPack = canonicalSizeKey(normalizePackagingSize(v.packagingSize || v.name, p.category));
-                        return vPack.includes(targetKey) || targetKey.includes(vPack);
-                      });
+                  if (selectedSizes.length >= 1 && Array.isArray(p.variants)) {
+                    const matchedVar = p.variants.find((v) =>
+                      selectedSizes.some((sel) =>
+                        doesPackagingSizeMatch(v.packagingSize || v.name, sel, p.category)
+                      )
+                    );
                     preferredVariantId = matchedVar?.id;
                   } else if (currentSlug === '1l-5l-bulk' && Array.isArray(p.variants)) {
                     const bulkVar = p.variants.find((v) =>

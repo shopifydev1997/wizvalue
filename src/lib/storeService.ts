@@ -98,8 +98,18 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
     console.warn('Could not read settings/general from Firestore, using initial settings:', error);
   }
 
+  const normalizedPresets = (
+    Array.isArray(merged.packagingPresets) && merged.packagingPresets.length > 0
+      ? merged.packagingPresets
+      : INITIAL_SETTINGS.packagingPresets || []
+  )
+    .map((sz) => normalizePackagingSize(sz))
+    .filter(Boolean)
+    .filter((sz, idx, arr) => arr.indexOf(sz) === idx);
+
   return {
     ...merged,
+    packagingPresets: normalizedPresets,
     headerLogo: resolveAssetUrl(normalizeBrandLogoPath(merged.headerLogo)),
     footerLogo: resolveAssetUrl(normalizeBrandLogoPath(merged.footerLogo)),
     footerImage: resolveAssetUrl(merged.footerImage),
@@ -142,8 +152,16 @@ export async function getGeneralSettings(): Promise<GeneralSettings> {
  */
 export async function saveGeneralSettings(settings: GeneralSettings): Promise<void> {
   const path = SETTINGS_DOC_PATH;
+  const normalizedPresets = Array.isArray(settings.packagingPresets)
+    ? settings.packagingPresets
+        .map((sz) => normalizePackagingSize(sz))
+        .filter(Boolean)
+        .filter((sz, idx, arr) => arr.indexOf(sz) === idx)
+    : settings.packagingPresets;
+
   const cleanData = cleanFirestoreData({
     ...settings,
+    packagingPresets: normalizedPresets,
     headerLogo: settings.headerLogo ? normalizeBrandLogoPath(settings.headerLogo) : settings.headerLogo,
     footerLogo: settings.footerLogo ? normalizeBrandLogoPath(settings.footerLogo) : settings.footerLogo,
     footerImage: settings.footerImage ? normalizeAssetPath(settings.footerImage) : settings.footerImage,
@@ -195,13 +213,26 @@ export async function saveGeneralSettings(settings: GeneralSettings): Promise<vo
   }
 }
 
+export const DEFAULT_FRAGRANCE_PRESETS: string[] = [
+  'Neem & Aloe Vera',
+  'Citrus Lemon',
+  'Active Lemon',
+  'Lavender Blossom',
+  'Ocean Breeze',
+  'Power Pine',
+  'Fresh Linen',
+  'Aloe Vera & Chamomile',
+  'Rose Blossom',
+  'Unscented Natural'
+];
+
 /**
- * Normalizes raw/shortened packaging size strings (e.g. '500 ml', '1 Litre')
+ * Normalizes raw/shortened packaging size strings (e.g. '500 ml', '1 Litre', '2 Litre Can')
  * to standard Quick Packaging Presets as configured in the backend admin panel.
  */
 export function normalizePackagingSize(rawSize: string, _category?: string): string {
   if (!rawSize) return '';
-  const trimmed = rawSize.trim();
+  const trimmed = rawSize.replace(/\s+/g, ' ').trim();
   const lower = trimmed.toLowerCase();
 
   // Laundry Top Load / Front Load distinct packaging formats
@@ -221,13 +252,26 @@ export function normalizePackagingSize(rawSize: string, _category?: string): str
   if (lower === '750 ml bottle' || lower === '750ml bottle') return '750 ml Bottle';
   if (lower === '1 litre pouch' || lower === '1 liter pouch' || lower === '1l pouch' || lower === '1 litre refill pouch') return '1 Litre Pouch';
   if (lower === '1 litre bottle' || lower === '1 liter bottle' || lower === '1l bottle' || lower === '1 litre angled bottle' || lower === '1 litre pump bottle') return '1 Litre Bottle';
-  if (lower === '2 litre can' || lower === '2 liter can' || lower === '2l can' || lower === '2 litre bottle') return '2 Litre Can';
+  if (
+    lower === '2 litre can' ||
+    lower === '2 liter can' ||
+    lower === '2l can' ||
+    lower === '2 litre pouch' ||
+    lower === '2 liter pouch' ||
+    lower === '2l pouch' ||
+    lower === '2 litre refill pouch' ||
+    lower === '2 litre bottle'
+  ) {
+    return '2 Litre Pouch';
+  }
   if (lower === '5 litre can' || lower === '5 liter can' || lower === '5l can' || lower === '5 litre heavy duty can' || lower === '5 litre commercial can' || lower === '5 litre bulk can' || lower === '5 litre heavy can') return '5 Litre Can';
-  if (lower.includes('80 pull') || lower.includes('wipes')) return '80 Pulls Pack';
-  if (lower === 'pack of 2') return 'Pack of 2';
-  if (lower === 'pack of 4' && !(_category || '').toLowerCase().includes('paper')) return 'Pack of 4';
-  if (lower.includes('pack of 4') || lower.includes('facial tissue')) return 'Pack of 4 Boxes';
+  if (lower === '250 ml bottle' || lower === '250ml bottle') return '250 ml Bottle';
+
+  if (lower.includes('pack of 2')) return 'Pack of 2';
+  if ((lower === 'pack of 4' || lower.includes('mega saver pack of 4') || lower.includes('pack of 4 (320')) && !(_category || '').toLowerCase().includes('paper')) return 'Pack of 4';
   if (lower.includes('pack of 8')) return 'Pack of 8 Boxes';
+  if (lower.includes('pack of 4') || lower.includes('facial tissue')) return 'Pack of 4 Boxes';
+  if (lower.includes('80 pull') || lower === 'single pack wet wipes' || (lower.includes('wipes') && !lower.includes('pack of'))) return '80 Pulls Pack';
 
   // Consolidate raw shortened fragments:
   if (lower === '500 ml' || lower === '500ml' || lower === '500 ml pump' || lower === '500 ml dispenser' || lower === '500 ml spray' || lower === '500 ml trigger spray') {
@@ -243,7 +287,7 @@ export function normalizePackagingSize(rawSize: string, _category?: string): str
   }
 
   if (lower === '2 litre' || lower === '2 liter' || lower === '2l') {
-    return '2 Litre Can';
+    return '2 Litre Pouch';
   }
 
   if (lower === '5 litre' || lower === '5 liter' || lower === '5l') {
@@ -255,6 +299,63 @@ export function normalizePackagingSize(rawSize: string, _category?: string): str
   }
 
   return trimmed;
+}
+
+export function canonicalSizeKey(val: string): string {
+  return val
+    .toLowerCase()
+    .replace(/liter/g, 'litre')
+    .replace(/&/g, 'and')
+    .replace(/(\d)\s+(ml|l|litre)\b/g, '$1$2')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export function doesPackagingSizeMatch(candidateRaw: string, selectedRaw: string, category?: string): boolean {
+  const normCandidate = canonicalSizeKey(normalizePackagingSize(candidateRaw, category) || candidateRaw);
+  const normSelected = canonicalSizeKey(normalizePackagingSize(selectedRaw, category) || selectedRaw);
+  const rawCandidate = canonicalSizeKey(candidateRaw);
+  const rawSelected = canonicalSizeKey(selectedRaw);
+
+  if (!normCandidate || !normSelected) return false;
+  if (normCandidate === normSelected || rawCandidate === rawSelected || normCandidate === rawSelected) {
+    return true;
+  }
+
+  // Exact bulk equivalence across Laundry Top/Front Load variants when filtering by base bulk pack
+  if (normSelected === '1litre pouch' && normCandidate === '1litre top load and front load pouch') return true;
+  if (normSelected === '2litre pouch' && (normCandidate === '2litre top load pouch' || normCandidate === '2litre front load pouch')) return true;
+  if (normSelected === '5litre can' && (normCandidate === '5litre can top load' || normCandidate === '5litre can front load')) return true;
+
+  return false;
+}
+
+export function extractProductFragrances(product: Product): string[] {
+  if (product.category === 'Paper Products') return [];
+  const rawItems: string[] = [];
+  if (product.fragrance && typeof product.fragrance === 'string') {
+    product.fragrance.split(',').forEach((s) => rawItems.push(s));
+  }
+  if (Array.isArray(product.fragrances)) {
+    product.fragrances.forEach((f) => {
+      if (f && typeof f === 'string') {
+        f.split(',').forEach((s) => rawItems.push(s));
+      }
+    });
+  }
+
+  const seen = new Map<string, string>();
+  rawItems.forEach((item) => {
+    const cleaned = item.replace(/\s+/g, ' ').trim();
+    const lower = cleaned.toLowerCase();
+    if (!cleaned || lower === 'n/a' || lower === 'none' || lower === 'unscented pure') return;
+    if (!seen.has(lower)) {
+      const presetMatch = DEFAULT_FRAGRANCE_PRESETS.find((p) => p.toLowerCase() === lower);
+      seen.set(lower, presetMatch || cleaned);
+    }
+  });
+
+  return Array.from(seen.values());
 }
 
 const isDiscontinuedProductOrVariant = (
@@ -373,9 +474,11 @@ export async function getProducts(): Promise<Product[]> {
       }));
 
       const basePack = p.packagingSize ? normalizePackagingSize(p.packagingSize, p.category) : p.packagingSize;
+      const isPersonalCareCategory = p.category === 'Handwash' || p.category === 'Hand Sanitizer';
 
       return {
         ...p,
+        subcategory: isPersonalCareCategory && p.subcategory === 'Household Cleaners' ? 'Personal Care' : p.subcategory,
         images: Array.isArray(p.images) ? p.images.map((img) => resolveAssetUrl(img)) : [],
         packagingSize: basePack,
         variants: normalizedVariants

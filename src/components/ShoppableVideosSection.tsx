@@ -256,10 +256,10 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
   };
 
   return (
-    <section className="w-full py-12 sm:py-16 bg-white select-none">
+    <section className="w-full py-7 sm:py-16 bg-white select-none">
       <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
         {/* Top Header Row matching Reference Layout */}
-        <div className="flex items-center justify-between mb-8 sm:mb-10 w-full">
+        <div className="flex items-center justify-between mb-4 sm:mb-10 w-full">
           <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-neutral-900 tracking-tight font-['Poppins',sans-serif]">
             Shoppable videos
           </h2>
@@ -310,7 +310,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
         ) : (
           <div
             ref={scrollContainerRef}
-            className="flex items-stretch overflow-x-auto gap-[18px] no-scrollbar scroll-smooth pb-2 w-full"
+            className="flex items-stretch overflow-x-auto gap-3 sm:gap-[18px] no-scrollbar scroll-smooth pb-1 sm:pb-2 w-full"
           >
             {shoppableVideos.map((video) => {
               const hasLocalVideo = Boolean(video.videoUrl);
@@ -336,7 +336,7 @@ export const ShoppableVideosSection: React.FC<ShoppableVideosSectionProps> = ({
               return (
                 <div
                   key={video.id}
-                  className="relative shrink-0 w-full sm:w-[calc((100%-18px)/2)] lg:w-[calc((100%-54px)/4)] aspect-[330/510] bg-neutral-900 overflow-hidden group select-none shadow-xs rounded-none border border-neutral-100"
+                  className="relative shrink-0 w-[66vw] sm:w-[calc((100%-18px)/2)] lg:w-[calc((100%-54px)/4)] aspect-[330/510] bg-neutral-900 overflow-hidden group select-none shadow-xs rounded-none border border-neutral-100"
                 >
                   {/* Video / Background Media Layer */}
                   <div className="absolute inset-0 w-full h-full overflow-hidden bg-neutral-950">

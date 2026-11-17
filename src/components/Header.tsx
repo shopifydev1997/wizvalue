@@ -329,10 +329,10 @@ export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       {/* 1. Announcement Bar */}
-      <div className="bg-[#7a49a6] text-white text-xs font-medium py-2 w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px] flex items-center justify-between">
+      <div className="bg-[#7a49a6] text-white text-[11px] sm:text-xs font-medium py-1.5 sm:py-2 w-full px-3 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px] flex items-center justify-between">
         <button
           onClick={() => setAnnouncementIndex((prev) => (prev === 0 ? announcements.length - 1 : prev - 1))}
-          className="text-purple-200 hover:text-white transition-colors p-1"
+          className="text-purple-200 hover:text-white transition-colors p-0.5 sm:p-1"
           aria-label="Previous announcement"
         >
           <ChevronLeft className="w-3.5 h-3.5" />
@@ -344,16 +344,16 @@ export const Header: React.FC = () => {
 
         <button
           onClick={() => setAnnouncementIndex((prev) => (prev === announcements.length - 1 ? 0 : prev + 1))}
-          className="text-purple-200 hover:text-white transition-colors p-1"
+          className="text-purple-200 hover:text-white transition-colors p-0.5 sm:p-1"
           aria-label="Next announcement"
         >
           <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* 2. Main Navigation Bar - Full Width with 100px margins on left and right */}
+      {/* 2. Main Navigation Bar - Reduced height by 10% (72px -> 64px) across Desktop, Laptop, Tablet & Mobile */}
       <div className="w-full px-4 sm:px-6 md:px-8 lg:px-[100px] xl:px-[100px]">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-[64px]">
           {/* Logo with Provision to Add or Delete WiZ Logo */}
           <div className="flex items-center space-x-2 shrink-0">
             {settings?.showHeaderLogo !== false ? (
@@ -363,7 +363,7 @@ export const Header: React.FC = () => {
                     <img
                       src={resolveAssetUrl(settings?.headerLogo, DEFAULT_BRAND_LOGO)}
                       alt={settings?.websiteName || 'WiZ'}
-                      className="h-9 sm:h-10 max-w-[160px] object-contain transition-transform group-hover:scale-105"
+                      className="h-7 sm:h-8 max-w-[140px] object-contain transition-transform group-hover:scale-105"
                       onLoad={(e) => {
                         e.currentTarget.style.display = '';
                         const fb = document.getElementById('wiz-header-logo-fallback');
@@ -385,13 +385,13 @@ export const Header: React.FC = () => {
                     <span
                       id="wiz-header-logo-fallback"
                       style={{ display: 'none' }}
-                      className="text-4xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150"
+                      className="text-3xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150"
                     >
                       WiZ<span className="text-xs font-bold align-super ml-0.5 text-gray-500">®</span>
                     </span>
                   </>
                 ) : (
-                  <span className="text-4xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150">
+                  <span className="text-3xl font-extrabold tracking-tight text-[#7a49a6] transition-transform duration-150">
                     WiZ<span className="text-xs font-bold align-super ml-0.5 text-gray-500">®</span>
                   </span>
                 )}
@@ -406,13 +406,13 @@ export const Header: React.FC = () => {
 
           {/* Desktop Navigation - 1 Line Single Row */}
           <nav className="hidden lg:flex items-center space-x-4 xl:space-x-6 2xl:space-x-7 text-[13px] font-medium text-gray-800 whitespace-nowrap flex-nowrap shrink-0">
-            <Link to="/" className="hover:text-[#7a49a6] transition-colors py-6">
+            <Link to="/" className="hover:text-[#7a49a6] transition-colors py-4">
               Home
             </Link>
 
             {/* Household Cleaners Dropdown */}
             <div
-              className="py-6 static"
+              className="py-4 static"
               onMouseEnter={() => setActiveMegaMenu('household')}
               onMouseLeave={() => setActiveMegaMenu(null)}
             >
@@ -428,7 +428,7 @@ export const Header: React.FC = () => {
 
             {/* Personal Care Dropdown */}
             <div
-              className="py-6 static"
+              className="py-4 static"
               onMouseEnter={() => setActiveMegaMenu('personal')}
               onMouseLeave={() => setActiveMegaMenu(null)}
             >
@@ -444,7 +444,7 @@ export const Header: React.FC = () => {
 
             {/* 1L & 5L Dropdown */}
             <div
-              className="py-6 static"
+              className="py-4 static"
               onMouseEnter={() => setActiveMegaMenu('bulk')}
               onMouseLeave={() => setActiveMegaMenu(null)}
             >
@@ -460,7 +460,7 @@ export const Header: React.FC = () => {
 
             {/* Paper Products Dropdown */}
             <div
-              className="py-6 static"
+              className="py-4 static"
               onMouseEnter={() => setActiveMegaMenu('paper')}
               onMouseLeave={() => setActiveMegaMenu(null)}
             >
@@ -476,7 +476,7 @@ export const Header: React.FC = () => {
 
             {/* Offers Dropdown with #ff675d red accent */}
             <div
-              className="py-6 static"
+              className="py-4 static"
               onMouseEnter={() => setActiveMegaMenu('offers')}
               onMouseLeave={() => setActiveMegaMenu(null)}
             >
@@ -488,7 +488,7 @@ export const Header: React.FC = () => {
               </button>
             </div>
 
-            <Link to="/bulk-order" className="hover:text-[#7a49a6] transition-colors py-6">
+            <Link to="/bulk-order" className="hover:text-[#7a49a6] transition-colors py-4">
               Bulk Order
             </Link>
 
@@ -563,8 +563,7 @@ export const Header: React.FC = () => {
           ========================================================================= */}
       {activeMegaMenu && (
         <div
-          className="hidden lg:block fixed left-0 right-0 w-full bg-white border-t border-b-2 border-gray-200 shadow-2xl z-50 transition-all duration-200"
-          style={{ top: '112px' }}
+          className="hidden lg:block absolute left-0 right-0 top-full w-full bg-white border-t border-b-2 border-gray-200 shadow-2xl z-50 transition-all duration-200"
           onMouseEnter={() => setActiveMegaMenu(activeMegaMenu)}
           onMouseLeave={() => setActiveMegaMenu(null)}
         >
@@ -572,62 +571,21 @@ export const Header: React.FC = () => {
             {/* HOUSEHOLD CLEANERS MEGA MENU */}
             {activeMegaMenu === 'household' && (() => {
               const hasLeftImg = Boolean(getLeftImage('household')?.visible !== false && getLeftImage('household')?.imageUrl);
-              const colClass = hasLeftImg ? 'col-span-3' : 'col-span-4';
+              const surfaceColClass = hasLeftImg ? 'col-span-5' : 'col-span-7';
+              const laundryColClass = hasLeftImg ? 'col-span-4' : 'col-span-5';
 
               return (
                 <div className="grid grid-cols-12 gap-8 items-start">
                   {/* LEFT SIDE IMAGE WITH PROVISION TO ADD & DELETE */}
                   {renderLeftImageCard('household', 'col-span-3')}
 
-                  {/* COLUMN 1: Hand Hygiene */}
-                  <div className={colClass}>
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#7a49a6] mb-3 pb-1 border-b border-gray-100 flex items-center space-x-1.5">
-                      <span>Hand Hygiene</span>
-                    </h4>
-
-                    {/* Handwash Section */}
-                    <div className="mb-4">
-                      <Link
-                        to="/category/handwash"
-                        onClick={() => setActiveMegaMenu(null)}
-                        className="font-bold text-xs text-gray-900 hover:text-[#7a49a6] flex items-center justify-between group"
-                      >
-                        <span>Handwash</span>
-                        <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#7a49a6]" />
-                      </Link>
-                      <ul className="mt-1.5 pl-2 space-y-1 text-[11px] text-gray-600 border-l border-gray-200">
-                        <li><Link to="/category/handwash?size=500%20ml%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 500ml Bottle</Link></li>
-                        <li><Link to="/category/handwash?size=1%20Litre%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 1 Liter Bottle</Link></li>
-                        <li><Link to="/category/handwash?size=1%20Litre%20Pouch" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 1 Liter Pouch</Link></li>
-                        <li><Link to="/category/handwash?size=5%20Litre%20Can" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 5 Liter Can</Link></li>
-                      </ul>
-                    </div>
-
-                    {/* Hand Sanitizer Section */}
-                    <div>
-                      <Link
-                        to="/category/hand-sanitizer"
-                        onClick={() => setActiveMegaMenu(null)}
-                        className="font-bold text-xs text-gray-900 hover:text-[#7a49a6] flex items-center justify-between group"
-                      >
-                        <span>Hand Sanitizer</span>
-                        <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#7a49a6]" />
-                      </Link>
-                      <ul className="mt-1.5 pl-2 space-y-1 text-[11px] text-gray-600 border-l border-gray-200">
-                        <li><Link to="/category/hand-sanitizer?size=2ml%20Pouch%20pack%20of%20500" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block leading-tight">• 2ml Pouch pack of 500</Link></li>
-                        <li><Link to="/category/hand-sanitizer?size=500%20ml%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 500ml bottle</Link></li>
-                        <li><Link to="/category/hand-sanitizer?size=5%20Litre%20Can" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 5 Liter Can</Link></li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* COLUMN 2: Surface & Floor Care */}
-                  <div className={colClass}>
+                  {/* COLUMN 1: Surface & Floor Care */}
+                  <div className={surfaceColClass}>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#7a49a6] mb-3 pb-1 border-b border-gray-100">
                       Surface &amp; Floor Care
                     </h4>
 
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                       {/* Floor Cleaner */}
                       <div>
                         <Link
@@ -697,8 +655,8 @@ export const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* COLUMN 3: Fabric & Laundry */}
-                  <div className={colClass}>
+                  {/* COLUMN 2: Fabric & Laundry */}
+                  <div className={laundryColClass}>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#7a49a6] mb-3 pb-1 border-b border-gray-100">
                       Fabric &amp; Laundry
                     </h4>
@@ -726,12 +684,54 @@ export const Header: React.FC = () => {
             {/* PERSONAL CARE MEGA MENU */}
             {activeMegaMenu === 'personal' && (() => {
               const hasLeftImg = Boolean(getLeftImage('personal')?.visible !== false && getLeftImage('personal')?.imageUrl);
-              const colClass = hasLeftImg ? 'col-span-4' : 'col-span-6';
+              const colClass = hasLeftImg ? 'col-span-3' : 'col-span-4';
 
               return (
                 <div className="grid grid-cols-12 gap-8 items-start">
                   {/* LEFT SIDE IMAGE WITH PROVISION TO ADD & DELETE */}
-                  {renderLeftImageCard('personal', 'col-span-4')}
+                  {renderLeftImageCard('personal', 'col-span-3')}
+
+                  {/* Hand Hygiene: Handwash & Hand Sanitizer */}
+                  <div className={colClass}>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#7a49a6] mb-3 pb-1 border-b border-gray-100 flex items-center space-x-1.5">
+                      <span>Hand Hygiene</span>
+                    </h4>
+
+                    {/* Handwash Section */}
+                    <div className="mb-4">
+                      <Link
+                        to="/category/handwash"
+                        onClick={() => setActiveMegaMenu(null)}
+                        className="font-bold text-xs text-gray-900 hover:text-[#7a49a6] flex items-center justify-between group"
+                      >
+                        <span>Handwash</span>
+                        <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#7a49a6]" />
+                      </Link>
+                      <ul className="mt-1.5 pl-2 space-y-1 text-[11px] text-gray-600 border-l border-gray-200">
+                        <li><Link to="/category/handwash?size=500%20ml%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 500ml Bottle</Link></li>
+                        <li><Link to="/category/handwash?size=1%20Litre%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 1 Liter Bottle</Link></li>
+                        <li><Link to="/category/handwash?size=1%20Litre%20Pouch" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 1 Liter Pouch</Link></li>
+                        <li><Link to="/category/handwash?size=5%20Litre%20Can" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 5 Liter Can</Link></li>
+                      </ul>
+                    </div>
+
+                    {/* Hand Sanitizer Section */}
+                    <div>
+                      <Link
+                        to="/category/hand-sanitizer"
+                        onClick={() => setActiveMegaMenu(null)}
+                        className="font-bold text-xs text-gray-900 hover:text-[#7a49a6] flex items-center justify-between group"
+                      >
+                        <span>Hand Sanitizer</span>
+                        <ArrowRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity text-[#7a49a6]" />
+                      </Link>
+                      <ul className="mt-1.5 pl-2 space-y-1 text-[11px] text-gray-600 border-l border-gray-200">
+                        <li><Link to="/category/hand-sanitizer?size=2ml%20Pouch%20pack%20of%20500" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block leading-tight">• 2ml Pouch pack of 500</Link></li>
+                        <li><Link to="/category/hand-sanitizer?size=500%20ml%20Bottle" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 500ml bottle</Link></li>
+                        <li><Link to="/category/hand-sanitizer?size=5%20Litre%20Can" onClick={() => setActiveMegaMenu(null)} className="hover:text-[#7a49a6] block">• 5 Liter Can</Link></li>
+                      </ul>
+                    </div>
+                  </div>
 
                   {/* Wet Wipes */}
                   <div className={colClass}>
@@ -1349,8 +1349,8 @@ export const Header: React.FC = () => {
 
       {/* 4. Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden fixed inset-0 top-[110px] bg-white z-40 overflow-y-auto p-6 border-t border-gray-200">
-          <nav className="flex flex-col space-y-4 text-base font-medium text-gray-900">
+        <div className="lg:hidden fixed inset-x-0 bottom-0 top-[93px] sm:top-[97px] bg-white z-40 overflow-y-auto px-4 py-4 border-t border-gray-200">
+          <nav className="flex flex-col space-y-2.5 text-[15px] font-medium text-gray-900">
             <Link
               to="/"
               onClick={() => setMobileMenuOpen(false)}
@@ -1374,23 +1374,6 @@ export const Header: React.FC = () => {
                 Household Cleaners
               </Link>
               <div className="mt-2 pl-3 border-l border-purple-200 space-y-2.5 text-xs text-gray-600">
-                <div>
-                  <Link to="/category/handwash" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Handwash</Link>
-                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
-                    <Link to="/category/handwash?size=500%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 500ml Bottle</Link>
-                    <Link to="/category/handwash?size=1%20Litre%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 1 Liter Bottle</Link>
-                    <Link to="/category/handwash?size=1%20Litre%20Pouch" onClick={() => setMobileMenuOpen(false)}>• 1 Liter Pouch</Link>
-                    <Link to="/category/handwash?size=5%20Litre%20Can" onClick={() => setMobileMenuOpen(false)}>• 5 Liter Can</Link>
-                  </div>
-                </div>
-                <div>
-                  <Link to="/category/hand-sanitizer" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Hand Sanitizer</Link>
-                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
-                    <Link to="/category/hand-sanitizer?size=2ml%20Pouch%20pack%20of%20500" onClick={() => setMobileMenuOpen(false)}>• 2ml Pouch pack of 500</Link>
-                    <Link to="/category/hand-sanitizer?size=500%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 500ml bottle</Link>
-                    <Link to="/category/hand-sanitizer?size=5%20Litre%20Can" onClick={() => setMobileMenuOpen(false)}>• 5 Liter Can</Link>
-                  </div>
-                </div>
                 <div>
                   <Link to="/category/floor-cleaner" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Floor Cleaner</Link>
                   <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
@@ -1434,13 +1417,50 @@ export const Header: React.FC = () => {
                 </div>
               </div>
             </div>
-            <Link
-              to="/category/wet-wipes"
-              onClick={() => setMobileMenuOpen(false)}
-              className="py-2 border-b border-gray-100"
-            >
-              Personal Care
-            </Link>
+            <div className="py-2 border-b border-gray-100">
+              <Link
+                to="/category/personal-care"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block font-semibold text-gray-900"
+              >
+                Personal Care
+              </Link>
+              <div className="mt-2 pl-3 border-l border-purple-200 space-y-2.5 text-xs text-gray-600">
+                <div>
+                  <Link to="/category/handwash" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Handwash</Link>
+                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+                    <Link to="/category/handwash?size=500%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 500ml Bottle</Link>
+                    <Link to="/category/handwash?size=1%20Litre%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 1 Liter Bottle</Link>
+                    <Link to="/category/handwash?size=1%20Litre%20Pouch" onClick={() => setMobileMenuOpen(false)}>• 1 Liter Pouch</Link>
+                    <Link to="/category/handwash?size=5%20Litre%20Can" onClick={() => setMobileMenuOpen(false)}>• 5 Liter Can</Link>
+                  </div>
+                </div>
+                <div>
+                  <Link to="/category/hand-sanitizer" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Hand Sanitizer</Link>
+                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+                    <Link to="/category/hand-sanitizer?size=2ml%20Pouch%20pack%20of%20500" onClick={() => setMobileMenuOpen(false)}>• 2ml Pouch pack of 500</Link>
+                    <Link to="/category/hand-sanitizer?size=500%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 500ml bottle</Link>
+                    <Link to="/category/hand-sanitizer?size=5%20Litre%20Can" onClick={() => setMobileMenuOpen(false)}>• 5 Liter Can</Link>
+                  </div>
+                </div>
+                <div>
+                  <Link to="/category/wet-wipes" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Wet Wipes</Link>
+                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+                    <Link to="/category/wet-wipes?size=80%20Pulls%20Pack" onClick={() => setMobileMenuOpen(false)}>• 80 Pulls Pack</Link>
+                    <Link to="/category/wet-wipes?size=Pack%20of%202" onClick={() => setMobileMenuOpen(false)}>• Pack of 2</Link>
+                    <Link to="/category/wet-wipes?size=Pack%20of%204" onClick={() => setMobileMenuOpen(false)}>• Pack of 4</Link>
+                  </div>
+                </div>
+                <div>
+                  <Link to="/category/bodywash" onClick={() => setMobileMenuOpen(false)} className="font-semibold text-gray-800 block">Bodywash</Link>
+                  <div className="pl-2 mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
+                    <Link to="/category/bodywash?size=250%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 250ml Bottle</Link>
+                    <Link to="/category/bodywash?size=500%20ml%20Bottle" onClick={() => setMobileMenuOpen(false)}>• 500ml Bottle</Link>
+                    <Link to="/category/bodywash?size=5%20Litre%20Can" onClick={() => setMobileMenuOpen(false)}>• 5 Liter Can</Link>
+                  </div>
+                </div>
+              </div>
+            </div>
             <Link
               to="/category/1l-5l-bulk"
               onClick={() => setMobileMenuOpen(false)}

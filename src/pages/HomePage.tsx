@@ -172,6 +172,8 @@ export const HomePage: React.FC = () => {
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
   const [addedNoticeMap, setAddedNoticeMap] = useState<Record<string, boolean>>({});
   const carouselContainerRef = React.useRef<HTMLDivElement>(null);
+  const [canScrollEssentialsLeft, setCanScrollEssentialsLeft] = useState(false);
+  const [canScrollEssentialsRight, setCanScrollEssentialsRight] = useState(true);
   const [lovedSlideIndex, setLovedSlideIndex] = useState(1);
   const categoryScrollRef = React.useRef<HTMLDivElement>(null);
   const [canScrollCatLeft, setCanScrollCatLeft] = useState(false);
@@ -564,7 +566,7 @@ export const HomePage: React.FC = () => {
       sellingPrice: 99,
       badge: null,
       isSoldout: false,
-      category: 'Home Care'
+      category: 'Personal Care'
     },
     {
       id: 'wiz-wet-wipes-ref',
@@ -649,6 +651,30 @@ export const HomePage: React.FC = () => {
       badge: null,
       isSoldout: false,
       category: 'Personal Care'
+    },
+    {
+      id: 'wiz-toilet-cleaner-ref',
+      productId: 'prod-toilet-cleaner',
+      title: 'Disinfectant Toilet Cleaner 1L',
+      slug: 'wiz-disinfectant-toilet-cleaner-1l',
+      image: '/assets/products/Toilet-Cleaner 1L.jpg',
+      regularPrice: 150.00,
+      sellingPrice: 93,
+      badge: null,
+      isSoldout: false,
+      category: 'Home Care'
+    },
+    {
+      id: 'wiz-glass-cleaner-ref',
+      productId: 'prod-glass-cleaner',
+      title: 'Sparkle Glass Cleaner 1L',
+      slug: 'wiz-sparkle-glass-cleaner-1l',
+      image: '/assets/products/Glass-Cleaner 1L.jpg',
+      regularPrice: 145.00,
+      sellingPrice: 99,
+      badge: null,
+      isSoldout: false,
+      category: 'Home Care'
     }
   ];
 
@@ -791,15 +817,46 @@ export const HomePage: React.FC = () => {
     return true;
   });
 
+  const updateEssentialsScrollState = () => {
+    const el = carouselContainerRef.current;
+    if (!el) return;
+    setCanScrollEssentialsLeft(el.scrollLeft > 8);
+    setCanScrollEssentialsRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
+  };
+
+  useEffect(() => {
+    const el = carouselContainerRef.current;
+    if (el) {
+      el.scrollTo({ left: 0, behavior: 'auto' });
+      requestAnimationFrame(() => updateEssentialsScrollState());
+    }
+  }, [activeCategoryFilter]);
+
+  useEffect(() => {
+    updateEssentialsScrollState();
+    window.addEventListener('resize', updateEssentialsScrollState);
+    return () => window.removeEventListener('resize', updateEssentialsScrollState);
+  }, []);
+
   const handlePrevCategoryItems = () => {
-    if (carouselContainerRef.current) {
-      carouselContainerRef.current.scrollBy({ left: -360, behavior: 'smooth' });
+    const el = carouselContainerRef.current;
+    if (!el) return;
+    const step = Math.max(el.clientWidth, 260);
+    if (el.scrollLeft <= 8 && el.scrollWidth > el.clientWidth + 8) {
+      el.scrollTo({ left: el.scrollWidth - el.clientWidth, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: -step, behavior: 'smooth' });
     }
   };
 
   const handleNextCategoryItems = () => {
-    if (carouselContainerRef.current) {
-      carouselContainerRef.current.scrollBy({ left: 360, behavior: 'smooth' });
+    const el = carouselContainerRef.current;
+    if (!el) return;
+    const step = Math.max(el.clientWidth, 260);
+    if (el.scrollLeft >= el.scrollWidth - el.clientWidth - 8 && el.scrollWidth > el.clientWidth + 8) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: step, behavior: 'smooth' });
     }
   };
 
@@ -2275,7 +2332,7 @@ export const HomePage: React.FC = () => {
       <section
         onMouseEnter={() => setIsBannerHovered(true)}
         onMouseLeave={() => setIsBannerHovered(false)}
-        className="relative w-full overflow-hidden bg-[#efc0c6] group select-none h-[440px] sm:h-[525px]"
+        className="relative w-full overflow-hidden bg-[#efc0c6] group select-none h-[330px] sm:h-[525px]"
       >
         {/* Hero Background Image */}
         {bannerBgImage ? (
@@ -2328,12 +2385,12 @@ export const HomePage: React.FC = () => {
         )}
 
         {/* Hero Overlay Content & Slide Controls - Unified Flexbox Container Aligned with Hero Margins */}
-        <div className="absolute inset-x-0 bottom-12 sm:bottom-14 md:bottom-[95px] z-20 w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pointer-events-none">
-          {/* Left Side: Thumbnail Card + Heading, Subtitle & CTA */}
-          <div className="flex flex-row items-center gap-5 sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto">
-            {/* Banner Small Square Thumbnail Card */}
+        <div className="absolute inset-x-0 bottom-10 sm:bottom-14 md:bottom-[95px] z-20 w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-row items-end justify-between gap-3 sm:gap-6 pointer-events-none">
+          {/* Left Side: Thumbnail Card (Desktop/Tablet) + Heading, Subtitle & CTA */}
+          <div className="flex flex-row items-center sm:gap-7 lg:gap-8 max-w-2xl sm:max-w-3xl pointer-events-auto min-w-0">
+            {/* Banner Small Square Thumbnail Card - hidden on mobile view */}
             {bannerThumbImage && (
-              <div className="relative shrink-0 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/30 bg-white/10 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
+              <div className="hidden sm:block relative shrink-0 sm:w-32 sm:h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl border border-white/30 bg-white/10 backdrop-blur-xs transition-transform duration-300 hover:scale-[1.02]">
                 <img
                   src={resolveAssetUrl(bannerThumbImage)}
                   alt={currentBanner.title}
@@ -2344,18 +2401,18 @@ export const HomePage: React.FC = () => {
 
             {/* Typography & White CTA Button */}
             <div className="text-white text-left">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold tracking-tight text-white leading-tight font-['Poppins',sans-serif] drop-shadow-sm">
+              <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold tracking-tight text-white leading-tight font-['Poppins',sans-serif] drop-shadow-sm">
                 {currentBanner.title}
               </h1>
 
-              <p className="text-xs sm:text-sm md:text-base text-white/95 max-w-sm sm:max-w-md mt-2 sm:mt-3 leading-relaxed font-normal drop-shadow-xs font-['Poppins',sans-serif]">
+              <p className="text-xs sm:text-sm md:text-base text-white/95 max-w-sm sm:max-w-md mt-1.5 sm:mt-3 leading-snug sm:leading-relaxed font-normal drop-shadow-xs font-['Poppins',sans-serif] line-clamp-2 sm:line-clamp-none">
                 {currentBanner.subtitle}
               </p>
 
-              <div className="mt-4 sm:mt-6">
+              <div className="mt-3 sm:mt-6">
                 <Link
                   to={currentBanner.buttonLink || '/shop'}
-                  className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-xs sm:text-[13px] font-bold uppercase tracking-wider py-3 sm:py-3.5 px-7 sm:px-9 transition-colors shadow-sm rounded-none cursor-pointer"
+                  className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-[11px] sm:text-[13px] font-bold uppercase tracking-wider py-2.5 sm:py-3.5 px-5 sm:px-9 transition-colors shadow-sm rounded-none cursor-pointer"
                 >
                   {currentBanner.buttonText || 'EXPLORE PRODUCTS'}
                 </Link>
@@ -2364,7 +2421,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Right Side: Slide Controls */}
-          <div className="flex items-end space-x-6 shrink-0 self-end pointer-events-auto">
+          <div className="flex items-end space-x-3 sm:space-x-6 shrink-0 self-end pointer-events-auto">
             <div className="text-left hidden sm:block">
               <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-white/90 block mb-0.5">
                 NEXT
@@ -2382,11 +2439,11 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
               <button
                 type="button"
                 onClick={handlePrevBanner}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
                 style={{ borderRadius: '9999px' }}
                 aria-label="Previous slide"
               >
@@ -2395,7 +2452,7 @@ export const HomePage: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNextBanner}
-                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-[#7a49a6] hover:text-white transition-colors cursor-pointer"
                 style={{ borderRadius: '9999px' }}
                 aria-label="Next slide"
               >
@@ -2427,9 +2484,9 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 1B: WiZ CATEGORIES QUICK NAVIGATION STRIP (Matches Attached WiZ-Categories Design)
           ========================================================================= */}
-      <section className="w-full bg-white py-8 sm:py-10 border-b border-gray-100">
-        <div className="w-full px-4 sm:px-6 md:px-10 lg:px-[100px]">
-          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-x-3 gap-y-6 sm:gap-x-4 items-end">
+      <section className="w-full bg-white py-5 sm:py-10 border-b border-gray-100">
+        <div className="w-full px-3 sm:px-6 md:px-10 lg:px-[100px]">
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-9 gap-x-2 gap-y-3.5 sm:gap-x-4 sm:gap-y-6 items-end">
             {[
               {
                 name: 'Hand Wash',
@@ -2482,14 +2539,14 @@ export const HomePage: React.FC = () => {
                 to={cat.link}
                 className="group flex flex-col items-center text-center focus:outline-none"
               >
-                <div className="w-full h-28 sm:h-32 md:h-36 flex items-center justify-center overflow-visible">
+                <div className="w-full h-18 sm:h-32 md:h-36 flex items-center justify-center overflow-visible">
                   <img
                     src={resolveAssetUrl(cat.image)}
                     alt={cat.name}
                     className="max-h-full w-auto object-contain transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
-                <span className="mt-2.5 text-[13px] sm:text-sm font-medium text-gray-900 group-hover:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] whitespace-nowrap">
+                <span className="mt-1.5 sm:mt-2.5 text-[11px] sm:text-sm font-medium text-gray-900 group-hover:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] whitespace-nowrap">
                   {cat.name}
                 </span>
               </Link>
@@ -2503,21 +2560,18 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 2: ALL ESSENTIALS, HOME CARE & PERSONAL CARE (Exact Layout Match)
           ========================================================================= */}
-      {/* =========================================================================
-          SECTION 2: ALL ESSENTIALS, HOME CARE & PERSONAL CARE (Exact Layout Match)
-          ========================================================================= */}
-      <section className="w-full pt-10 sm:pt-14 pb-14 sm:pb-20 bg-white">
+      <section className="w-full pt-6 sm:pt-14 pb-8 sm:pb-20 bg-white">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
           {/* Category Tabs & Carousel Navigation Header (Matches attached WiZ-Products_8ebda911.jpg) */}
-          <div className="flex items-center justify-between pb-8 sm:pb-10 border-b border-transparent">
+          <div className="flex items-center justify-between pb-3.5 sm:pb-10 border-b border-transparent gap-2">
           {/* Category Tabs: All Essentials, Home Care, Personal Care with small circular thumbnails */}
-          <div className="flex items-center space-x-6 sm:space-x-10 lg:space-x-12 overflow-x-auto no-scrollbar py-2">
+          <div className="flex items-center space-x-4 sm:space-x-10 lg:space-x-12 min-w-0 flex-1 overflow-x-auto no-scrollbar py-2">
             {/* 1. All Essentials Tab */}
-            <div className="flex items-center space-x-3.5 group cursor-pointer text-left shrink-0 relative">
+            <div className="flex items-center space-x-2.5 sm:space-x-3.5 group cursor-pointer text-left shrink-0 relative">
               {tabThumbnails.all && (
                 <div
                   onClick={() => setActiveCategoryFilter('all')}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
+                  className="w-9 h-9 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
@@ -2535,7 +2589,7 @@ export const HomePage: React.FC = () => {
                 onClick={() => setActiveCategoryFilter('all')}
                 className="flex flex-col justify-center cursor-pointer text-left focus:outline-none"
               >
-                <span className="text-base sm:text-lg lg:text-[19px] font-normal text-gray-900 group-hover:text-black transition-colors whitespace-nowrap leading-none">
+                <span className="text-sm sm:text-lg lg:text-[19px] font-normal text-gray-900 group-hover:text-black transition-colors whitespace-nowrap leading-none">
                   All Essentials
                 </span>
                 {activeCategoryFilter === 'all' && (
@@ -2545,11 +2599,11 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* 2. Home Care Tab */}
-            <div className="flex items-center space-x-3.5 group cursor-pointer text-left shrink-0 relative">
+            <div className="flex items-center space-x-2.5 sm:space-x-3.5 group cursor-pointer text-left shrink-0 relative">
               {tabThumbnails.home && (
                 <div
                   onClick={() => setActiveCategoryFilter('home')}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
+                  className="w-9 h-9 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
@@ -2567,7 +2621,7 @@ export const HomePage: React.FC = () => {
                 onClick={() => setActiveCategoryFilter('home')}
                 className="flex flex-col justify-center cursor-pointer text-left focus:outline-none"
               >
-                <span className="text-base sm:text-lg lg:text-[19px] font-normal text-gray-800 group-hover:text-black transition-colors whitespace-nowrap leading-none">
+                <span className="text-sm sm:text-lg lg:text-[19px] font-normal text-gray-800 group-hover:text-black transition-colors whitespace-nowrap leading-none">
                   Home Care
                 </span>
                 {activeCategoryFilter === 'home' && (
@@ -2577,11 +2631,11 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* 3. Personal Care Tab */}
-            <div className="flex items-center space-x-3.5 group cursor-pointer text-left shrink-0 relative">
+            <div className="flex items-center space-x-2.5 sm:space-x-3.5 group cursor-pointer text-left shrink-0 relative">
               {tabThumbnails.personal && (
                 <div
                   onClick={() => setActiveCategoryFilter('personal')}
-                  className="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
+                  className="w-9 h-9 sm:w-12 sm:h-12 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-white border border-gray-200/80 shadow-xs relative"
                   style={{ borderRadius: '9999px' }}
                 >
                   <img
@@ -2599,7 +2653,7 @@ export const HomePage: React.FC = () => {
                 onClick={() => setActiveCategoryFilter('personal')}
                 className="flex flex-col justify-center cursor-pointer text-left focus:outline-none"
               >
-                <span className="text-base sm:text-lg lg:text-[19px] font-normal text-gray-800 group-hover:text-black transition-colors whitespace-nowrap leading-none">
+                <span className="text-sm sm:text-lg lg:text-[19px] font-normal text-gray-800 group-hover:text-black transition-colors whitespace-nowrap leading-none">
                   Personal Care
                 </span>
                 {activeCategoryFilter === 'personal' && (
@@ -2609,40 +2663,53 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Header Area: Manage Tab Thumbnails button + Carousel Navigation Arrows */}
-          <div className="flex items-center space-x-2 sm:space-x-3 shrink-0 ml-4">
-
-            {/* Carousel Navigation Arrows matching attached WiZ-Products_8ebda911.jpg */}
+          {/* Right Header Area: Carousel Navigation Arrows */}
+          <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0 ml-2 sm:ml-4">
             <button
+              type="button"
               onClick={handlePrevCategoryItems}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a3a3a3] hover:bg-gray-700 text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer ${
+                canScrollEssentialsLeft
+                  ? 'bg-black hover:bg-[#7a49a6]'
+                  : 'bg-[#a3a3a3] hover:bg-gray-700'
+              }`}
               style={{ borderRadius: '9999px' }}
               aria-label="Previous items"
               title="Previous items"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
+              type="button"
               onClick={handleNextCategoryItems}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black hover:bg-[#7a49a6] text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+              className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer ${
+                canScrollEssentialsRight
+                  ? 'bg-black hover:bg-[#7a49a6]'
+                  : 'bg-[#a3a3a3] hover:bg-gray-700'
+              }`}
               style={{ borderRadius: '9999px' }}
               aria-label="Next items"
               title="Next items"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
-        {/* 4 Product Cards Grid matching attached WiZ-Products_8ebda911.jpg */}
+        {/* Product Cards Horizontal Carousel: 2 products in mobile view, 4 products in desktop view */}
         <div
           ref={carouselContainerRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7 overflow-x-auto no-scrollbar scroll-smooth"
+          onScroll={updateEssentialsScrollState}
+          className="flex items-stretch gap-3.5 sm:gap-6 lg:gap-7 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {displayedEssentialsItems.slice(0, 4).map((item) => (
-            <div key={item.id} className="group flex flex-col justify-between">
+          {displayedEssentialsItems.map((item) => (
+            <div
+              key={item.id}
+              className="group shrink-0 snap-start w-[calc((100%-14px)/2)] sm:w-[calc((100%-24px)/2)] md:w-[calc((100%-48px)/3)] lg:w-[calc((100%-84px)/4)] flex flex-col justify-between"
+            >
               {/* Product Image Container: #f6f6f6 clean background, centered packshot */}
-              <div className="relative w-full aspect-[1/1.08] sm:aspect-[4/5] bg-[#f6f6f6] flex items-center justify-center p-6 sm:p-8 overflow-hidden">
+              <div className="relative w-full aspect-[1/1.08] sm:aspect-[4/5] bg-[#f6f6f6] flex items-center justify-center p-3 sm:p-6 md:p-8 overflow-hidden">
                 <Link
                   to={`/product/${item.slug}`}
                   onClick={() => {
@@ -2662,7 +2729,7 @@ export const HomePage: React.FC = () => {
                 {/* Badges matching attached image: 25% OFF (coral) & Soldout (black) */}
                 {item.badge === '25% OFF' && (
                   <span
-                    className="absolute top-4 left-4 bg-[#ff5757] text-white text-xs font-semibold px-3.5 py-1 shadow-xs tracking-wide rounded-full"
+                    className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-[#ff5757] text-white text-[10px] sm:text-xs font-semibold px-2.5 sm:px-3.5 py-0.5 sm:py-1 shadow-xs tracking-wide rounded-full"
                     style={{ borderRadius: '9999px' }}
                   >
                     25% OFF
@@ -2670,7 +2737,7 @@ export const HomePage: React.FC = () => {
                 )}
                 {item.isSoldout && (
                   <span
-                    className="absolute top-4 left-4 bg-black text-white text-xs font-semibold px-4 py-1 shadow-xs tracking-wide rounded-full"
+                    className="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 bg-black text-white text-[10px] sm:text-xs font-semibold px-3 sm:px-4 py-0.5 sm:py-1 shadow-xs tracking-wide rounded-full"
                     style={{ borderRadius: '9999px' }}
                   >
                     Soldout
@@ -2703,7 +2770,7 @@ export const HomePage: React.FC = () => {
               </div>
 
               {/* Product Info below container: Left Aligned Title + Price matching attached layout */}
-              <div className="pt-3 pb-1 text-left">
+              <div className="pt-2 sm:pt-3 pb-0.5 sm:pb-1 text-left">
                 <h3 className="text-sm sm:text-[15px] font-normal text-gray-900 hover:text-black transition-colors leading-snug text-left">
                   <Link
                     to={`/product/${item.slug}`}
@@ -2738,11 +2805,11 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 3: MOST LOVED PICKS (Slider Layout matching Reference Image Most_Loved_Picks_0eb07c1b.jpg)
           ========================================================================= */}
-      <section className="w-full py-12 sm:py-16 overflow-hidden bg-white">
-        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] mb-6 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <section className="w-full py-7 sm:py-16 overflow-hidden bg-white">
+        <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] mb-3.5 sm:mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
             <div className="text-left">
-              <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight text-left font-['Poppins',sans-serif]">
+              <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight text-left font-['Poppins',sans-serif]">
                 Most Loved Picks
               </h2>
             </div>
@@ -2750,11 +2817,11 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Carousel Slider with Side Previews / Peeks */}
-        <div className="relative w-full overflow-hidden">
+        <div className="relative w-full overflow-hidden [--slide-w:86vw] sm:[--slide-w:min(68vw,1180px)] [--slide-gap:14px] sm:[--slide-gap:20px]">
           <div
             className="flex items-center transition-transform duration-500 ease-in-out"
             style={{
-              transform: `translateX(calc(50vw - (min(68vw, 1180px) / 2) - ${lovedSlideIndex} * (min(68vw, 1180px) + 20px)))`
+              transform: `translateX(calc(50vw - (var(--slide-w) / 2) - ${lovedSlideIndex} * (var(--slide-w) + var(--slide-gap))))`
             }}
           >
             {lovedSlides.map((slide, idx) => {
@@ -2765,7 +2832,8 @@ export const HomePage: React.FC = () => {
                   onClick={() => {
                     if (!isActive) setLovedSlideIndex(idx);
                   }}
-                  className={`shrink-0 w-[68vw] max-w-[1180px] mr-[20px] relative aspect-[1180/700] overflow-hidden select-none transition-opacity duration-300 group ${
+                  style={{ width: 'var(--slide-w)', marginRight: 'var(--slide-gap)' }}
+                  className={`shrink-0 relative aspect-[16/10] sm:aspect-[1180/700] overflow-hidden select-none transition-opacity duration-300 group ${
                     isActive ? 'cursor-default opacity-100' : 'cursor-pointer opacity-90 hover:opacity-100'
                   }`}
                 >
@@ -2781,60 +2849,23 @@ export const HomePage: React.FC = () => {
                     <div className="w-full h-full bg-linear-to-br from-neutral-800 via-neutral-900 to-black" />
                   )}
 
-                  {/* Left-Bottom Overlay Text & CTA Button (Matching Reference Image) */}
-                  <div className="absolute left-6 sm:left-10 lg:left-14 bottom-6 sm:bottom-10 lg:bottom-12 z-20 text-left max-w-sm sm:max-w-md">
-                    <h3 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight leading-tight mb-2 drop-shadow-md font-['Poppins',sans-serif]">
+                  {/* Subtle bottom-left gradient for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/50 via-black/15 to-transparent pointer-events-none" />
+
+                  {/* Left-Bottom Overlay Text & CTA Button */}
+                  <div className="absolute left-4 sm:left-10 lg:left-14 bottom-4 sm:bottom-10 lg:bottom-12 z-20 text-left max-w-[85%] sm:max-w-md">
+                    <h3 className="text-lg sm:text-3xl lg:text-4xl font-semibold text-white tracking-tight leading-tight mb-1 sm:mb-2 drop-shadow-md font-['Poppins',sans-serif]">
                       {slide.title}
                     </h3>
-                    <p className="text-xs sm:text-sm text-white/95 line-clamp-2 mb-4 drop-shadow">
+                    <p className="text-[11px] sm:text-sm text-white/95 line-clamp-2 mb-2.5 sm:mb-4 drop-shadow">
                       {slide.subtitle}
                     </p>
                     <Link
                       to={slide.shopLink}
-                      className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white px-6 sm:px-8 py-2 sm:py-2.5 text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
+                      className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white px-4 sm:px-8 py-1.5 sm:py-2.5 text-[11px] sm:text-sm font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
                     >
                       SHOP NOW
                     </Link>
-                  </div>
-
-                  {/* Right Floating Product Listing Boxes with Backend Product Details & Thumbnails */}
-                  <div className="absolute right-4 sm:right-6 lg:right-10 bottom-6 sm:bottom-10 lg:bottom-12 flex flex-col space-y-3 sm:space-y-4 z-20">
-                    {slide.products.map((pItem) => (
-                      <div
-                        key={pItem.id}
-                        className="bg-white shadow-xl p-3 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 w-60 sm:w-72 md:w-80 lg:w-[350px] border-0"
-                      >
-                        {/* Product Image Thumbnail from Backend Product Upload */}
-                        <div className="w-16 h-14 sm:w-20 sm:h-18 lg:w-24 lg:h-20 flex items-center justify-center shrink-0 p-1 bg-white">
-                          <img
-                            src={resolveAssetUrl(pItem.image)}
-                            alt={pItem.title}
-                            className="max-h-full max-w-full object-contain"
-                            draggable={false}
-                          />
-                        </div>
-
-                        {/* Product Info & QUICK VIEW Button */}
-                        <div className="flex-1 min-w-0 text-left">
-                          <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
-                            {pItem.title}
-                          </h4>
-                          <div className="text-xs sm:text-sm font-bold text-gray-900 mt-0.5 mb-2 sm:mb-2.5">
-                            {pItem.price}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (pItem.product) setQuickViewProduct(pItem.product);
-                            }}
-                            className="w-full bg-black text-white hover:bg-[#7a49a6] py-1.5 sm:py-2 px-3 text-[10px] sm:text-[11px] font-bold uppercase tracking-wider transition-colors text-center cursor-pointer shadow-xs"
-                          >
-                            QUICK VIEW
-                          </button>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                   {/* Left and Right Navigation Arrows shifted directly onto the slide image */}
                   {isActive && (
@@ -2845,11 +2876,11 @@ export const HomePage: React.FC = () => {
                           e.stopPropagation();
                           handlePrevLovedSlide();
                         }}
-                        className="absolute left-3 sm:left-5 md:left-7 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/65 hover:bg-[#7a49a6] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-xs cursor-pointer border border-white/20 hover:scale-105"
+                        className="absolute left-2 sm:left-5 md:left-7 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/65 hover:bg-[#7a49a6] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-xs cursor-pointer border border-white/20 hover:scale-105"
                         title="Previous Slide"
                         aria-label="Previous slide"
                       >
-                        <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
                       </button>
                       <button
                         type="button"
@@ -2857,11 +2888,11 @@ export const HomePage: React.FC = () => {
                           e.stopPropagation();
                           handleNextLovedSlide();
                         }}
-                        className="absolute right-3 sm:right-5 md:right-7 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/65 hover:bg-[#7a49a6] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-xs cursor-pointer border border-white/20 hover:scale-105"
+                        className="absolute right-2 sm:right-5 md:right-7 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/65 hover:bg-[#7a49a6] text-white flex items-center justify-center transition-all shadow-xl backdrop-blur-xs cursor-pointer border border-white/20 hover:scale-105"
                         title="Next Slide"
                         aria-label="Next slide"
                       >
-                        <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
                       </button>
                     </>
                   )}
@@ -2877,11 +2908,11 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 4: PRODUCT CATEGORIES (Exact Layout Match with Product_Category_ddffba0a.jpg)
           ========================================================================= */}
-      <section className="w-full py-12 sm:py-16 bg-white overflow-hidden">
+      <section className="w-full py-7 sm:py-16 bg-white overflow-hidden">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
           {/* Header Row: Title */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-gray-900 text-left font-['Poppins',sans-serif]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-8">
+            <h2 className="text-2xl sm:text-4xl font-semibold tracking-tight text-gray-900 text-left font-['Poppins',sans-serif]">
               Product Categories
             </h2>
           </div>
@@ -2890,13 +2921,13 @@ export const HomePage: React.FC = () => {
           <div
             ref={categoryScrollRef}
             onScroll={handleCategoryScrollEvent}
-            className="flex items-stretch gap-[18px] overflow-x-auto scroll-smooth pb-4 select-none no-scrollbar w-full"
+            className="flex items-stretch gap-3 sm:gap-[18px] overflow-x-auto scroll-smooth pb-2 sm:pb-4 select-none no-scrollbar w-full"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {productCategories.map((cat) => (
               <div
                 key={cat.id}
-                className="group relative shrink-0 w-[calc((100%-18px)/1.35)] sm:w-[calc((100%-18px)/2)] md:w-[calc((100%-36px)/3)] lg:w-[calc((100%-54px)/4)] h-[320px] sm:h-[350px] md:h-[365px] overflow-hidden bg-gray-50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col"
+                className="group relative shrink-0 w-[calc((100%-12px)/2)] sm:w-[calc((100%-18px)/2)] md:w-[calc((100%-36px)/3)] lg:w-[calc((100%-54px)/4)] h-[215px] sm:h-[350px] md:h-[365px] overflow-hidden bg-gray-50 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col"
               >
                 {/* Category Thumbnail Image or Clean Neutral Box */}
                 {cat.image ? (
@@ -2915,12 +2946,12 @@ export const HomePage: React.FC = () => {
                 {/* Floating White Label Box at Bottom matching attached design */}
                 <Link
                   to={cat.slug}
-                  className="absolute left-3 right-3 sm:left-4 sm:right-4 bottom-3 sm:bottom-4 bg-white shadow-sm px-4 py-3 flex items-center justify-between border-0 transition-transform duration-300 group-hover:-translate-y-0.5 z-10"
+                  className="absolute left-2 right-2 sm:left-4 sm:right-4 bottom-2 sm:bottom-4 bg-white shadow-sm px-2.5 py-2 sm:px-4 sm:py-3 flex items-center justify-between border-0 transition-transform duration-300 group-hover:-translate-y-0.5 z-10"
                 >
-                  <span className="text-sm font-semibold text-gray-900 group-hover:text-black transition-colors">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-900 group-hover:text-black transition-colors truncate mr-1">
                     {cat.name}
                   </span>
-                  <span className="text-xs text-gray-500 font-normal">
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-normal shrink-0">
                     {cat.count}
                   </span>
                 </Link>
@@ -2929,26 +2960,26 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Centered Circular Navigation Buttons matching attached Product_Category_ddffba0a.jpg */}
-          <div className="flex items-center justify-center space-x-3 mt-6 sm:mt-8">
+          <div className="flex items-center justify-center space-x-3 mt-4 sm:mt-8">
             <button
               type="button"
               onClick={() => handleScrollCategories('left')}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#a3a3a3] hover:bg-black text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#a3a3a3] hover:bg-black text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
               style={{ borderRadius: '9999px' }}
               aria-label="Previous product categories"
               title="Previous product categories"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <button
               type="button"
               onClick={() => handleScrollCategories('right')}
-              className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black hover:bg-[#7a49a6] text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+              className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black hover:bg-[#7a49a6] text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
               style={{ borderRadius: '9999px' }}
               aria-label="Next product categories"
               title="Next product categories"
             >
-              <ChevronRight className="w-5 h-5" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
@@ -2957,7 +2988,7 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 5: OUR BESTSELLERS (Full width background image with Add/Delete provision)
           ========================================================================= */}
-      <section className="relative w-full py-12 sm:py-16 overflow-hidden bg-[#a8bba8]">
+      <section className="relative w-full py-7 sm:py-16 overflow-hidden bg-[#a8bba8]">
         {/* Full width background image or clean gradient if deleted */}
         {bestsellerBgImage ? (
           <div
@@ -2974,12 +3005,12 @@ export const HomePage: React.FC = () => {
 
         <div className="relative w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
           {/* Header row: Left title & subtitle, Center provisions, Right circular navigation buttons */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-5 sm:mb-12 gap-3 sm:gap-6">
             <div className="max-w-xl text-left">
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
                 Our Bestsellers
               </h2>
-              <p className="text-sm sm:text-base text-white/90 font-normal mt-3 leading-relaxed max-w-lg font-['Poppins',sans-serif] text-left">
+              <p className="text-xs sm:text-base text-white/90 font-normal mt-1.5 sm:mt-3 leading-relaxed max-w-lg font-['Poppins',sans-serif] text-left">
                 Explore our most loved beauty essentials, trusted by customers for delivering radiant skin, everyday confidence, and visible results.
               </p>
             </div>
@@ -3009,7 +3040,7 @@ export const HomePage: React.FC = () => {
                   aria-label="Next bestsellers"
                 >
                   <ChevronRight className="w-4 h-4" />
-              </button>
+                </button>
             </div>
           </div>
 
@@ -3017,13 +3048,13 @@ export const HomePage: React.FC = () => {
           <div
             ref={bestsellerScrollRef}
             onScroll={handleBestsellerScrollEvent}
-            className="flex items-start gap-2 overflow-x-auto scroll-smooth pb-4 select-none no-scrollbar"
+            className="flex items-start gap-3 sm:gap-2 overflow-x-auto scroll-smooth pb-2 sm:pb-4 select-none no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {bestsellerProducts.map((item) => (
               <div
                 key={item.id}
-                className="group shrink-0 w-[270px] sm:w-[320px] md:w-[350px] lg:w-[calc((100%-32px)/5)] flex flex-col"
+                className="group shrink-0 w-[calc((100%-12px)/2)] sm:w-[320px] md:w-[350px] lg:w-[calc((100%-32px)/5)] flex flex-col"
               >
                 {/* Product Box (Pure White, border-0, shadow-xs) */}
                 <div className="relative aspect-[374/498] bg-white overflow-hidden shadow-xs border-0">
@@ -3085,11 +3116,11 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 6: PERSONAL CARE (Exact Layout Matching Personal-Care-Section_bad93f56.jpg)
           ========================================================================= */}
-      <section className="w-full py-12 sm:py-16 lg:py-20 bg-[#5f3786] overflow-hidden select-none">
+      <section className="w-full py-7 sm:py-16 lg:py-20 bg-[#5f3786] overflow-hidden select-none">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
           {/* Top Header: Left-Aligned Heading */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 sm:mb-10">
-            <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-4 sm:mb-10">
+            <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] text-left">
               Personal Care
             </h2>
           </div>
@@ -3256,15 +3287,15 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 7: HOUSEHOLD CLEANERS (2-Row 5-Column Grid matching Reference Image)
           ========================================================================= */}
-      <section className="w-full py-12 sm:py-16 lg:py-20 bg-white overflow-hidden select-none">
+      <section className="w-full py-7 sm:py-16 lg:py-20 bg-white overflow-hidden select-none">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
           {/* Top-Left Heading matching reference image */}
-          <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight font-['Poppins',sans-serif] text-left mb-8 sm:mb-10">
+          <h2 className="text-2xl sm:text-4xl lg:text-[42px] font-semibold text-gray-900 tracking-tight font-['Poppins',sans-serif] text-left mb-4 sm:mb-10">
             Household Cleaners
           </h2>
 
           {/* 10 Products in a 2-Row 5-Column Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-[20px]">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-6 lg:gap-[20px]">
             {householdCleanerProducts.map((item) => (
               <div key={item.id} className="group flex flex-col">
                 {/* Product Image Box */}
@@ -3301,10 +3332,10 @@ export const HomePage: React.FC = () => {
                 </div>
 
                 {/* Left-aligned details below the product listing image */}
-                <div className="mt-3 text-left">
+                <div className="mt-2 sm:mt-3 text-left">
                   <Link
                     to={item.slug}
-                    className="block text-sm sm:text-base font-normal text-gray-900 hover:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] truncate"
+                    className="block text-xs sm:text-base font-normal text-gray-900 hover:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] truncate"
                   >
                     {item.title}
                   </Link>
@@ -3326,7 +3357,7 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 8: TICKER MARQUEE BANNER (Color #5f3786)
           ========================================================================= */}
-      <div className="bg-[#5f3786] text-white py-3 overflow-hidden border-y border-[#5f3786]">
+      <div className="bg-[#5f3786] text-white py-2 sm:py-3 overflow-hidden border-y border-[#5f3786]">
         <div className="animate-marquee whitespace-nowrap text-xs font-semibold tracking-wider uppercase flex space-x-8">
           <span>Pan-India Free shipping on orders over ₹599</span>
           <span>•</span>
@@ -3355,7 +3386,7 @@ export const HomePage: React.FC = () => {
           2. Product listing details & thumbnails dynamically retrieved from backend uploaded products
           3. Exact typography, layout, "SHOP NOW" CTA, and "Top Picks 30% Off" interactive floating card
           ========================================================================= */}
-      <section className="relative w-full aspect-[1825/862] min-h-[380px] sm:min-h-[500px] lg:min-h-[640px] overflow-hidden select-none bg-[#f5ede5]">
+      <section className="relative w-full flex flex-col justify-between p-4 py-6 sm:p-0 sm:block sm:aspect-[1825/862] sm:min-h-[500px] lg:min-h-[640px] overflow-hidden select-none bg-[#f5ede5]">
         {/* Full Section Background Banner Image or Gradient Fallback */}
         {lovedEssentialsBg ? (
           <img
@@ -3369,19 +3400,22 @@ export const HomePage: React.FC = () => {
           <div className="absolute inset-0 w-full h-full bg-linear-to-r from-[#d8c3b0] via-[#ede3d8] to-[#d8c3b0]" />
         )}
 
-        {/* Left Side Content Overlay: Shifted to bottom and bottom-aligned with the right side white product box */}
-        <div className="absolute left-4 sm:left-8 md:left-12 lg:left-[180px] xl:left-[200px] bottom-[6%] sm:bottom-[8%] md:bottom-[10%] max-w-[420px] sm:max-w-[480px] z-20 pointer-events-none">
+        {/* Mobile scrim for text contrast */}
+        <div className="sm:hidden absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/45 pointer-events-none" />
+
+        {/* Left Side Content Overlay: Stacked cleanly on mobile above the product card, bottom-left aligned on sm+ */}
+        <div className="relative sm:absolute sm:left-8 md:left-12 lg:left-[180px] xl:left-[200px] sm:bottom-[8%] md:bottom-[10%] max-w-[420px] sm:max-w-[480px] z-20 pointer-events-none mb-4 sm:mb-0">
           <div className="pointer-events-auto">
-            <span className="block text-white/90 text-xs sm:text-sm md:text-base font-light tracking-[0.2em] uppercase font-['Poppins',sans-serif] drop-shadow-xs">
+            <span className="block text-white/90 text-[11px] sm:text-sm md:text-base font-light tracking-[0.2em] uppercase font-['Poppins',sans-serif] drop-shadow-xs">
               Our Most
             </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-semibold text-white leading-tight font-['Poppins',sans-serif] mt-1 sm:mt-1.5 drop-shadow-md">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-[46px] font-semibold text-white leading-tight font-['Poppins',sans-serif] mt-0.5 sm:mt-1.5 drop-shadow-md">
               <span className="italic font-serif font-medium text-white">Loved</span> Essentials
             </h2>
-            <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-white/95 line-clamp-2 sm:line-clamp-3 leading-relaxed max-w-[360px] font-['Poppins',sans-serif] drop-shadow-sm font-normal">
+            <p className="mt-1.5 sm:mt-3 text-xs sm:text-sm text-white/95 line-clamp-2 sm:line-clamp-3 leading-relaxed max-w-[360px] font-['Poppins',sans-serif] drop-shadow-sm font-normal">
               Carefully formulated essentials designed for daily freshness, radiant hygiene, and complete family protection.
             </p>
-            <div className="mt-4 sm:mt-6">
+            <div className="mt-3 sm:mt-6">
               <Link
                 to="/shop"
                 className="inline-flex items-center justify-center px-5 sm:px-7 py-2 sm:py-2.5 bg-white hover:bg-[#7a49a6] text-gray-900 hover:text-white border border-white/80 hover:border-[#7a49a6] text-[10px] sm:text-xs md:text-sm font-semibold uppercase tracking-[0.18em] shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer"
@@ -3393,7 +3427,7 @@ export const HomePage: React.FC = () => {
         </div>
 
         {/* Floating Card ("Top Picks 30% Off") Overlay - Dynamically loaded from backend products */}
-        <div className="absolute right-4 sm:right-8 md:right-12 lg:right-[180px] xl:right-[200px] bottom-[6%] sm:bottom-[8%] md:bottom-[10%] w-[92%] max-w-[340px] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[500px] bg-white rounded-xl md:rounded-2xl shadow-2xl p-3 sm:p-4 md:p-5 lg:p-6 flex flex-col justify-between z-20 border border-black/5">
+        <div className="relative sm:absolute sm:right-8 md:right-12 lg:right-[180px] xl:right-[200px] sm:bottom-[8%] md:bottom-[10%] w-full sm:w-[92%] sm:max-w-[420px] md:max-w-[460px] lg:max-w-[500px] bg-white rounded-xl md:rounded-2xl shadow-2xl p-3 sm:p-4 md:p-5 lg:p-6 flex flex-col justify-between z-20 border border-black/5">
           {/* Card Header: Title & Navigation Arrows */}
           <div className="flex items-center justify-between pb-2 sm:pb-3 border-b border-gray-100">
             <div className="flex items-center gap-2">
@@ -3558,50 +3592,50 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 10: UP TO 50% OFF FLASH DEAL WITH COUNTDOWN (Matches 50_Percent_Off_3bd6c5c5.jpg)
           ========================================================================= */}
-      <section className="w-full py-12 sm:py-16 lg:py-20 bg-[#5f3786] select-none overflow-hidden">
+      <section className="w-full py-7 sm:py-16 lg:py-20 bg-[#5f3786] select-none overflow-hidden">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px]">
           {/* Top Header Row: Left Title & Right Countdown Timer */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-10 gap-3 sm:gap-6">
             <div>
-              <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] leading-tight text-left">
+              <h2 className="text-2xl sm:text-4xl lg:text-[44px] font-semibold text-white tracking-tight font-['Poppins',sans-serif] leading-tight text-left">
                 UP TO 50% OFF
               </h2>
             </div>
 
             {/* Countdown timer matching reference */}
             <div className="flex items-start space-x-3 sm:space-x-4 text-white select-none self-start sm:self-auto">
-              <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px]">
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
+              <div className="flex flex-col items-center min-w-[34px] sm:min-w-[48px]">
+                <span className="text-xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
                   {String(timeLeft.days).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1.5 font-['Inter',sans-serif]">
+                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1 sm:mt-1.5 font-['Inter',sans-serif]">
                   Days
                 </span>
               </div>
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
-              <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px]">
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
+              <span className="text-xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
+              <div className="flex flex-col items-center min-w-[34px] sm:min-w-[48px]">
+                <span className="text-xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
                   {String(timeLeft.hours).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1.5 font-['Inter',sans-serif]">
+                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1 sm:mt-1.5 font-['Inter',sans-serif]">
                   Hours
                 </span>
               </div>
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
-              <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px]">
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
+              <span className="text-xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
+              <div className="flex flex-col items-center min-w-[34px] sm:min-w-[48px]">
+                <span className="text-xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
                   {String(timeLeft.minutes).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1.5 font-['Inter',sans-serif]">
+                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1 sm:mt-1.5 font-['Inter',sans-serif]">
                   Minutes
                 </span>
               </div>
-              <span className="text-2xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
-              <div className="flex flex-col items-center min-w-[36px] sm:min-w-[48px]">
-                <span className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
+              <span className="text-xl sm:text-3xl lg:text-4xl font-light leading-none -mt-0.5">:</span>
+              <div className="flex flex-col items-center min-w-[34px] sm:min-w-[48px]">
+                <span className="text-xl sm:text-3xl lg:text-4xl font-light tracking-tight leading-none">
                   {String(timeLeft.seconds).padStart(2, '0')}
                 </span>
-                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1.5 font-['Inter',sans-serif]">
+                <span className="text-[10px] sm:text-xs text-white/90 font-light mt-1 sm:mt-1.5 font-['Inter',sans-serif]">
                   Seconds
                 </span>
               </div>
@@ -3611,7 +3645,7 @@ export const HomePage: React.FC = () => {
           {/* Center Split Box: Left Lifestyle Photo (50%) + Right Product Listing (50%) */}
           <div className="relative bg-white grid grid-cols-1 md:grid-cols-2 shadow-xl overflow-hidden rounded-none">
             {/* Left Lifestyle Photo */}
-            <div className="relative aspect-[682/512] md:aspect-auto md:h-full bg-gray-100 overflow-hidden">
+            <div className="relative aspect-[16/10] sm:aspect-[682/512] md:aspect-auto md:h-full bg-gray-100 overflow-hidden">
               <img
                 src={resolveAssetUrl('/assets/products/handwash-pouch01.jpg')}
                 alt="WiZ Handwash Refill Pouch Complete Beauty Care"
@@ -3630,14 +3664,14 @@ export const HomePage: React.FC = () => {
             </div>
 
             {/* Right White Product Listing Panel */}
-            <div className="p-6 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-between bg-white text-left">
+            <div className="p-4 sm:p-8 lg:p-10 xl:p-12 flex flex-col justify-between bg-white text-left">
               <div>
-                <h3 className="text-lg sm:text-xl lg:text-[22px] font-semibold text-gray-900 font-['Poppins',sans-serif] mb-6 sm:mb-8 text-left">
+                <h3 className="text-base sm:text-xl lg:text-[22px] font-semibold text-gray-900 font-['Poppins',sans-serif] mb-3.5 sm:mb-8 text-left">
                   Complete Beauty Care
                 </h3>
 
                 {/* 3 Products Grid */}
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 lg:gap-5">
                   {flashDealProducts.map((item) => (
                     <div key={item.id} className="group flex flex-col">
                       {/* Product Box */}
@@ -3700,7 +3734,7 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 11: FULL-WIDTH MANIFESTO BANNER (Matches Reference Image)
           ========================================================================= */}
-      <section className="relative w-full h-[400px] sm:h-[480px] bg-black overflow-hidden flex items-center justify-center text-center">
+      <section className="relative w-full h-[260px] sm:h-[480px] bg-black overflow-hidden flex items-center justify-center text-center">
         <img
           src={resolveAssetUrl('/assets/every-drop-metters.jpg')}
           alt="Every Drop Matters"
@@ -3708,15 +3742,15 @@ export const HomePage: React.FC = () => {
         />
 
         <div className="relative max-w-2xl mx-auto px-4 text-white z-10">
-          <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight mb-4 font-['Poppins',sans-serif]">
+          <h2 className="text-2xl sm:text-5xl font-semibold tracking-tight mb-2.5 sm:mb-4 font-['Poppins',sans-serif]">
             Every Drop Matters
           </h2>
-          <p className="text-xs sm:text-sm text-gray-200 leading-relaxed max-w-lg mx-auto mb-8">
+          <p className="text-xs sm:text-sm text-gray-200 leading-relaxed max-w-lg mx-auto mb-5 sm:mb-8">
             Watch how our formulations work to deliver pristine hygiene, active protection, and nourishing care with every single use.
           </p>
           <Link
             to="/shop"
-            className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-xs font-bold uppercase tracking-wider py-3.5 px-8 transition-colors"
+            className="inline-block bg-white text-black hover:bg-[#7a49a6] hover:text-white text-[11px] sm:text-xs font-bold uppercase tracking-wider py-2.5 sm:py-3.5 px-6 sm:px-8 transition-colors"
           >
             EXPLORE ALL PRODUCT
           </Link>
@@ -3739,10 +3773,10 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 14: LATEST BLOG POSTS (Clickable cards landing on /blog/:slug)
           ========================================================================= */}
-      <section className="w-full py-16 bg-white">
+      <section className="w-full py-7 sm:py-16 bg-white">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
           {/* Section Header: Heading on left, View All Blogs link on right */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b border-gray-100">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 sm:gap-4 mb-4 sm:mb-10 pb-3 sm:pb-4 border-b border-gray-100">
             <div>
               <h2 className="text-2xl sm:text-3xl font-semibold text-gray-900 tracking-tight text-left font-['Poppins',sans-serif]">
                 Latest Blog Posts
@@ -3774,18 +3808,18 @@ export const HomePage: React.FC = () => {
               const textBlock = (
                 <div
                   key={`text-${post.id}`}
-                  className="flex flex-col items-center text-center px-4 py-8 sm:px-6 flex-1 justify-center"
+                  className="flex flex-col items-center text-center px-3 py-4 sm:px-6 sm:py-8 flex-1 justify-center"
                 >
-                  <div className="text-xs font-medium text-gray-500 mb-3 tracking-wide">
+                  <div className="text-xs font-medium text-gray-500 mb-1.5 sm:mb-3 tracking-wide">
                     {post.date}
                   </div>
-                  <h3 className="text-xl sm:text-[22px] font-semibold text-gray-900 leading-snug mb-3 text-center max-w-[300px] mx-auto group-hover/blog:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] text-balance">
+                  <h3 className="text-lg sm:text-[22px] font-semibold text-gray-900 leading-snug mb-1.5 sm:mb-3 text-center max-w-[300px] mx-auto group-hover/blog:text-[#7a49a6] transition-colors font-['Poppins',sans-serif] text-balance">
                     {post.title}
                   </h3>
-                  <p className="text-xs sm:text-[13px] text-gray-600 text-center leading-relaxed max-w-[300px] mx-auto mb-4 line-clamp-3">
+                  <p className="text-xs sm:text-[13px] text-gray-600 text-center leading-relaxed max-w-[300px] mx-auto mb-2.5 sm:mb-4 line-clamp-3">
                     {post.excerpt}
                   </p>
-                  <div className="text-xs font-medium text-gray-700 mb-4 tracking-wide">
+                  <div className="text-xs font-medium text-gray-700 mb-2.5 sm:mb-4 tracking-wide">
                     {byline}
                   </div>
                   <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#7a49a6] group-hover/blog:text-[#5f3786] transition-colors">
@@ -3798,10 +3832,10 @@ export const HomePage: React.FC = () => {
               const imageBlock = (
                 <div
                   key={`image-${post.id}`}
-                  className="p-4 sm:p-6 flex items-center justify-center"
+                  className="p-2.5 sm:p-6 flex items-center justify-center"
                 >
                   {post.image ? (
-                    <div className="relative w-full max-w-[360px] aspect-square overflow-hidden bg-gray-50 shadow-2xs border border-gray-100">
+                    <div className="relative w-full max-w-[360px] aspect-[16/10] sm:aspect-square overflow-hidden bg-gray-50 shadow-2xs border border-gray-100">
                       <img
                         src={resolveAssetUrl(post.image)}
                         alt={post.title}
@@ -3810,7 +3844,7 @@ export const HomePage: React.FC = () => {
                       />
                     </div>
                   ) : (
-                    <div className="w-full max-w-[360px] aspect-square bg-gray-50 border border-gray-100 flex items-center justify-center" />
+                    <div className="w-full max-w-[360px] aspect-[16/10] sm:aspect-square bg-gray-50 border border-gray-100 flex items-center justify-center" />
                   )}
                 </div>
               );
@@ -3844,12 +3878,12 @@ export const HomePage: React.FC = () => {
           SECTION: RECENTLY VIEWED (Tracks & Displays Last 4 Clicked Products)
           ========================================================================= */}
       {recentlyViewedProducts.length > 0 && (
-        <section className="w-full py-14 sm:py-16 bg-[#fbfbfb] border-t border-gray-200">
+        <section className="w-full py-7 sm:py-16 bg-[#fbfbfb] border-t border-gray-200">
           <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
             {/* Header: Title, Browsing Subtitle, and Quick Links */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-10 gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-4 sm:mb-10 gap-2 sm:gap-4">
               <div className="text-left">
-                <span className="text-[11px] font-bold tracking-widest text-[#7a49a6] uppercase block mb-1">
+                <span className="text-[11px] font-bold tracking-widest text-[#7a49a6] uppercase block mb-0.5 sm:mb-1">
                   Based on your browsing
                 </span>
                 <h2 className="text-2xl sm:text-3xl lg:text-[34px] font-semibold text-gray-900 tracking-tight font-['Poppins',sans-serif]">
@@ -3883,8 +3917,8 @@ export const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* 4 Recently Viewed Cards Flexbox Row */}
-            <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-start gap-6">
+            {/* 4 Recently Viewed Cards Grid (2-up mobile, 4-up desktop) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
               {recentlyViewedProducts.slice(0, 4).map((item) => {
                 const defaultVariant = item.variants?.[0] || {
                   id: `${item.id}-default`,
@@ -3901,11 +3935,11 @@ export const HomePage: React.FC = () => {
                 return (
                   <div
                     key={item.id}
-                    className="w-full sm:w-[calc((100%-24px)/2)] lg:w-[calc((100%-72px)/4)] shrink-0 group relative bg-white border border-gray-200 hover:border-gray-400 transition-all duration-200 flex flex-col justify-between shadow-2xs"
+                    className="w-full group relative bg-white border border-gray-200 hover:border-gray-400 transition-all duration-200 flex flex-col justify-between shadow-2xs"
                   >
                     <div>
                       {/* Product Image Area */}
-                      <div className="relative aspect-square w-full overflow-hidden bg-[#f8f8f8] flex items-center justify-center p-5">
+                      <div className="relative aspect-square w-full overflow-hidden bg-[#f8f8f8] flex items-center justify-center p-3 sm:p-5">
                         <Link
                           to={`/product/${item.slug}`}
                           onClick={() => recordRecentlyViewed(item)}
@@ -3920,14 +3954,14 @@ export const HomePage: React.FC = () => {
                         </Link>
 
                         {/* Badges */}
-                        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+                        <div className="absolute top-2 left-2 sm:top-2.5 sm:left-2.5 flex flex-col gap-1 z-10">
                           {item.discountPercent > 0 && (
-                            <span className="bg-[#ff675d] text-white text-[11px] font-semibold px-2.5 py-0.5 rounded-full shadow-2xs">
+                            <span className="bg-[#ff675d] text-white text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-0.5 rounded-full shadow-2xs">
                               {item.discountPercent}% OFF
                             </span>
                           )}
                           {item.isSoldout && (
-                            <span className="bg-black text-white text-[11px] font-semibold px-3 py-0.5 rounded-full shadow-2xs">
+                            <span className="bg-black text-white text-[10px] sm:text-[11px] font-semibold px-2.5 sm:px-3 py-0.5 rounded-full shadow-2xs">
                               Soldout
                             </span>
                           )}
@@ -3988,8 +4022,8 @@ export const HomePage: React.FC = () => {
                       </div>
 
                       {/* Details */}
-                      <div className="p-4 text-left">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">
+                      <div className="p-2.5 sm:p-4 text-left">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-0.5 sm:mb-1 truncate">
                           {item.category || 'Hygiene Essential'}
                         </span>
                         <h3 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-1 hover:text-[#7a49a6] transition-colors text-left">
@@ -4002,13 +4036,13 @@ export const HomePage: React.FC = () => {
                         </h3>
 
                         {/* Pricing */}
-                        <div className="mt-1.5 flex items-center justify-start space-x-2">
+                        <div className="mt-1 sm:mt-1.5 flex items-center justify-start space-x-2">
                           {item.regularPrice > item.sellingPrice && (
-                            <span className="text-xs text-gray-400 line-through font-normal">
+                            <span className="text-[11px] sm:text-xs text-gray-400 line-through font-normal">
                               ₹{item.regularPrice.toFixed(2)}
                             </span>
                           )}
-                          <span className="text-sm font-semibold text-gray-900">
+                          <span className="text-xs sm:text-sm font-semibold text-gray-900">
                             ₹{item.sellingPrice.toFixed(2)}
                           </span>
                         </div>
@@ -4025,35 +4059,35 @@ export const HomePage: React.FC = () => {
       {/* =========================================================================
           SECTION 15: LOVED BY EVERY SKIN TYPE (Matches Reference Design Exactly)
           ========================================================================= */}
-      <section className="w-full py-16 sm:py-20 bg-[#5f3786] border-t border-purple-900">
+      <section className="w-full py-7 sm:py-20 bg-[#5f3786] border-t border-purple-900">
         <div className="w-full px-4 sm:px-8 md:px-12 lg:px-[180px] xl:px-[200px] flex flex-col">
-          <div className="text-left mb-8 sm:mb-10">
+          <div className="text-left mb-4 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight font-['Poppins',sans-serif]">
               Loved By Every Skin Type
             </h2>
           </div>
 
-          <div className="flex flex-wrap lg:flex-nowrap items-stretch justify-between gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {/* Card 1: Free shipping */}
-            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
-              <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
-                <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <div className="bg-white p-4 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-3 sm:mb-6 text-[#7a49a6]">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M2 5h11v11H2z" />
                   <path d="M13 9h4l3 3v4h-7V9z" />
                   <circle cx="6" cy="17" r="2" />
                   <circle cx="16.5" cy="17" r="2" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Free shipping</h3>
-              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed max-w-[240px]">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-900 mb-1.5 sm:mb-4">Free shipping</h3>
+              <p className="text-[11px] sm:text-[13px] text-gray-600 leading-snug sm:leading-relaxed max-w-[240px]">
                 Premium skincare products deliver a refreshing skin experience without compromising on quality and comfort for everyday beauty care.
               </p>
             </div>
 
             {/* Card 2: Customer Support */}
-            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
-              <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
-                <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <div className="bg-white p-4 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-3 sm:mb-6 text-[#7a49a6]">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 14v-3a8 8 0 0 1 16 0v3" />
                   <rect x="2" y="13" width="3.5" height="5.5" rx="1" />
                   <rect x="18.5" y="13" width="3.5" height="5.5" rx="1" />
@@ -4064,31 +4098,31 @@ export const HomePage: React.FC = () => {
                   <circle cx="13.5" cy="13" r="0.6" fill="#7a49a6" stroke="none" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Customer Support</h3>
-              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed max-w-[240px]">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-900 mb-1.5 sm:mb-4">Customer Support</h3>
+              <p className="text-[11px] sm:text-[13px] text-gray-600 leading-snug sm:leading-relaxed max-w-[240px]">
                 Our skincare experts provide reliable guidance and support without compromising your experience and comfort for better skincare results.
               </p>
             </div>
 
             {/* Card 3: Satisfaction */}
-            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
-              <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
-                <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <div className="bg-white p-4 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-3 sm:mb-6 text-[#7a49a6]">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                   <circle cx="12" cy="10" r="1.5" />
                   <path d="M12 11.5V15" />
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Satisfaction</h3>
-              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed max-w-[240px]">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-900 mb-1.5 sm:mb-4">Satisfaction</h3>
+              <p className="text-[11px] sm:text-[13px] text-gray-600 leading-snug sm:leading-relaxed max-w-[240px]">
                 High-quality skincare products ensure a satisfying experience without compromising on results and comfort for your daily beauty routine.
               </p>
             </div>
 
             {/* Card 4: Free Returns */}
-            <div className="w-full sm:w-[calc((100%-24px)/2)] lg:flex-1 lg:min-w-0 bg-white p-8 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
-              <div className="w-14 h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-6 text-[#7a49a6]">
-                <svg className="w-6 h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
+            <div className="bg-white p-4 sm:p-10 flex flex-col items-center text-center shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-md transition-shadow duration-200">
+              <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-[#f0e6fa] flex items-center justify-center mb-3 sm:mb-6 text-[#7a49a6]">
+                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[#7a49a6]" viewBox="0 0 24 24" fill="none" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                   <path d="M3 3v5h5" />
                   <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
@@ -4096,8 +4130,8 @@ export const HomePage: React.FC = () => {
                   <text x="12" y="14.5" fontSize="7" fontWeight="bold" textAnchor="middle" stroke="none" fill="#7a49a6" fontFamily="sans-serif">24</text>
                 </svg>
               </div>
-              <h3 className="text-base font-semibold text-gray-900 mb-4">Free Returns</h3>
-              <p className="text-xs sm:text-[13px] text-gray-600 leading-relaxed max-w-[240px]">
+              <h3 className="text-xs sm:text-base font-semibold text-gray-900 mb-1.5 sm:mb-4">Free Returns</h3>
+              <p className="text-[11px] sm:text-[13px] text-gray-600 leading-snug sm:leading-relaxed max-w-[240px]">
                 Enjoy hassle-free returns on skincare products without compromising your convenience and comfort for a smooth shopping experience.
               </p>
             </div>
